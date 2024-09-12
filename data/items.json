@@ -1,0 +1,204 @@
+{
+     "items": [
+          {
+               "row": 0,
+               "column": 0,
+               "title": "NPN Tranzystory",
+               "drawers": [
+                    "BC546",
+                    "BC547",
+                    "Darlington MPSA29"
+               ]
+          },
+          {
+               "row": 0,
+               "column": 1,
+               "title": "PNP Tranzystory",
+               "drawers": [
+                    "BC556",
+                    "",
+                    ""
+               ]
+          },
+          {
+               "row": 0,
+               "column": 2,
+               "title": "N MOSFET",
+               "drawers": [
+                    "BS170",
+                    "T2910",
+                    "IRL540"
+               ]
+          },
+          {
+               "row": 0,
+               "column": 3,
+               "title": "P MOSFET",
+               "drawers": [
+                    "",
+                    "",
+                    ""
+               ]
+          },
+          {
+               "row": 0,
+               "column": 4,
+               "title": "Rezystory Ohm",
+               "drawers": [
+                    "100",
+                    "330",
+                    "470"
+               ]
+          },
+          {
+               "row": 0,
+               "column": 5,
+               "title": "Rezystory kOhm",
+               "drawers": [
+                    "1000",
+                    "3300",
+                    "4700"
+               ]
+          },
+          {
+               "row": 0,
+               "column": 6,
+               "title": "Rezystory kOhm",
+               "drawers": [
+                    "10k",
+                    "56k",
+                    ""
+               ]
+          },
+          {
+               "row": 0,
+               "column": 7,
+               "title": "Rezystory k-MOhm",
+               "drawers": [
+                    "100k",
+                    "470k",
+                    "1M"
+               ]
+          },
+          {
+               "row": 1,
+               "column": 0,
+               "title": "Diody \u015awiec\u0105ce",
+               "drawers": [
+                    "LED",
+                    "LED RGB",
+                    "Linijka; 8-segment"
+               ]
+          },
+          {
+               "row": 1,
+               "column": 1,
+               "title": "Diody",
+               "drawers": [
+                    "N4148",
+                    "Zener 3.3V",
+                    ""
+               ]
+          },
+          {
+               "row": 1,
+               "column": 2,
+               "title": "Stabilizator Liniowy",
+               "drawers": [
+                    "LD1117V33 3.3V",
+                    "LM7805 5V",
+                    ""
+               ]
+          },
+          {
+               "row": 1,
+               "column": 3,
+               "title": "R\u00f3\u017cne",
+               "drawers": [
+                    "NE555",
+                    "Podk\u0142adki DIP",
+                    "Komparator Napi\u0119cia"
+               ]
+          },
+          {
+               "row": 1,
+               "column": 4,
+               "title": "Rezystory Specjalne",
+               "drawers": [
+                    "Fotorezystor 5-10k",
+                    "Termistor NTC 47k",
+                    ""
+               ]
+          },
+          {
+               "row": 1,
+               "column": 5,
+               "title": "Potencjometry",
+               "drawers": [
+                    "B20k",
+                    "B100k",
+                    "Ga\u0142ki Nasadkowe"
+               ]
+          },
+          {
+               "row": 1,
+               "column": 6,
+               "title": "Potencjometry Monta\u017cowe",
+               "drawers": [
+                    "5k",
+                    "20k",
+                    ""
+               ]
+          },
+          {
+               "row": 2,
+               "column": 0,
+               "title": "Bramki Logiczne",
+               "drawers": [
+                    "AND CD4081",
+                    "OR CD4071",
+                    ""
+               ]
+          },
+          {
+               "row": 2,
+               "column": 1,
+               "title": "Bramki Logiczne",
+               "drawers": [
+                    "NOT CD40[49,69]",
+                    "NAND CD4093BE",
+                    ""
+               ]
+          },
+          {
+               "row": 2,
+               "column": 4,
+               "title": "Kondensatory Ceramiczne",
+               "drawers": [
+                    "100nF",
+                    "",
+                    ""
+               ]
+          },
+          {
+               "row": 2,
+               "column": 5,
+               "title": "Kondensatory Monolityczne",
+               "drawers": [
+                    "10nF",
+                    "470nF",
+                    "1uF"
+               ]
+          },
+          {
+               "row": 2,
+               "column": 6,
+               "title": "Kondensatory Elektrolityczne",
+               "drawers": [
+                    "10uF",
+                    "100uF 220uF",
+                    "1mF"
+               ]
+          }
+     ]
+}
