@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import NamedTuple, TYPE_CHECKING
+from typing import NamedTuple
 
-from drawer import Drawer
-from component import Component
+from storage.drawer import Drawer
+from storage.component import Component
 
 
 class Row(NamedTuple):
@@ -43,7 +43,7 @@ class Container:
 
     def get_next_free_row_and_column(self) -> Position:
         for row in self.drawer_rows:
-            if c := len(row.drawers) < self.max_drawers_per_row:
-                return Position(row=row.index, column=c)
+            if len(row.drawers) < self.max_drawers_per_row:
+                return Position(row=row.index, column=len(row.drawers))
 
         raise IndexError("[FAIL] Failed to add a new drawer as there is no more space in this storage!")

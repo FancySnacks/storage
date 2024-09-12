@@ -3,9 +3,10 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
+from storage.component import Component
+
 if TYPE_CHECKING:
     from storage.container import Container
-    from storage.component import Component
 
 
 @dataclass
@@ -42,3 +43,15 @@ class Drawer:
                 return True
 
         return False
+
+    def get_readable_format(self) -> st:
+        components = [f"{comp.get_readable_format()}" for comp in self.components]
+        components = ', '.join(components)
+        return f"{self.get_pos_str()} {self.name}\n[{components}]\n"
+
+    def get_pos_str(self) -> str:
+        """Get drawer position in storage as formatted string."""
+        return f"[{self.row},{self.column}]"
+
+    def __repr__(self) -> str:
+        return self.get_readable_format()
