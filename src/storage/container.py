@@ -1,20 +1,24 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import NamedTuple
 
 from storage.drawer import Drawer
 from storage.component import Component
 
 
-class Row(NamedTuple):
+@dataclass
+class Row:
     index: int
     drawers: list[Drawer]
 
 
-class Position(NamedTuple):
+@dataclass
+class Position:
     row: int
     column: int
+
+    def __repr__(self) -> str:
+        return f"[{self.row},{self.column}]"
 
 
 @dataclass
@@ -25,6 +29,7 @@ class Container:
     compartments_per_drawer: int = 3
 
     drawer_rows: list[Row] = field(default_factory=list)
+    _drawers: list[Drawer] = field(default_factory=list)
 
     def __post_init__(self):
         for i in range(0, self.total_rows):
@@ -34,12 +39,31 @@ class Container:
     def add_drawer(self, drawer_name: str, components: list[Component] = list) -> Drawer:
         pos = self.get_next_free_row_and_column()
         new_drawer = Drawer(drawer_name, pos.row, pos.column, components=components, parent_container=self)
+
         self.drawer_rows[pos.row].drawers.append(new_drawer)
+        self._drawers.append(new_drawer)
 
         print(f"[DRAWER] {new_drawer.name} was added to "
               f"{self.name} at [{pos.row},{pos.column}]")
         
         return new_drawer
+
+    def get_drawer_by_name(self, drawer_name: str) -> Drawer | None:
+        """Return child Drawer by name."""
+        for drawer in self._drawers:
+            if drawer.name == drawer_name:
+                return drawer
+
+        print(f"[FAIL] '{drawer_name}' drawer was not found inside {self.name} container.")
+        return None
+
+    def get_drawer_at_pos(self, row: int, column: int) -> Drawer | None:
+        """Return child Drawer at target row and column."""
+        try:
+            return self.drawer_rows[row].drawers[column]
+        except IndexError:
+            print(f"[FAIL] Drawer at {Position(row, column)} was not found inside {self.name} container.")
+            return None
 
     def get_next_free_row_and_column(self) -> Position:
         for row in self.drawer_rows:
