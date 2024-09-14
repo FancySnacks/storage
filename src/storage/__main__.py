@@ -1,3 +1,5 @@
+"""Main entry point of the software."""
+
 from storage.container import Container
 
 

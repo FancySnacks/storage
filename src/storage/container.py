@@ -8,12 +8,14 @@ from storage.component import Component
 
 @dataclass
 class Row:
+    """Singular row of drawers belonging to a container."""
     index: int
     drawers: list[Drawer]
 
 
 @dataclass
 class Position:
+    """A class containing x,y coordinates of ad rawer."""
     row: int
     column: int
 
@@ -23,6 +25,8 @@ class Position:
 
 @dataclass
 class Container:
+    """A container containing rows of drawers that contain groups of components allocated in many compartment
+    or divisions."""
     name: str
     total_rows: int
     max_drawers_per_row: int = 8
@@ -32,11 +36,15 @@ class Container:
     _drawers: list[Drawer] = field(default_factory=list)
 
     def __post_init__(self):
+        # Fill container with empty rows on init
         for i in range(0, self.total_rows):
             new_row = Row(i, [])
             self.drawer_rows.append(new_row)
 
     def add_drawer(self, drawer_name: str, components: list[Component] = list) -> Drawer:
+        """Add new Drawer child class identified by unique name.\n
+        List of child components can be empty.\n
+        Returns a new drawer if successful, raises error if not."""
         pos = self.get_next_free_row_and_column()
         new_drawer = Drawer(drawer_name, pos.row, pos.column, components=components, parent_container=self)
 
@@ -66,6 +74,7 @@ class Container:
             return None
 
     def get_next_free_row_and_column(self) -> Position:
+        """Find the first free spot where a new Drawer can be put in."""
         for row in self.drawer_rows:
             if len(row.drawers) < self.max_drawers_per_row:
                 return Position(row=row.index, column=len(row.drawers))

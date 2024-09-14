@@ -3,6 +3,7 @@ from dataclasses import dataclass, field
 
 @dataclass
 class Component:
+    """Singular component or a group of components stored in parent drawer."""
     name: str
     count: int
     type: str

@@ -11,6 +11,7 @@ if TYPE_CHECKING:
 
 @dataclass
 class Drawer:
+    """A drawer belonging to certain container and containing specified amount of components."""
     name: str
     row: int
     column: int
@@ -22,6 +23,10 @@ class Drawer:
         self.components = []
 
     def add_component(self, component_name: str, component_type: str, count: int = 0) -> Component:
+        """Add a new component to this drawer.\n
+        The total limit of unique components this drawer can have is specified by drawer's container parent.\n
+        Each component type belongs in its own separate compartment.\n
+        Raises ValueError if there is no more space in this drawer."""
         if not self.too_many_components(self.components):
             new_component = Component(component_name, count, component_type)
             self.components.append(new_component)
@@ -37,14 +42,14 @@ class Drawer:
                              f"({len(self.components)}/{self.parent_container.compartments_per_drawer})")
 
     def too_many_components(self, components: list[Component]) -> bool:
-        """Make sure only as many element types are allowed as many compartments are per drawer."""
+        """Check whether all compartments are taken or not."""
         if self.parent_container:
             if len(components) > self.parent_container.compartments_per_drawer:
                 return True
 
         return False
 
-    def get_readable_format(self) -> st:
+    def get_readable_format(self) -> str:
         components = [f"{comp.get_readable_format()}" for comp in self.components]
         components = ', '.join(components)
         return f"{self.get_pos_str()} {self.name}\n[{components}]\n"
