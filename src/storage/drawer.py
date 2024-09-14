@@ -22,11 +22,21 @@ class Drawer:
     def __post_init__(self):
         self.components = []
 
+    @property
+    def component_names(self) -> list[str]:
+        return [comp.name for comp in self.components]
+
     def add_component(self, component_name: str, component_type: str, count: int = 0) -> Component | None:
         """Add a new component to this drawer.\n
         The total limit of unique components this drawer can have is specified by drawer's container parent.\n
         Each component type belongs in its own separate compartment."""
-        if not self.too_many_components(self.components):
+
+        if self._component_already_exists(component_name):
+            print(f"[FAIL] Failed to add component '{component_name}' to {self.parent_container.name}/{self.name} as it"
+                  f" already exists.")
+            return None
+
+        if not self._too_many_components(self.components):
             new_component = Component(component_name, count, component_type)
             self.components.append(new_component)
 
@@ -41,12 +51,17 @@ class Drawer:
                   f"({len(self.components)}/{self.parent_container.compartments_per_drawer})")
             return None
 
-    def too_many_components(self, components: list[Component]) -> bool:
+    def _too_many_components(self, components: list[Component]) -> bool:
         """Check whether all compartments are taken or not."""
         if self.parent_container:
             if len(components) > self.parent_container.compartments_per_drawer:
                 return True
 
+        return False
+    
+    def _component_already_exists(self, component_name) -> bool:
+        if component_name in self.component_names:
+            return True
         return False
 
     def get_readable_format(self) -> str:
