@@ -19,6 +19,10 @@ class Position:
     row: int
     column: int
 
+    @classmethod
+    def from_drawer(cls, drawer: Drawer) -> Position:
+        return Position(drawer.row, drawer.column)
+
     def __repr__(self) -> str:
         return f"[{self.row},{self.column}]"
 
@@ -41,10 +45,17 @@ class Container:
             new_row = Row(i, [])
             self.drawer_rows.append(new_row)
 
-    def add_drawer(self, drawer_name: str, components: list[Component] = list) -> Drawer:
+    def add_drawer(self, drawer_name: str, components: list[Component] = list) -> Drawer | None:
         """Add new Drawer child class identified by unique name.\n
         List of child components can be empty.\n
-        Returns a new drawer if successful, raises error if not."""
+        Returns a new drawer if successful."""
+
+        if not self._is_drawer_name_unique(drawer_name):
+            drawer = self.get_drawer_by_name(drawer_name)
+            print(f"[FAIL] Drawer with name '{drawer_name}' already exists at "
+                  f"{Position.from_drawer(drawer)}")
+            return None
+
         pos = self.get_next_free_row_and_column()
         new_drawer = Drawer(drawer_name, pos.row, pos.column, components=components, parent_container=self)
 
@@ -80,3 +91,8 @@ class Container:
                 return Position(row=row.index, column=len(row.drawers))
 
         raise IndexError("[FAIL] Failed to add a new drawer as there is no more space in this storage!")
+
+    def _is_drawer_name_unique(self, drawer_name: str) -> bool:
+        if drawer_name in [drawer.name for drawer in self._drawers]:
+            return False
+        return True

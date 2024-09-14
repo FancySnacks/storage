@@ -22,11 +22,10 @@ class Drawer:
     def __post_init__(self):
         self.components = []
 
-    def add_component(self, component_name: str, component_type: str, count: int = 0) -> Component:
+    def add_component(self, component_name: str, component_type: str, count: int = 0) -> Component | None:
         """Add a new component to this drawer.\n
         The total limit of unique components this drawer can have is specified by drawer's container parent.\n
-        Each component type belongs in its own separate compartment.\n
-        Raises ValueError if there is no more space in this drawer."""
+        Each component type belongs in its own separate compartment."""
         if not self.too_many_components(self.components):
             new_component = Component(component_name, count, component_type)
             self.components.append(new_component)
@@ -38,8 +37,9 @@ class Drawer:
             return new_component
         
         else:
-            raise ValueError(f"Too many component types to fit in a single drawer "
-                             f"({len(self.components)}/{self.parent_container.compartments_per_drawer})")
+            print(f"Too many component types to fit in a single drawer "
+                  f"({len(self.components)}/{self.parent_container.compartments_per_drawer})")
+            return None
 
     def too_many_components(self, components: list[Component]) -> bool:
         """Check whether all compartments are taken or not."""
