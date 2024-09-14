@@ -84,6 +84,29 @@ class Container:
             print(f"[FAIL] Drawer at {Position(row, column)} was not found inside {self.name} container.")
             return None
 
+    def remove_drawer_by_name(self, drawer_name: str):
+        drawer = self.get_drawer_by_name(drawer_name)
+
+        if not drawer:
+            return
+
+        self.drawer_rows[drawer.row].drawers.pop(drawer.column)
+        self._drawers.remove(drawer)
+
+        print(f"[SUCCESS] '{drawer_name}' drawer was removed from {self.name}")
+
+    def remove_drawer_at_pos(self, row: int, column: int):
+        drawer = self.get_drawer_at_pos(row, column)
+
+        if not drawer:
+            return None
+
+        drawer = self.drawer_rows[row].drawers.pop(column)
+        self._drawers.remove(drawer)
+
+        print(f"[SUCCESS] '{drawer.name}' drawer at {Position(row, column)} was removed from {self.name}")
+
+
     def get_next_free_row_and_column(self) -> Position:
         """Find the first free spot where a new Drawer can be put in."""
         for row in self.drawer_rows:

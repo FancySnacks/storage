@@ -55,28 +55,26 @@ class Drawer:
     def get_component_by_name(self, component_name: str) -> Component | None:
         """Get child component by name. Returns none if component wasn't found."""
         try:
-            index = self.component_names.find(component_name)
+            index = self.component_names.index(component_name)
             return self.components[index]
         except ValueError:
             print(f"[FAIL] '{component_name}' component was not found in {self.parent_container.name}/{self.name}!")
             return None
 
     def remove_component_by_name(self, component_name: str):
-        """Remove component from this drawer by it's unique name."""
         component = self.get_component_by_name(component_name)
+        index = self.component_names.index(component_name)
 
         if not component:
             return
 
-        self.components.remove(component)
+        self.components.pop(index)
         print(f"[SUCCESS] '{component_name}' component was removed from {self.parent_container.name}/{self.name}")
 
     def remove_component_by_index(self, component_index: int):
-        """Remove component from this drawer by index."""
         try:
-            component = self.components[component_index]
+            component = self.components.pop(component_index)
             component_name = component.name
-            self.components.remove(component)
             print(f"[SUCCESS] '{component_name}' component was removed from {self.parent_container.name}/{self.name}")
         except ValueError:
             print(f"[FAIL] Component at index '{component_index}' was not found in "
