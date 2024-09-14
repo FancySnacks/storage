@@ -68,7 +68,7 @@ class Container:
         return new_drawer
 
     def get_drawer_by_name(self, drawer_name: str) -> Drawer | None:
-        """Return child Drawer by name."""
+        """Return child Drawer by name. Returns None if drawer wasn't found."""
         for drawer in self._drawers:
             if drawer.name == drawer_name:
                 return drawer
