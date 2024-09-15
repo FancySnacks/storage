@@ -62,7 +62,7 @@ class Container:
         self.drawer_rows[pos.row].drawers.append(new_drawer)
         self._drawers.append(new_drawer)
 
-        print(f"[DRAWER] {new_drawer.name} was added to "
+        print(f"[SUCCESS] {new_drawer.name} drawer was added to "
               f"{self.name} at [{pos.row},{pos.column}]")
         
         return new_drawer
@@ -105,7 +105,6 @@ class Container:
         self._drawers.remove(drawer)
 
         print(f"[SUCCESS] '{drawer.name}' drawer at {Position(row, column)} was removed from {self.name}")
-
 
     def get_next_free_row_and_column(self) -> Position:
         """Find the first free spot where a new Drawer can be put in."""

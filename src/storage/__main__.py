@@ -10,7 +10,8 @@ def main() -> int:
     for elem in ["BC546", "BC547", "Darlington MPSA29"]:
         new_drawer.add_component(elem, "Tranzystor")
 
-    print(c.get_drawer_at_pos(0, 1))
+    print(c.get_drawer_at_pos(0, 0))
+    print(c.remove_drawer_at_pos(0, 0))
 
     return 0
 

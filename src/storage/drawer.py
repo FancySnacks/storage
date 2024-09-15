@@ -41,9 +41,9 @@ class Drawer:
             new_component = Component(component_name, count, component_type)
             self.components.append(new_component)
 
-            print(f"[COMPONENT] {new_component.name} was added to "
-                  f"{self.parent_container.name}/{self.name} "
-                  f"at [{self.row},{self.column}]")
+            print(f"[SUCCESS] {new_component.name} component was added to "
+                  f"{self.parent_container.name}/{self.name} [{self.row},{self.column}] "
+                  f"at compartment {len(self.components)}")
             
             return new_component
         
@@ -96,7 +96,7 @@ class Drawer:
     def get_readable_format(self) -> str:
         components = [f"{comp.get_readable_format()}" for comp in self.components]
         components = ', '.join(components)
-        return f"{self.get_pos_str()} {self.name}\n[{components}]\n"
+        return f"{self.get_pos_str()} {self.name} [{components}]\n"
 
     def get_pos_str(self) -> str:
         """Get drawer position in storage as formatted string."""
