@@ -27,7 +27,7 @@ class Position:
         return f"[{self.row},{self.column}]"
 
 
-@dataclass(frozen=True, order=True)
+@dataclass
 class Container:
     """A container containing rows of drawers that contain groups of components allocated in many compartment
     or divisions."""
@@ -40,7 +40,11 @@ class Container:
     _drawers: list[Drawer] = field(default_factory=list)
 
     def __post_init__(self):
-        # Fill container with empty rows on init
+        self.create_rows()
+
+    def create_rows(self):
+        self._drawer_rows.clear()
+
         for i in range(0, self.total_rows):
             new_row = Row(i, [])
             self._drawer_rows.append(new_row)
@@ -105,6 +109,12 @@ class Container:
         self._drawers.remove(drawer)
 
         print(f"[SUCCESS] '{drawer.name}' drawer at {Position(row, column)} was removed from {self.name}")
+
+    def clear_container(self):
+        self._drawers.clear()
+        self.create_rows()
+
+        print(f"[SUCCESS] {self.name} has been cleared!")
 
     def get_next_free_row_and_column(self) -> Position:
         """Find the first free spot where a new Drawer can be put in."""
