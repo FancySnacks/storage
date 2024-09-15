@@ -11,7 +11,7 @@ def main() -> int:
         new_drawer.add_component(elem, "Tranzystor")
 
     print(c.get_drawer_at_pos(0, 0))
-    print(c.remove_drawer_at_pos(0, 0))
+    c.remove_drawer_at_pos(0, 0)
 
     return 0
 
