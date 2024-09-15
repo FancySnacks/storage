@@ -27,7 +27,7 @@ class Position:
         return f"[{self.row},{self.column}]"
 
 
-@dataclass
+@dataclass(frozen=True, order=True)
 class Container:
     """A container containing rows of drawers that contain groups of components allocated in many compartment
     or divisions."""
