@@ -39,6 +39,14 @@ class Container:
     _drawer_rows: list[Row] = field(default_factory=list)
     _drawers: list[Drawer] = field(default_factory=list)
 
+    @property
+    def drawer_rows(self) -> list[Row]:
+        return self._drawer_rows
+
+    @property
+    def drawers(self) -> list[Drawer]:
+        return self._drawers
+
     def __post_init__(self):
         self.create_rows()
 

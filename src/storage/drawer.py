@@ -4,7 +4,6 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 from storage.component import Component
-from storage.const import NAME, INDEX
 
 if TYPE_CHECKING:
     from storage.container import Container
