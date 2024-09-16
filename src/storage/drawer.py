@@ -27,9 +27,9 @@ class Drawer:
         return [comp.name for comp in self.components]
 
     def add_component(self, component_name: str, component_type: str, count: int = 0) -> Component | None:
-        """Add a new component to this drawer.\n
-        The total limit of unique components this drawer can have is specified by drawer's container parent.\n
-        Each component type belongs in its own separate compartment."""
+        """The total limit of unique components this drawer can have is specified by drawer's container parent.\n
+          Each component type belongs in its own separate compartment.
+          Returns None on failure."""
 
         if self._component_already_exists(component_name):
             print(f"[FAIL] Failed to add component '{component_name}' to {self.parent_container.name}/{self.name} as it"
@@ -78,6 +78,10 @@ class Drawer:
         except ValueError:
             print(f"[FAIL] Component at index '{component_index}' was not found in "
                   f"{self.parent_container.name}/{self.name}!")
+
+    def clear_drawer(self):
+        self.components.clear()
+        print(f"[SUCCESS] {self.name} has been cleared!")
 
     def _too_many_components(self, components: list[Component]) -> bool:
         """Check whether all compartments are taken or not."""

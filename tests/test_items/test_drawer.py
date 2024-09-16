@@ -13,3 +13,10 @@ def test_component_is_removed_from_drawer_via_index(drawer, component_dict):
     drawer.add_component(**component_dict)
     drawer.remove_component_by_index(0)
     assert len(drawer.components) == 0
+
+
+def test_drawer_is_cleared(drawer, component_dict):
+    drawer.add_component(**component_dict)
+    drawer.add_component(**component_dict)
+    drawer.clear_drawer()
+    assert len(drawer.components) == 0
