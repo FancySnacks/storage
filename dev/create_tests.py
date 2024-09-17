@@ -25,13 +25,15 @@ def test_dir_path_exists(test_dir_path) -> bool:
     return path.exists() + path.is_dir()
 
 
-def create_test_file(test_path, file_name, file_contents):
+def create_test_file(test_path, file_name, file_contents) -> pathlib.Path:
     path = pathlib.Path(file_name)
     test_path = pathlib.Path(test_path)
     test_path = test_path.joinpath(pathlib.Path(f"test_{path.name}.py"))
 
     with open(test_path, 'x') as f:
         f.write(file_contents)
+
+    return test_path
 
 
 def create_test_file_content_from_method_list(method_names: list[str]) -> str:
@@ -139,7 +141,10 @@ def main(args: list[str] | None = None) -> int:
     methods = find_methods_inside_class(class_file_path, class_name)
     test_file_contents = add_import_statement(class_name, class_file_path)
     test_file_contents += create_test_file_content_from_method_list(methods)
-    create_test_file(test_dir_path, class_name.lower(), test_file_contents)
+    out = create_test_file(test_dir_path, class_name.lower(), test_file_contents)
+
+    if print_out_allowed:
+        print(f"CREATE_TESTS: {out} created with {len(methods)} test methods")
 
     return 0
 
