@@ -15,7 +15,7 @@ class Row:
 
 @dataclass
 class Position:
-    """A class containing x,y coordinates of ad rawer."""
+    """A class containing x,y coordinates of a drawer."""
     row: int
     column: int
 
