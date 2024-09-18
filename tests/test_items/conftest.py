@@ -2,7 +2,6 @@ import pytest
 
 from storage.container import Container
 from storage.drawer import Drawer
-from storage.component import Component
 
 
 TEST_CONTAINER_NAME = 'TestContainer'

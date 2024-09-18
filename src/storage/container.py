@@ -27,7 +27,7 @@ class Position:
         return f"[{self.row},{self.column}]"
 
 
-@dataclass(frozen=True, order=True)
+@dataclass
 class Container:
     """A container containing rows of drawers that contain groups of components allocated in many compartment
     or divisions."""
@@ -47,15 +47,23 @@ class Container:
     def drawers(self) -> list[Drawer]:
         return self._drawers
 
+    @property
+    def get_max_drawer_count(self) -> int:
+        return self.total_rows * self.max_drawers_per_row
+
     def __post_init__(self):
         self.create_rows()
 
     def create_rows(self):
-        self._drawer_rows.clear()
-
         for i in range(0, self.total_rows):
             new_row = Row(i, [])
             self._drawer_rows.append(new_row)
+        print(self._drawer_rows)
+
+    def resize_container(self, rows: int, drawers_per_row: int):
+        self.total_rows = rows
+        self.max_drawers_per_row = drawers_per_row
+        self.clear_container()
 
     def add_drawer(self, drawer_name: str, components: list[Component] = list) -> Drawer | None:
         """Add new Drawer child class identified by unique name.\n
@@ -120,6 +128,7 @@ class Container:
 
     def clear_container(self):
         self._drawers.clear()
+        self._drawer_rows.clear()
         self.create_rows()
 
         print(f"[SUCCESS] {self.name} has been cleared!")
