@@ -9,6 +9,10 @@ if TYPE_CHECKING:
     from storage.container import Container
 
 
+class DrawerPlaceholder:
+    pass
+
+
 @dataclass
 class Drawer:
     """A drawer belonging to certain container and containing specified amount of components."""

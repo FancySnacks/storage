@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from storage.drawer import Drawer
+from storage.drawer import Drawer, DrawerPlaceholder
 from storage.component import Component
 
 
@@ -10,14 +10,23 @@ from storage.component import Component
 class Row:
     """Singular row of drawers belonging to a container."""
     index: int
-    drawers: list[Drawer]
+    drawers: list[Drawer | DrawerPlaceholder]
+
+    def pop_drawer(self, column: int = -1) -> Drawer:
+        old_drawer = self.drawers[column]
+        self.drawers[column] = DrawerPlaceholder()
+        return old_drawer
+
+    def fill_columns(self, max_drawers_per_row):
+        for column_n in range(0, max_drawers_per_row):
+            self.drawers.append(DrawerPlaceholder())
+
+    def get_column_length(self) -> int:
+        return len([x for x in self.drawers if isinstance(x, Drawer)])
 
     def is_column_free(self, column: int) -> bool:
-        try:
-            i = self.drawers[column]
-            return False
-        except IndexError:
-            return True
+        item = self.drawers[column]
+        return isinstance(item, DrawerPlaceholder)
 
 
 @dataclass
@@ -43,12 +52,8 @@ class Container:
     max_drawers_per_row: int = 8
     compartments_per_drawer: int = 3
 
-    _drawer_rows: list[Row] = field(default_factory=list)
+    drawer_rows: list[Row] = field(default_factory=list)
     _drawers: list[Drawer] = field(default_factory=list)
-
-    @property
-    def drawer_rows(self) -> list[Row]:
-        return self._drawer_rows
 
     @property
     def drawers(self) -> list[Drawer]:
@@ -61,11 +66,13 @@ class Container:
     def __post_init__(self):
         self.create_rows()
 
-    def create_rows(self):
-        for i in range(0, self.total_rows):
-            new_row = Row(i, [])
-            self._drawer_rows.append(new_row)
-        print(self._drawer_rows)
+    def create_rows(self, fill_empty_spaces=True):
+        for row_n in range(0, self.total_rows):
+            new_row = Row(row_n, [])
+            self.drawer_rows.append(new_row)
+
+            if fill_empty_spaces:
+                new_row.fill_columns(self.max_drawers_per_row)
 
     def resize_container(self, rows: int, drawers_per_row: int):
         self.total_rows = rows
@@ -86,7 +93,8 @@ class Container:
         pos = self.get_next_free_row_and_column()
         new_drawer = Drawer(drawer_name, pos.row, pos.column, components=components, parent_container=self)
 
-        self._drawer_rows[pos.row].drawers.append(new_drawer)
+        row = self.drawer_rows[pos.row]
+        row.drawers[pos.column] = new_drawer
         self._drawers.append(new_drawer)
 
         print(f"[SUCCESS] {new_drawer.name} drawer was added to "
@@ -106,7 +114,7 @@ class Container:
     def get_drawer_at_pos(self, row: int, column: int) -> Drawer | None:
         """Return child Drawer at target row and column."""
         try:
-            return self._drawer_rows[row].drawers[column]
+            return self.drawer_rows[row].drawers[column]
         except IndexError:
             print(f"[FAIL] Drawer at {Position(row, column)} was not found inside {self.name} container.")
             return None
@@ -117,7 +125,7 @@ class Container:
         if not drawer:
             return
 
-        self._drawer_rows[drawer.row].drawers.pop(drawer.column)
+        self.drawer_rows[drawer.row].pop_drawer(drawer.column)
         self._drawers.remove(drawer)
 
         print(f"[SUCCESS] '{drawer_name}' drawer was removed from {self.name}")
@@ -128,32 +136,34 @@ class Container:
         if not drawer:
             return None
 
-        drawer = self._drawer_rows[row].drawers.pop(column)
+        drawer = self.drawer_rows[row].pop_drawer(column)
         self._drawers.remove(drawer)
 
         print(f"[SUCCESS] '{drawer.name}' drawer at {Position(row, column)} was removed from {self.name}")
 
     def move_drawer_to(self, drawer_obj: Drawer, row: int, column: int, forced=False):
-        target_row = self._drawer_rows[row]
+        target_row = self.drawer_rows[row]
         is_space_free = target_row.is_column_free(column)
 
         if is_space_free + forced > 0:
             target_row.drawers[column] = drawer_obj
+            drawer_obj.row = row
+            drawer_obj.column = column
         else:
             raise ValueError("[FAIL] Failed move the drawer as that column is occupied by another!")
 
     def clear_container(self):
         self._drawers.clear()
-        self._drawer_rows.clear()
+        self.drawer_rows.clear()
         self.create_rows()
 
         print(f"[SUCCESS] {self.name} has been cleared!")
 
     def get_next_free_row_and_column(self) -> Position:
         """Find the first free spot where a new Drawer can be put in."""
-        for row in self._drawer_rows:
-            if len(row.drawers) < self.max_drawers_per_row:
-                return Position(row=row.index, column=len(row.drawers))
+        for row in self.drawer_rows:
+            if row.get_column_length() < self.max_drawers_per_row:
+                return Position(row=row.index, column=row.get_column_length())
 
         raise IndexError("[FAIL] Failed to add a new drawer as there is no more space in this storage!")
 
