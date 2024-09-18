@@ -31,7 +31,7 @@ def test_drawer_is_moved_to_another_spot(container, test_drawer_name):
     old_pos = drawer.position
     container.move_drawer_to(drawer, 1, 5)
     new_pos = container.get_drawer_by_name(test_drawer_name).position
-    assert old_pos != new_pos
+    assert old_pos != new_pos and container.get_drawer_at_pos(old_pos[0], old_pos[1]) != drawer
 
 
 def test_drawer_is_removed_from_container_at_pos(container, test_drawer_name):

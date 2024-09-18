@@ -144,11 +144,13 @@ class Container:
     def move_drawer_to(self, drawer_obj: Drawer, row: int, column: int, forced=False):
         target_row = self.drawer_rows[row]
         is_space_free = target_row.is_column_free(column)
+        old_pos = drawer_obj.position
 
         if is_space_free + forced > 0:
             target_row.drawers[column] = drawer_obj
             drawer_obj.row = row
             drawer_obj.column = column
+            self.drawer_rows[old_pos[0]].drawers[old_pos[1]] = DrawerPlaceholder()
         else:
             raise ValueError("[FAIL] Failed move the drawer as that column is occupied by another!")
 
