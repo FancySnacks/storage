@@ -12,6 +12,13 @@ class Row:
     index: int
     drawers: list[Drawer]
 
+    def is_column_free(self, column: int) -> bool:
+        try:
+            i = self.drawers[column]
+            return False
+        except IndexError:
+            return True
+
 
 @dataclass
 class Position:
@@ -125,6 +132,15 @@ class Container:
         self._drawers.remove(drawer)
 
         print(f"[SUCCESS] '{drawer.name}' drawer at {Position(row, column)} was removed from {self.name}")
+
+    def move_drawer_to(self, drawer_obj: Drawer, row: int, column: int, forced=False):
+        target_row = self._drawer_rows[row]
+        is_space_free = target_row.is_column_free(column)
+
+        if is_space_free + forced > 0:
+            target_row.drawers[column] = drawer_obj
+        else:
+            raise ValueError("[FAIL] Failed move the drawer as that column is occupied by another!")
 
     def clear_container(self):
         self._drawers.clear()

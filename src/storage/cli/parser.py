@@ -5,9 +5,9 @@ import argparse
 
 class ArgParser:
     def __init__(self):
-        self.parser = argparse.ArgumentParser(prog="Storage",
-                                              usage="storage",
-                                              description="Desc TBA",
+        self.parser = argparse.ArgumentParser(prog="storage",
+                                              usage='%(prog)s [options]',
+                                              description="Desc",
                                               epilog="Made by FancySnacks | 2024 | MIT License",
                                               formatter_class=argparse.RawDescriptionHelpFormatter)
         self.parser.add_subparsers(help="Subcommands")

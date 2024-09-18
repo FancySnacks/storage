@@ -26,6 +26,10 @@ class Drawer:
     def component_names(self) -> list[str]:
         return [comp.name for comp in self.components]
 
+    @property
+    def position(self) -> tuple[int, int]:
+        return self.row, self.column
+
     def add_component(self, component_name: str, component_type: str, count: int = 0) -> Component | None:
         """The total limit of unique components this drawer can have is specified by drawer's container parent.\n
           Each component type belongs in its own separate compartment.
