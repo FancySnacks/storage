@@ -23,6 +23,7 @@ class Subparser(ABC):
         self.parser: ArgumentParser = self.parser_parent.subparsers.add_parser(self.subparser_name,
                                                                                help=self.help)
         self.children_parsers = self.parser.add_subparsers(help=self.subparsers_help)
+        self.post_init()
 
     def get_formatted_usage_text(self) -> str:
         prog_name = self.parser_parent.parser.prog
@@ -31,6 +32,10 @@ class Subparser(ABC):
     def get_children_parsers_names_as_formatted_str(self) -> str:
         names = self.children_parsers.choices
         return '{' + ', '.join(names) + '}'
+
+    def post_init(self):
+        self.parser.usage = self.get_formatted_usage_text()
+
 
 
 class CreateSubparser(Subparser):
@@ -77,11 +82,11 @@ class CreateSubparser(Subparser):
                                           help="Drawer name")
 
         create_drawer_parser.add_argument('--separators',
-                                             type=int,
-                                             default=3,
-                                             metavar="SEPARATORS",
-                                             help="Number of compartments/separators per drawer - aka max count of "
-                                                  "unique components in a single drawer")
+                                          type=int,
+                                          default=3,
+                                          metavar="SEPARATORS",
+                                          help="Number of compartments/separators per drawer - aka max count of "
+                                               "unique components in a single drawer")
 
         # ===== CREATE COMPONENT ===== #
 
@@ -104,4 +109,53 @@ class CreateSubparser(Subparser):
                                              help="Component type. "
                                                   f"Choices: {ComponentType.get_component_types()}")
 
-        self.parser.usage = self.get_formatted_usage_text()
+
+class DeleteSubparser(Subparser):
+    subparser_name: str = 'delete'
+    help: str = 'Delete target container or drawer/component from its parent.'
+    subparsers_help: str = 'Choose item to delete'
+
+    def initialize_subparser(self):
+        super().initialize_subparser()
+
+        # ===== DELETE CONTAINER ===== #
+
+        delete_container_parser: ArgumentParser = self.children_parsers.add_parser('container')
+
+        delete_container_parser.add_argument('name',
+                                             type=str,
+                                             metavar="NAME",
+                                             help="Container name")
+
+        # ===== DELETE DRAWER ===== #
+
+        delete_drawer_parser: ArgumentParser = self.children_parsers.add_parser('drawer')
+
+        delete_drawer_parser.add_argument('name',
+                                          type=str,
+                                          metavar="NAME",
+                                          help="Drawer name")
+
+        delete_drawer_parser.add_argument('container',
+                                          type=str,
+                                          metavar="PARENT_CONTAINER_NAME",
+                                          help="Parent container name")
+
+        # ===== DELETE COMPONENT ===== #
+
+        delete_component_parser: ArgumentParser = self.children_parsers.add_parser('component')
+
+        delete_component_parser.add_argument('name',
+                                             type=str,
+                                             metavar="NAME",
+                                             help="Component name")
+
+        delete_component_parser.add_argument('drawer',
+                                             type=str,
+                                             metavar="PARENT_DRAWER_NAME",
+                                             help="Parent drawer name")
+
+        delete_component_parser.add_argument('container',
+                                             type=str,
+                                             metavar="PARENT_CONTAINER_NAME",
+                                             help="Parent container name")

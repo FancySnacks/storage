@@ -2,7 +2,7 @@
 
 import argparse
 
-from storage.cli.subparser import Subparser, CreateSubparser
+from storage.cli.subparser import Subparser, CreateSubparser, DeleteSubparser
 
 
 class ArgParser:
@@ -34,6 +34,7 @@ class ArgParser:
 
     def setup_subparsers(self):
         self.add_subparser(CreateSubparser(self))
+        self.add_subparser(DeleteSubparser(self))
 
     def add_subparser(self, subparser):
         self.subparsers_obj.append(subparser)
