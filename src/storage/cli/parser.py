@@ -2,18 +2,21 @@
 
 import argparse
 
+from storage.cli.subparser import Subparser, CreateSubparser
+
 
 class ArgParser:
     def __init__(self):
         self.parser = argparse.ArgumentParser(prog="storage",
-                                              usage='%(prog)s [options]',
                                               description="Desc",
                                               epilog="Made by FancySnacks | 2024 | MIT License",
                                               formatter_class=argparse.RawDescriptionHelpFormatter)
-        self.parser.add_subparsers(help="Subcommands")
 
+        self.subparsers = self.parser.add_subparsers(title='subcommands', help="Subcommands")
+        self.subparsers_obj: list[Subparser] = []
         self.parsed_args = {}
 
+        self.setup_subparsers()
         self.setup_args()
 
     def parse_args(self, args_to_parse: list[str]) -> dict:
@@ -28,3 +31,10 @@ class ArgParser:
         self.parser.add_argument('--printargs',
                                  action='store_true',
                                  help="Print parsed arguments to console.")
+
+    def setup_subparsers(self):
+        self.add_subparser(CreateSubparser(self))
+
+    def add_subparser(self, subparser):
+        self.subparsers_obj.append(subparser)
+        subparser.initialize_subparser()
