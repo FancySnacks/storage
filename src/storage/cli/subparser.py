@@ -3,6 +3,9 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from argparse import ArgumentParser
+
+from storage.const import ComponentType
 
 
 class Subparser(ABC):
@@ -17,8 +20,8 @@ class Subparser(ABC):
 
     @abstractmethod
     def initialize_subparser(self):
-        self.parser = self.parser_parent.subparsers.add_parser(self.subparser_name,
-                                                               help=self.help)
+        self.parser: ArgumentParser = self.parser_parent.subparsers.add_parser(self.subparser_name,
+                                                                               help=self.help)
         self.children_parsers = self.parser.add_subparsers(help=self.subparsers_help)
 
     def get_formatted_usage_text(self) -> str:
@@ -37,7 +40,68 @@ class CreateSubparser(Subparser):
 
     def initialize_subparser(self):
         super().initialize_subparser()
-        create_container_parser = self.children_parsers.add_parser('container')
-        create_drawer_parser = self.children_parsers.add_parser('drawer')
-        create_component_parser = self.children_parsers.add_parser('component')
+
+        # ===== CREATE CONTAINER ===== #
+
+        create_container_parser: ArgumentParser = self.children_parsers.add_parser('container')
+
+        create_container_parser.add_argument('name',
+                                             type=str,
+                                             metavar="NAME",
+                                             help="Container name")
+
+        create_container_parser.add_argument('rows',
+                                             type=int,
+                                             metavar="ROWS",
+                                             help="Number of rows")
+
+        create_container_parser.add_argument('columns',
+                                             type=int,
+                                             metavar="COLUMNS",
+                                             help="Number of maximum columns (drawers) per row")
+
+        create_container_parser.add_argument('--separators',
+                                             type=int,
+                                             default=3,
+                                             metavar="SEPARATORS",
+                                             help="Number of compartments/separators per drawer - aka max count of "
+                                                  "unique components in a single drawer")
+
+        # ===== CREATE DRAWER ===== #
+
+        create_drawer_parser: ArgumentParser = self.children_parsers.add_parser('drawer')
+
+        create_drawer_parser.add_argument('name',
+                                          type=str,
+                                          metavar="NAME",
+                                          help="Drawer name")
+
+        create_drawer_parser.add_argument('--separators',
+                                             type=int,
+                                             default=3,
+                                             metavar="SEPARATORS",
+                                             help="Number of compartments/separators per drawer - aka max count of "
+                                                  "unique components in a single drawer")
+
+        # ===== CREATE COMPONENT ===== #
+
+        create_component_parser: ArgumentParser = self.children_parsers.add_parser('component')
+
+        create_component_parser.add_argument('name',
+                                             type=str,
+                                             metavar="NAME",
+                                             help="Component name")
+
+        create_component_parser.add_argument('count',
+                                             type=int,
+                                             metavar="COUNT",
+                                             help="Number of components")
+
+        create_component_parser.add_argument('type',
+                                             type=str,
+                                             metavar="TYPE",
+                                             choices=ComponentType.get_component_types(),
+                                             help="Component type. "
+                                                  f"Choices: {ComponentType.get_component_types()}")
+
         self.parser.usage = self.get_formatted_usage_text()
