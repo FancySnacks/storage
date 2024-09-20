@@ -1,8 +1,18 @@
 """Main entry point of the software."""
 
+from sys import argv
+
 from storage.container import Container
 from storage.cli.parser import ArgParser
 from storage.cli.subparser import CreateSubparser, DeleteSubparser
+from storage.cli.argexecutor import ArgExecutor, CreateArgExecutor
+
+
+def get_arg_executor_from_argv(args: list[str]) -> ArgExecutor:
+    if 'create' in args:
+        return CreateArgExecutor(args)
+
+    return ArgExecutor(args)
 
 
 def setup_subparsers(parser: ArgParser):
@@ -16,6 +26,7 @@ def main(args: list[str] | None = None) -> int:
     setup_subparsers(parser)
 
     parsed_args: dict = parser.parse_args(args)
+    arg_executor = get_arg_executor_from_argv(argv)
 
     if parsed_args.get('printargs'):
         print(parsed_args)
