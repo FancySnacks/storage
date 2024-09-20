@@ -2,10 +2,19 @@
 
 from storage.container import Container
 from storage.cli.parser import ArgParser
+from storage.cli.subparser import CreateSubparser, DeleteSubparser
+
+
+def setup_subparsers(parser: ArgParser):
+    parser.add_subparser(CreateSubparser(parser))
+    parser.add_subparser(DeleteSubparser(parser))
 
 
 def main(args: list[str] | None = None) -> int:
     parser = ArgParser()
+    parser.setup_args()
+    setup_subparsers(parser)
+
     parsed_args: dict = parser.parse_args(args)
 
     if parsed_args.get('printargs'):
