@@ -27,18 +27,10 @@ def main(args: list[str] | None = None) -> int:
 
     parsed_args: dict = parser.parse_args(args)
     arg_executor = get_arg_executor_from_argv(argv)
+    arg_executor.parse_args()
 
     if parsed_args.get('printargs'):
         print(parsed_args)
-
-    c = Container(name="ECSS", total_rows=6, max_drawers_per_row=8, compartments_per_drawer=3)
-    new_drawer = c.add_drawer(drawer_name='Tranzystory NPN')
-
-    for elem in ["BC546", "BC547", "Darlington MPSA29"]:
-        new_drawer.add_component(elem, "Tranzystor")
-
-    print(c.get_drawer_at_pos(0, 0))
-    c.remove_drawer_at_pos(0, 0)
 
     return 0
 
