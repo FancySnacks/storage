@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from storage.drawer import Drawer, DrawerPlaceholder
-from storage.component import Component
+from storage.items.drawer import Drawer, DrawerPlaceholder
+from storage.items.component import Component
 
 
 @dataclass

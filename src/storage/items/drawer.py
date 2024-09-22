@@ -3,10 +3,10 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
-from storage.component import Component
+from storage.items.component import Component
 
 if TYPE_CHECKING:
-    from storage.container import Container
+    from storage.items.container import Container
 
 
 class DrawerPlaceholder:

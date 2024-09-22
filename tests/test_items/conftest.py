@@ -1,7 +1,7 @@
 import pytest
 
-from storage.container import Container
-from storage.drawer import Drawer
+from storage.items.container import Container
+from storage.items.drawer import Drawer
 
 
 TEST_CONTAINER_NAME = 'TestContainer'
