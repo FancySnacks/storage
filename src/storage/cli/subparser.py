@@ -81,6 +81,11 @@ class CreateSubparser(Subparser):
                                           metavar="NAME",
                                           help="Drawer name")
 
+        create_drawer_parser.add_argument('container',
+                                          type=str,
+                                          metavar="PARENT_CONTAINER_NAME",
+                                          help="Parent container name")
+
         create_drawer_parser.add_argument('--separators',
                                           type=int,
                                           default=3,
@@ -108,6 +113,16 @@ class CreateSubparser(Subparser):
                                              choices=ComponentType.get_component_types(),
                                              help="Component type. "
                                                   f"Choices: {ComponentType.get_component_types()}")
+
+        create_component_parser.add_argument('container',
+                                             type=str,
+                                             metavar="PARENT_CONTAINER_NAME",
+                                             help="Parent container name")
+
+        create_component_parser.add_argument('drawer',
+                                             type=str,
+                                             metavar="PARENT_DRAWER_NAME",
+                                             help="Parent drawer name")
 
 
 class DeleteSubparser(Subparser):
