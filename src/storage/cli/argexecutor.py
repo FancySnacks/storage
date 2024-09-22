@@ -1,12 +1,12 @@
 from abc import ABC, abstractmethod
+from typing import Callable
 
-from storage.container import Container
-from storage.drawer import Drawer
-from storage.component import Component
+from storage.session import Session
 
 
 class ArgExecutor(ABC):
-    def __init__(self, argv: list[str]):
+    def __init__(self, session: Session, argv: list[str]):
+        self.session: Session = session
         self.argv: list[str] = argv
         self.positional_args: list[str] = self.get_positional_args_from_argv(argv)[1::]
         self.item_type: str = self.get_item_type(argv)
@@ -16,10 +16,19 @@ class ArgExecutor(ABC):
     @property
     @abstractmethod
     def name(self) -> str:
-        return 'subparser'
+        pass
+
+    @property
+    @abstractmethod
+    def item_func_mapping(self) -> dict[str, Callable]:
+        pass
 
     @abstractmethod
     def parse_args(self):
+        pass
+
+    @abstractmethod
+    def get_item_related_function(self) -> Callable:
         pass
 
     def get_positional_args_from_argv(self, argv: list[str]) -> list[str]:
@@ -39,19 +48,24 @@ class ArgExecutor(ABC):
         else:
             return arg
 
+
 class CreateArgExecutor(ArgExecutor):
     @property
     def name(self) -> str:
         return 'create'
 
+    @property
+    def item_func_mapping(self) -> dict[str, Callable]:
+        d = {'container': self.session.create_container,
+             'drawer': self.session.create_drawer,
+             'component': self.session.create_component}
+        return d
+
+    def get_item_related_function(self) -> Callable:
+        return self.item_func_mapping.get(self.item_type)
+
     def parse_args(self):
-        item_mapping = {'container': Container,
-                        'drawer': Drawer,
-                        'component': Component}
-
-        item_class: Container | Drawer | Component = item_mapping[self.item_type]
-        item_instance = item_class(*self._normalize_args(self.positional_args))
-
-        print(item_instance)
-
-        raise NotImplementedError("Use actual functions like 'Container.create_drawer() or Drawer.create_component()'")
+        item_function_to_call = self.get_item_related_function()
+        args = self._normalize_args(self.positional_args)
+        item = item_function_to_call(*args)
+        print(item)
