@@ -136,6 +136,12 @@ class CreateSubparser(Subparser):
                                              metavar="PARENT_DRAWER_NAME",
                                              help="Parent drawer name")
 
+        create_component_parser.add_argument('--compartment',
+                                             '--c',
+                                             type=int,
+                                             default=-1,
+                                             metavar="COMPARTMENT")
+
 
 class DeleteSubparser(Subparser):
     subparser_name: str = 'delete'

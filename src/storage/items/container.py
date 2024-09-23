@@ -2,40 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+from storage.items.row import Row
 from storage.items.drawer import Drawer, DrawerPlaceholder
-from storage.items.component import Component
-
-
-@dataclass
-class Row:
-    """Singular row of drawers belonging to a container."""
-    index: int
-    drawers: list[Drawer | DrawerPlaceholder]
-
-    def pop_drawer(self, column: int = -1) -> Drawer:
-        old_drawer = self.drawers[column]
-        self.drawers[column] = DrawerPlaceholder()
-        return old_drawer
-
-    def fill_columns(self, max_drawers_per_row):
-        for column_n in range(0, max_drawers_per_row):
-            self.drawers.append(DrawerPlaceholder())
-
-    def get_column_length(self) -> int:
-        return len([x for x in self.drawers if isinstance(x, Drawer)])
-
-    def is_column_free(self, column: int) -> bool:
-        item = self.drawers[column]
-        return isinstance(item, DrawerPlaceholder)
-
-    def get_all_valid_drawers(self) -> list[Drawer]:
-        drawers = []
-
-        for drawer in self.drawers:
-            if isinstance(drawer, Drawer):
-                drawers.append(drawer)
-
-        return drawers
 
 
 @dataclass
@@ -77,7 +45,7 @@ class Container:
 
     def create_rows(self, fill_empty_spaces=True):
         for row_n in range(0, self.total_rows):
-            new_row = Row(row_n, [])
+            new_row = Row(row_n, [], Drawer, DrawerPlaceholder)
             self.drawer_rows.append(new_row)
 
             if fill_empty_spaces:
@@ -88,8 +56,7 @@ class Container:
         self.max_drawers_per_row = drawers_per_row
         self.clear_container()
 
-    def add_drawer(self, name: str, row: int = -1, column: int = -1,
-                   components: list[Component] = list) -> Drawer:
+    def add_drawer(self, name: str, row: int = -1, column: int = -1, components=None) -> Drawer:
         """Add new Drawer child class identified by unique name.\n
         List of child components can be empty.\n
         Returns a new drawer if successful."""
@@ -99,11 +66,14 @@ class Container:
             raise ValueError(f"Drawer with name '{name}' already exists at {Position.from_drawer(drawer)}")
 
         pos = self._clamp_new_drawer_position(row, column)
+        new_drawer = Drawer(name, pos.row, pos.column, parent_container=self)
 
-        new_drawer = Drawer(name, pos.row, pos.column, components=components, parent_container=self)
+        if components:
+            for comp in components:
+                new_drawer.add_component(**comp)
 
         row = self.drawer_rows[pos.row]
-        row.drawers[pos.column] = new_drawer
+        row.items[pos.column] = new_drawer
         self._drawers.append(new_drawer)
 
         print(f"{new_drawer.name} drawer was added to {self.name} at [{pos.row},{pos.column}]")
@@ -121,7 +91,7 @@ class Container:
     def get_drawer_at_pos(self, row: int, column: int) -> Drawer:
         """Return child Drawer at target row and column."""
         try:
-            return self.drawer_rows[row].drawers[column]
+            return self.drawer_rows[row].items[column]
         except IndexError:
             raise ValueError(
                 f"Drawer was not found inside {self.name} container at {Position(row, column)}.")
@@ -132,7 +102,7 @@ class Container:
         if not drawer:
             return
 
-        self.drawer_rows[drawer.row].pop_drawer(drawer.column)
+        self.drawer_rows[drawer.row].pop_item(drawer.column)
         self._drawers.remove(drawer)
 
         print(f"'{drawer_name}' drawer was removed from {self.name}")
@@ -143,7 +113,7 @@ class Container:
         if not drawer:
             return None
 
-        drawer = self.drawer_rows[row].pop_drawer(column)
+        drawer = self.drawer_rows[row].pop_item(column)
         self._drawers.remove(drawer)
 
         print(f"'{drawer.name}' drawer at {Position(row, column)} was removed from {self.name}")
@@ -154,10 +124,10 @@ class Container:
         old_pos = drawer_obj.position
 
         if is_space_free + forced > 0:
-            target_row.drawers[column] = drawer_obj
+            target_row.items[column] = drawer_obj
             drawer_obj.row = row
             drawer_obj.column = column
-            self.drawer_rows[old_pos[0]].drawers[old_pos[1]] = DrawerPlaceholder()
+            self.drawer_rows[old_pos[0]].items[old_pos[1]] = DrawerPlaceholder()
         else:
             raise ValueError(f"Failed move the drawer as column {column} is occupied!")
 

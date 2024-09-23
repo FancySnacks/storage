@@ -8,13 +8,18 @@ if TYPE_CHECKING:
     from storage.items.drawer import Drawer
 
 
+class ComponentPlaceholder:
+    pass
+
+
 @dataclass
 class Component:
     """Singular component or a group of components stored in parent drawer."""
     name: str
     count: int
     type: str
-    tags: dict = field(init=False, repr=False, default_factory=dict)
+    compartment: int
+    tags: dict = field(repr=False, default_factory=dict)
     parent_drawer: Drawer = None
 
     def get_readable_format(self) -> str:
@@ -24,6 +29,7 @@ class Component:
         return {"name": self.name,
                 "count": self.count,
                 "type": self.type,
+                "compartment": self.compartment,
                 "tags": self.tags}
 
     def __repr__(self) -> str:

@@ -1,9 +1,10 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from storage.items.component import Component
+from storage.items.component import Component, ComponentPlaceholder
+from storage.items.row import Row
 
 if TYPE_CHECKING:
     from storage.items.container import Container
@@ -20,11 +21,15 @@ class Drawer:
     row: int
     column: int
 
-    components: list[Component] = field(default_factory=list)
     parent_container: Container = None
+    _row: Row = None
 
     def __post_init__(self):
-        self.components = []
+        self.create_component_spaces()
+
+    @property
+    def components(self) -> list[Component]:
+        return self._row.get_all_valid_items()
 
     @property
     def component_names(self) -> list[str]:
@@ -34,17 +39,30 @@ class Drawer:
     def position(self) -> tuple[int, int]:
         return self.row, self.column
 
-    def add_component(self, component_name: str, component_type: str, count: int = 0) -> Component:
-        """The total limit of unique components this drawer can have is specified by drawer's container parent.\n
-          Each component type belongs in its own separate compartment.
-          Returns None on failure."""
+    def create_component_spaces(self):
+        new_row = Row(0, [], Component, ComponentPlaceholder)
+        self._row = new_row
 
-        if self._component_already_exists(component_name):
-            raise ValueError(f"Failed to add component '{component_name}' to {self.parent_container.name}/{self.name} "
+        new_row.fill_columns(self.parent_container.compartments_per_drawer)
+
+    def add_component(self, name: str, type: str, count: int = 0,
+                      compartment: int = -1, **kwargs) -> Component:
+        """The total limit of unique components this drawer can have is specified by drawer's container parent.\n
+          Each component type belongs in its own separate compartment."""
+
+        if self._component_already_exists(name):
+            raise ValueError(f"Failed to add component '{name}' to {self.parent_container.name}/{self.name} "
                              f"as it already exists.")
 
-        if not self._too_many_components(self.components):
-            new_component = Component(component_name, count, component_type, parent_drawer=self)
+        if self._too_many_row(self.components):
+            raise ValueError(f"Too many component types to fit in a single drawer "
+                             f"({len(self.components)}/{self.parent_container.compartments_per_drawer})")
+        else:
+            target_compartment = self._clamp_new_component_location(compartment)
+            new_component = Component(name, count, type, parent_drawer=self,
+                                      compartment=target_compartment, tags=kwargs)
+            self.move_component_to(new_component, target_compartment)
+
             self.components.append(new_component)
 
             print(f"[SUCCESS] {new_component.name} component was added to "
@@ -52,10 +70,6 @@ class Drawer:
                   f"at compartment {len(self.components)}")
 
             return new_component
-
-        else:
-            raise ValueError(f"Too many component types to fit in a single drawer "
-                             f"({len(self.components)}/{self.parent_container.compartments_per_drawer})")
 
     def get_component_by_name(self, component_name: str) -> Component:
         """Get child component by name. Returns none if component wasn't found."""
@@ -67,17 +81,20 @@ class Drawer:
 
     def remove_component_by_name(self, component_name: str):
         component = self.get_component_by_name(component_name)
-        index = self.component_names.index(component_name)
+        index = component.compartment
 
         if not component:
             return
 
-        self.components.pop(index)
+        self.components.remove(component)
+        self._row.pop_item(index)
         print(f"[SUCCESS] '{component_name}' component was removed from {self.parent_container.name}/{self.name}")
 
     def remove_component_by_index(self, component_index: int):
         try:
-            component = self.components.pop(component_index)
+            if self._row.is_column_free(component_index):
+                raise Exception
+            component = self._row.items.pop(component_index)
             component_name = component.name
             print(f"[SUCCESS] '{component_name}' component was removed from {self.parent_container.name}/{self.name}")
         except ValueError:
@@ -86,9 +103,39 @@ class Drawer:
 
     def clear_drawer(self):
         self.components.clear()
+        self._row.items.clear()
+        self._row.fill_columns(self.parent_container.compartments_per_drawer)
         print(f"[SUCCESS] {self.name} has been cleared!")
 
-    def _too_many_components(self, components: list[Component]) -> bool:
+    def move_component_to(self, component: Component, compartment: int, forced: bool = False):
+        max_compartments = self.parent_container.compartments_per_drawer - 1
+
+        if compartment > max_compartments:
+            raise IndexError(f"Specified compartment '{compartment}' is greater than the maximum: {max_compartments}")
+
+        if self._row.is_column_free(compartment) + forced > 0:
+            self._row.pop_item(compartment)
+            self._row.items[compartment] = component
+            component.compartment = compartment
+        else:
+            raise IndexError(f"Specified compartment '{compartment}' is already occupied by another component!")
+
+    def _clamp_new_component_location(self, compartment: int = -1):
+        if compartment > -1:
+            if self._row.is_column_free(compartment):
+                return compartment
+            else:
+                raise IndexError(f"Specified compartment '{compartment}' is already occupied by another component!")
+        else:
+            return self.get_next_free_compartment()
+
+    def get_next_free_compartment(self) -> int:
+        for i, space in enumerate(self._row.items):
+            if self._row.is_column_free(i):
+                return i
+        raise IndexError("Fail")
+
+    def _too_many_row(self, components: list[Component]) -> bool:
         """Check whether all compartments are taken or not."""
         if self.parent_container:
             if len(components) > self.parent_container.compartments_per_drawer:
@@ -110,14 +157,14 @@ class Drawer:
         """Get drawer position in storage as formatted string."""
         return f"[{self.row},{self.column}]"
 
-    def _components_to_dict_list(self) -> list[dict]:
+    def _row_to_dict_list(self) -> list[dict]:
         return [comp.to_json() for comp in self.components]
 
     def to_json(self) -> dict:
         return {"name": self.name,
                 "row": self.row,
                 "column": self.column,
-                "components": self._components_to_dict_list()}
+                "components": self._row_to_dict_list()}
 
     def __repr__(self) -> str:
         return self.get_readable_format()
