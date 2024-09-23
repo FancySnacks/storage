@@ -5,6 +5,8 @@ from storage.session import Session
 
 
 class ArgExecutor(ABC):
+    name: str = 'default'
+
     def __init__(self, session: Session, argv: list[str]):
         self.session: Session = session
         self.argv: list[str] = argv
@@ -12,11 +14,6 @@ class ArgExecutor(ABC):
         self.item_type: str = self.get_item_type(argv)
         print(self.argv)
         print(self.positional_args)
-
-    @property
-    @abstractmethod
-    def name(self) -> str:
-        pass
 
     @property
     @abstractmethod
@@ -42,7 +39,7 @@ class ArgExecutor(ABC):
     def _normalize_args(self, args: list[str]) -> list[str]:
         return [self._arg_type_match(arg) for arg in args]
 
-    def _arg_type_match(self, arg: str) -> int|str:
+    def _arg_type_match(self, arg: str) -> int | str:
         if arg.isdigit():
             return int(arg)
         else:
@@ -50,9 +47,7 @@ class ArgExecutor(ABC):
 
 
 class CreateArgExecutor(ArgExecutor):
-    @property
-    def name(self) -> str:
-        return 'create'
+    name: str = 'create'
 
     @property
     def item_func_mapping(self) -> dict[str, Callable]:

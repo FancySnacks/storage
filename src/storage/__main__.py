@@ -3,6 +3,7 @@
 from sys import argv
 
 from storage.session import Session
+from storage.data_manager import DataManager
 from storage.cli.parser import ArgParser
 from storage.cli.subparser import CreateSubparser, DeleteSubparser
 from storage.cli.argexecutor import ArgExecutor, CreateArgExecutor
@@ -21,9 +22,10 @@ def setup_subparsers(parser: ArgParser):
 
 
 def main(args: list[str] | None = None) -> int:
-    session = Session()
-
+    data_manager = DataManager()
+    session = Session(data_manager)
     parser = ArgParser()
+
     parser.setup_args()
     setup_subparsers(parser)
 
