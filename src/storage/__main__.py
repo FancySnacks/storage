@@ -24,9 +24,9 @@ def main(args: list[str] | None = None) -> int:
     session = Session()
     parser = ArgParser()
 
+    session.load_container_data_from_file()
     parser.setup_args()
     setup_subparsers(parser)
-    session.load_container_data_from_file()
 
     parsed_args: dict = parser.parse_args(args)
     arg_executor = get_arg_executor_from_argv(session, argv)

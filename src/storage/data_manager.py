@@ -43,19 +43,20 @@ class DataManager(ABC):
     def save_data_to_file(self, obj_to_save, filepath):
         pass
 
-    def _get_list_of_supported_files_in_dir(self, dir_path) -> list[str]:
+    def _get_list_of_supported_files_in_dir(self, dir_path):
         ls = os.listdir(dir_path)
-        return [file for file in ls if self._file_is_supported_by_manager(file)]
+        return [pathlib.Path(CONTAINER_SAVE_PATH).joinpath(file) for file in ls if
+                self._file_is_supported_by_manager(file)]
 
     def _file_is_supported_by_manager(self, filepath) -> bool:
         return pathlib.Path(filepath).suffix == self.file_suffix
 
     def _create_filepath(self, obj):
-        return pathlib.Path(self.container_path).joinpath(f"{obj.name}.{self.file_suffix}")
+        return pathlib.Path(self.container_path).joinpath(f"{obj.name}{self.file_suffix}")
 
 
 class JSONDataManager(DataManager):
-    file_suffix: str = 'json'
+    file_suffix: str = '.json'
 
     def load_data_from_file(self, filepath) -> dict:
         with open(filepath, 'r') as file:
