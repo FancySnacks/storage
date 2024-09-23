@@ -14,9 +14,9 @@ def test_container_is_resized(container):
 
 
 def test_duplicate_drawer_not_added(container, test_drawer_name):
-    container.add_drawer(test_drawer_name)
-    container.add_drawer(test_drawer_name)
-    assert len(container.drawers) != 2
+    with pytest.raises(ValueError):
+        container.add_drawer(test_drawer_name)
+        container.add_drawer(test_drawer_name)
 
 
 def test_new_drawer_not_added_when_row_is_full(container, test_drawer_name):
