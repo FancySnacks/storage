@@ -94,7 +94,8 @@ class Drawer:
         try:
             if self._row.is_column_free(component_index):
                 raise Exception
-            component = self._row.items.pop(component_index)
+            component = self._row.pop_item(component_index)
+            print(self.components)
             component_name = component.name
             print(f"[SUCCESS] '{component_name}' component was removed from {self.parent_container.name}/{self.name}")
         except ValueError:
