@@ -1,4 +1,11 @@
+import pathlib
+
 from enum import StrEnum, auto
+
+
+MODULE_ROOT_PATH = pathlib.Path.cwd()
+SAVE_PATH = MODULE_ROOT_PATH.joinpath('save')
+CONTAINER_SAVE_PATH = SAVE_PATH.joinpath('containers')
 
 
 class ComponentType(StrEnum):
