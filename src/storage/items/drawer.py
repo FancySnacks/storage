@@ -113,5 +113,14 @@ class Drawer:
         """Get drawer position in storage as formatted string."""
         return f"[{self.row},{self.column}]"
 
+    def _components_to_dict_list(self) -> list[dict]:
+        return [comp.to_json() for comp in self.components]
+
+    def to_json(self) -> dict:
+        return {"name": self.name,
+                "row": self.row,
+                "column": self.column,
+                "components": self._components_to_dict_list()}
+
     def __repr__(self) -> str:
         return self.get_readable_format()

@@ -173,3 +173,10 @@ class Container:
         if drawer_name in [drawer.name for drawer in self._drawers]:
             return False
         return True
+
+    def _drawers_to_dict_list(self) -> list[dict]:
+        return [drawer.to_json() for drawer in self._drawers]
+
+    def to_json(self) -> dict:
+        return {"name": self.name,
+                "drawers": self._drawers_to_dict_list()}

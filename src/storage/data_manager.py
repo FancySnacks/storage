@@ -5,8 +5,16 @@ import os
 import pathlib
 
 from abc import ABC, abstractmethod
+from typing import Protocol
 
 from storage.const import SAVE_PATH, CONTAINER_SAVE_PATH
+
+
+class JSONInterface(Protocol):
+    name: str
+
+    def to_json(self) -> dict:
+        pass
 
 
 class DataManager(ABC):
@@ -32,7 +40,7 @@ class DataManager(ABC):
         pass
 
     @abstractmethod
-    def save_data_to_file(self, data, filepath):
+    def save_data_to_file(self, obj_to_save, filepath):
         pass
 
     def _get_list_of_supported_files_in_dir(self, dir_path) -> list[str]:
@@ -41,6 +49,9 @@ class DataManager(ABC):
 
     def _file_is_supported_by_manager(self, filepath) -> bool:
         return pathlib.Path(filepath).suffix == self.file_suffix
+
+    def _create_filepath(self, obj):
+        return pathlib.Path(obj.name).joinpath(f".{self.file_suffix}")
 
 
 class JSONDataManager(DataManager):
@@ -52,6 +63,10 @@ class JSONDataManager(DataManager):
 
         return data
 
-    def save_data_to_file(self, data, filepath):
+    def save_data_to_file(self, obj_to_save: JSONInterface, filepath=None):
+        if not filepath:
+            filepath = self._create_filepath(obj_to_save)
+
         with open(filepath, 'r') as file:
+            data = obj_to_save.to_json()
             json.dump(data, file)
