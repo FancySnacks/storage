@@ -2,10 +2,12 @@ from abc import ABC, abstractmethod
 from typing import Callable
 
 from storage.session import Session
+from storage.cli.subparser import Subparser
 
 
 class ArgExecutor(ABC):
     name: str = 'default'
+    aliases: list[str] = Subparser.aliases
 
     def __init__(self, session: Session, argv: list[str]):
         self.session: Session = session
@@ -63,4 +65,3 @@ class CreateArgExecutor(ArgExecutor):
         item_function_to_call = self.get_item_related_function()
         args = self._normalize_args(self.positional_args)
         item = item_function_to_call(*args)
-        print(item)

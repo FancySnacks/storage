@@ -21,6 +21,9 @@ class Session:
 
     def create_container(self, name: str, rows: int, columns: int, drawer_compartments: int = 3) -> Container:
         new_container = Container(name, rows, columns, compartments_per_drawer=drawer_compartments)
+
+        self.data_manager.save_data_to_file(new_container)
+
         return new_container
 
     def create_drawer(self, name: str, row_pos: int, column_pos: int) -> Drawer:

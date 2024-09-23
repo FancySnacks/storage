@@ -28,6 +28,15 @@ class Row:
         item = self.drawers[column]
         return isinstance(item, DrawerPlaceholder)
 
+    def get_all_valid_drawers(self) -> list[Drawer]:
+        drawers = []
+
+        for drawer in self.drawers:
+            if isinstance(drawer, Drawer):
+                drawers.append(drawer)
+
+        return drawers
+
 
 @dataclass
 class Position:
@@ -179,4 +188,7 @@ class Container:
 
     def to_json(self) -> dict:
         return {"name": self.name,
+                "rows": self.total_rows,
+                "drawers_per_row": self.max_drawers_per_row,
+                "compartments_per_drawer": self.compartments_per_drawer,
                 "drawers": self._drawers_to_dict_list()}

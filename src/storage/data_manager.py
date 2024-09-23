@@ -51,7 +51,7 @@ class DataManager(ABC):
         return pathlib.Path(filepath).suffix == self.file_suffix
 
     def _create_filepath(self, obj):
-        return pathlib.Path(obj.name).joinpath(f".{self.file_suffix}")
+        return pathlib.Path(self.container_path).joinpath(f"{obj.name}.{self.file_suffix}")
 
 
 class JSONDataManager(DataManager):
@@ -67,6 +67,7 @@ class JSONDataManager(DataManager):
         if not filepath:
             filepath = self._create_filepath(obj_to_save)
 
-        with open(filepath, 'r') as file:
+        with open(filepath, 'w') as file:
             data = obj_to_save.to_json()
-            json.dump(data, file)
+            data = json.dumps(data, indent=4)
+            file.write(data)
