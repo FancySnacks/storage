@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 
 
 class DataManager(ABC):
+    # TODO: allowed formats: json, yaml, sql
     @abstractmethod
     def load_data_from_file(self) -> dict:
         pass
