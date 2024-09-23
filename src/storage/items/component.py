@@ -1,4 +1,11 @@
+from __future__ import annotations
+
 from dataclasses import dataclass, field
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from storage.items.drawer import Drawer
 
 
 @dataclass
@@ -8,6 +15,7 @@ class Component:
     count: int
     type: str
     tags: dict = field(init=False, repr=False, default_factory=dict)
+    parent_drawer: Drawer = None
 
     def get_readable_format(self) -> str:
         return f"{self.name} (x{self.count})"

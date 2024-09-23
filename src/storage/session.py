@@ -1,5 +1,3 @@
-"""Session is a program instance that handles data-processing tasks."""
-
 from storage.data_manager import JSONDataManager
 from storage.items.container import Container
 from storage.items.drawer import Drawer
@@ -8,6 +6,7 @@ from storage.const import ComponentType
 
 
 class Session:
+    """Session is a program instance that handles data-processing tasks."""
     def __init__(self, data_manager=JSONDataManager):
         self.data_manager = data_manager()
         self.containers: list[Container] = []
@@ -39,11 +38,18 @@ class Session:
         container = self.get_container_by_name(parent_container_name)
         new_drawer = container.add_drawer(name, int(row_pos), int(column_pos))
         self.save_container_file_and_resync(container)
+
         return new_drawer
 
-    def create_component(self, name: str, count, component_type: str) -> Component:
+    def create_component(self, name: str, count, component_type: str, parent_container_name: str,
+                         parent_drawer_name: str) -> Component:
+        container = self.get_container_by_name(parent_container_name)
+        drawer = container.get_drawer_by_name(parent_drawer_name)
+
         component_type = ComponentType(component_type)
-        new_component = Component(name, count, component_type)
+        new_component = drawer.add_component(name, component_type, int(count))
+        self.save_container_file_and_resync(container)
+
         return new_component
 
     def get_container_by_name(self, name: str) -> Container:
@@ -52,3 +58,10 @@ class Session:
                 return container
 
         raise ValueError(f"Container with name '{name}' does not exist!")
+
+    def get_drawer_by_name(self, name: str, container_name: str) -> Drawer:
+        for container in self.containers:
+            if container.name == container_name:
+                return container.get_drawer_by_name(name)
+
+        raise ValueError(f"Drawer with name '{name}' does not exist!")

@@ -34,39 +34,36 @@ class Drawer:
     def position(self) -> tuple[int, int]:
         return self.row, self.column
 
-    def add_component(self, component_name: str, component_type: str, count: int = 0) -> Component | None:
+    def add_component(self, component_name: str, component_type: str, count: int = 0) -> Component:
         """The total limit of unique components this drawer can have is specified by drawer's container parent.\n
           Each component type belongs in its own separate compartment.
           Returns None on failure."""
 
         if self._component_already_exists(component_name):
-            print(f"[FAIL] Failed to add component '{component_name}' to {self.parent_container.name}/{self.name} as it"
-                  f" already exists.")
-            return None
+            raise ValueError(f"Failed to add component '{component_name}' to {self.parent_container.name}/{self.name} "
+                             f"as it already exists.")
 
         if not self._too_many_components(self.components):
-            new_component = Component(component_name, count, component_type)
+            new_component = Component(component_name, count, component_type, parent_drawer=self)
             self.components.append(new_component)
 
             print(f"[SUCCESS] {new_component.name} component was added to "
                   f"{self.parent_container.name}/{self.name} [{self.row},{self.column}] "
                   f"at compartment {len(self.components)}")
-            
-            return new_component
-        
-        else:
-            print(f"Too many component types to fit in a single drawer "
-                  f"({len(self.components)}/{self.parent_container.compartments_per_drawer})")
-            return None
 
-    def get_component_by_name(self, component_name: str) -> Component | None:
+            return new_component
+
+        else:
+            raise ValueError(f"Too many component types to fit in a single drawer "
+                             f"({len(self.components)}/{self.parent_container.compartments_per_drawer})")
+
+    def get_component_by_name(self, component_name: str) -> Component:
         """Get child component by name. Returns none if component wasn't found."""
         try:
             index = self.component_names.index(component_name)
             return self.components[index]
         except ValueError:
-            print(f"[FAIL] '{component_name}' component was not found in {self.parent_container.name}/{self.name}!")
-            return None
+            raise ValueError(f"'{component_name}' component was not found in {self.parent_container.name}/{self.name}!")
 
     def remove_component_by_name(self, component_name: str):
         component = self.get_component_by_name(component_name)
@@ -84,8 +81,8 @@ class Drawer:
             component_name = component.name
             print(f"[SUCCESS] '{component_name}' component was removed from {self.parent_container.name}/{self.name}")
         except ValueError:
-            print(f"[FAIL] Component at index '{component_index}' was not found in "
-                  f"{self.parent_container.name}/{self.name}!")
+            raise ValueError(f"Component at index '{component_index}' was not found in "
+                             f"{self.parent_container.name}/{self.name}!")
 
     def clear_drawer(self):
         self.components.clear()
