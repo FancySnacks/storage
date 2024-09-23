@@ -21,7 +21,6 @@ class Session:
             new_container = Container(**data)
 
             for drawer in drawers:
-                print(drawer)
                 new_container.add_drawer(**drawer)
 
             self.containers.append(new_container)
