@@ -36,4 +36,4 @@ def drawer(container) -> Drawer:
 
 @pytest.fixture
 def component_dict() -> dict:
-    return {'name': TEST_COMPONENT_NAME, 'count': 1, 'type': 'Test'}
+    return {'name': TEST_COMPONENT_NAME, 'count': 1, 'type': 'Test', 'tags': {}}

@@ -45,8 +45,8 @@ class Drawer:
 
         new_row.fill_columns(self.parent_container.compartments_per_drawer)
 
-    def add_component(self, name: str, type: str, count: int = 0,
-                      compartment: int = -1, **kwargs) -> Component:
+    def add_component(self, name: str, type: str, tags: dict, count: int = 0,
+                      compartment: int = -1) -> Component:
         """The total limit of unique components this drawer can have is specified by drawer's container parent.\n
           Each component type belongs in its own separate compartment."""
 
@@ -60,7 +60,7 @@ class Drawer:
         else:
             target_compartment = self._clamp_new_component_location(compartment)
             new_component = Component(name, count, type, parent_drawer=self,
-                                      compartment=target_compartment, tags=kwargs)
+                                      compartment=target_compartment, tags=tags)
             self.move_component_to(new_component, target_compartment)
 
             print(f"[SUCCESS] {new_component.name} component was added to "

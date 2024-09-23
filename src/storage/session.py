@@ -47,7 +47,7 @@ class Session:
         drawer = container.get_drawer_by_name(parent_drawer_name)
 
         component_type = ComponentType(component_type)
-        new_component = drawer.add_component(name, component_type, int(count), compartment)
+        new_component = drawer.add_component(name, component_type, {}, int(count), compartment)
         self.save_container_file_and_resync(container)
 
         return new_component
