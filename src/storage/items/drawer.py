@@ -63,8 +63,6 @@ class Drawer:
                                       compartment=target_compartment, tags=kwargs)
             self.move_component_to(new_component, target_compartment)
 
-            self.components.append(new_component)
-
             print(f"[SUCCESS] {new_component.name} component was added to "
                   f"{self.parent_container.name}/{self.name} [{self.row},{self.column}] "
                   f"at compartment {len(self.components)}")
@@ -86,7 +84,6 @@ class Drawer:
         if not component:
             return
 
-        self.components.remove(component)
         self._row.pop_item(index)
         print(f"[SUCCESS] '{component_name}' component was removed from {self.parent_container.name}/{self.name}")
 
@@ -95,7 +92,6 @@ class Drawer:
             if self._row.is_column_free(component_index):
                 raise Exception
             component = self._row.pop_item(component_index)
-            print(self.components)
             component_name = component.name
             print(f"[SUCCESS] '{component_name}' component was removed from {self.parent_container.name}/{self.name}")
         except ValueError:
@@ -103,7 +99,6 @@ class Drawer:
                              f"{self.parent_container.name}/{self.name}!")
 
     def clear_drawer(self):
-        self.components.clear()
         self._row.items.clear()
         self._row.fill_columns(self.parent_container.compartments_per_drawer)
         print(f"[SUCCESS] {self.name} has been cleared!")
