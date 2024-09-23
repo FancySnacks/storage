@@ -168,8 +168,15 @@ class Container:
 
         print(f"[SUCCESS] {self.name} has been cleared!")
 
-    def get_next_free_row_and_column(self) -> Position:
+    def get_next_free_row_and_column(self, start_row: int = -1) -> Position:
         """Find the first free spot where a new Drawer can be put in."""
+        if start_row > -1:
+            row = self.drawer_rows[start_row]
+            if row.get_column_length() < self.max_drawers_per_row:
+                return Position(row=start_row, column=row.get_column_length())
+            else:
+                raise IndexError(f"Failed to add a new drawer as there are no free columns in row {start_row}!")
+
         for row in self.drawer_rows:
             if row.get_column_length() < self.max_drawers_per_row:
                 return Position(row=row.index, column=row.get_column_length())
@@ -177,11 +184,15 @@ class Container:
         raise IndexError("Failed to add a new drawer as there is no more space in this storage!")
 
     def _clamp_new_drawer_position(self, row: int = -1, column: int = -1):
-        if row > -1 and column > -1:
+        if row > -1:
+            if not column > -1:
+                raise IndexError(f"Column was specified but not row!")
+
             if self._is_pos_free:
                 pos = Position(row, column)
             else:
                 raise IndexError(f"Column {column} at row {row} is occupied!")
+
         else:
             pos = self.get_next_free_row_and_column()
 

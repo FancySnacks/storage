@@ -37,7 +37,7 @@ class Session:
 
     def create_drawer(self, name: str, parent_container_name: str, row_pos: int = -1, column_pos: int = -1) -> Drawer:
         container = self.get_container_by_name(parent_container_name)
-        new_drawer = container.add_drawer(name, row_pos, column_pos)
+        new_drawer = container.add_drawer(name, int(row_pos), int(column_pos))
         self.save_container_file_and_resync(container)
         return new_drawer
 

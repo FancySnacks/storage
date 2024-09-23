@@ -39,7 +39,8 @@ class ArgExecutor(ABC):
         return positionals[0]
 
     def _normalize_args(self, args: list[str]) -> list[str]:
-        return [self._arg_type_match(arg) for arg in args]
+        args_without_flags = list(filter(lambda arg: '--' not in arg, args))
+        return [self._arg_type_match(arg) for arg in args_without_flags]
 
     def _arg_type_match(self, arg: str) -> int | str:
         if arg.isdigit():

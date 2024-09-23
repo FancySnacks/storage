@@ -95,6 +95,16 @@ class CreateSubparser(Subparser):
                                           help="Number of compartments/separators per drawer - aka max count of "
                                                "unique components in a single drawer")
 
+        create_drawer_parser.add_argument('--row',
+                                          type=int,
+                                          default=-1,
+                                          metavar="ROW")
+
+        create_drawer_parser.add_argument('--column',
+                                          type=int,
+                                          default=-1,
+                                          metavar="COLUMN")
+
         # ===== CREATE COMPONENT ===== #
 
         create_component_parser: ArgumentParser = self.children_parsers.add_parser('component')
