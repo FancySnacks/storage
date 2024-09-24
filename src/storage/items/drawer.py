@@ -3,6 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from storage.exceptions import DuplicateNameError, NoFreeSpacesError, ItemNotFoundError, ItemNotFoundAtPositionError, \
+    SpaceOccupiedError
 from storage.items.component import Component, ComponentPlaceholder
 from storage.items.row import Row
 
@@ -51,12 +53,10 @@ class Drawer:
           Each component type belongs in its own separate compartment."""
 
         if self._component_already_exists(name):
-            raise ValueError(f"Failed to add component '{name}' to {self.parent_container.name}/{self.name} "
-                             f"as it already exists.")
+            raise DuplicateNameError(item='component', name=name, relation=self.name)
 
-        if self._too_many_row(self.components):
-            raise ValueError(f"Too many component types to fit in a single drawer "
-                             f"({len(self.components)}/{self.parent_container.compartments_per_drawer})")
+        if self._free_spot_exists(self.components):
+            raise NoFreeSpacesError(item='component', relation=self.name)
         else:
             target_compartment = self._clamp_new_component_location(compartment)
             new_component = Component(name, count, type, parent_drawer=self,
@@ -75,7 +75,7 @@ class Drawer:
             index = self.component_names.index(component_name)
             return self.components[index]
         except ValueError:
-            raise ValueError(f"'{component_name}' component was not found in {self.parent_container.name}/{self.name}!")
+            raise ItemNotFoundError(item='component', name=component_name, relation=self.name)
 
     def remove_component_by_name(self, component_name: str):
         component = self.get_component_by_name(component_name)
@@ -90,13 +90,14 @@ class Drawer:
     def remove_component_by_index(self, component_index: int):
         try:
             if self._row.is_column_free(component_index):
-                raise Exception
+                raise ValueError
+
             component = self._row.pop_item(component_index)
             component_name = component.name
             print(f"[SUCCESS] '{component_name}' component was removed from {self.parent_container.name}/{self.name}")
+
         except ValueError:
-            raise ValueError(f"Component at index '{component_index}' was not found in "
-                             f"{self.parent_container.name}/{self.name}!")
+            raise ItemNotFoundAtPositionError(item='component', relation=self.name, pos=f"index {component_index}")
 
     def clear_drawer(self):
         self._row.items.clear()
@@ -107,21 +108,22 @@ class Drawer:
         max_compartments = self.parent_container.compartments_per_drawer - 1
 
         if compartment > max_compartments:
-            raise IndexError(f"Specified compartment '{compartment}' is greater than the maximum: {max_compartments}")
+            raise NoFreeSpacesError(item='component', relation=self.name,
+                                    reason=f"as specified compartment number is not valid")
 
         if self._row.is_column_free(compartment) + forced > 0:
             self._row.pop_item(compartment)
             self._row.items[compartment] = component
             component.compartment = compartment
         else:
-            raise IndexError(f"Specified compartment '{compartment}' is already occupied by another component!")
+            raise SpaceOccupiedError(itme='component', relation=self.name, pos=f"compartment {compartment}")
 
     def _clamp_new_component_location(self, compartment: int = -1):
         if compartment > -1:
             if self._row.is_column_free(compartment):
                 return compartment
             else:
-                raise IndexError(f"Specified compartment '{compartment}' is already occupied by another component!")
+                raise SpaceOccupiedError(itme='component', relation=self.name, pos=f"compartment {compartment}")
         else:
             return self.get_next_free_compartment()
 
@@ -129,9 +131,9 @@ class Drawer:
         for i, space in enumerate(self._row.items):
             if self._row.is_column_free(i):
                 return i
-        raise IndexError("Fail")
+        raise NoFreeSpacesError(item='component', relation=self.name)
 
-    def _too_many_row(self, components: list[Component]) -> bool:
+    def _free_spot_exists(self, components: list[Component]) -> bool:
         """Check whether all compartments are taken or not."""
         if self.parent_container:
             if len(components) > self.parent_container.compartments_per_drawer:

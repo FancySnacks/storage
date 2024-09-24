@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+from storage.exceptions import DuplicateNameError, SpaceOccupiedError, NoFreeSpacesError, ItemNotFoundError, \
+    ItemNotFoundAtPositionError
 from storage.items.row import Row
 from storage.items.drawer import Drawer, DrawerPlaceholder
 
@@ -63,7 +65,7 @@ class Container:
 
         if not self._is_drawer_name_unique(name):
             drawer = self.get_drawer_by_name(name)
-            raise ValueError(f"Drawer with name '{name}' already exists at {Position.from_drawer(drawer)}")
+            raise DuplicateNameError(item='drawer', name=name, relation=self.name, pos=Position.from_drawer(drawer))
 
         pos = self._clamp_new_drawer_position(row, column)
         new_drawer = Drawer(name, pos.row, pos.column, parent_container=self)
@@ -86,15 +88,14 @@ class Container:
             if drawer.name == drawer_name:
                 return drawer
 
-        raise ValueError(f"'{drawer_name}' drawer was not found inside {self.name} container.")
+        raise ItemNotFoundError(item='drawer', name=drawer_name, relation=self.name)
 
     def get_drawer_at_pos(self, row: int, column: int) -> Drawer:
         """Return child Drawer at target row and column."""
         try:
             return self.drawer_rows[row].items[column]
         except IndexError:
-            raise ValueError(
-                f"Drawer was not found inside {self.name} container at {Position(row, column)}.")
+            raise ItemNotFoundAtPositionError(item='drawer', relation=self.name, pos=Position(row, column))
 
     def remove_drawer_by_name(self, drawer_name: str):
         drawer = self.get_drawer_by_name(drawer_name)
@@ -129,7 +130,7 @@ class Container:
             drawer_obj.column = column
             self.drawer_rows[old_pos[0]].items[old_pos[1]] = DrawerPlaceholder()
         else:
-            raise ValueError(f"Failed move the drawer as column {column} is occupied!")
+            raise SpaceOccupiedError(itme='drawer', relation=self.name, pos=Position(row, column))
 
     def clear_container(self):
         self._drawers.clear()
@@ -145,23 +146,24 @@ class Container:
             if row.get_column_length() < self.max_drawers_per_row:
                 return Position(row=start_row, column=row.get_column_length())
             else:
-                raise IndexError(f"Failed to add a new drawer as there are no free columns in row {start_row}!")
+                raise NoFreeSpacesError(item='drawer', relation=self.name,
+                                        reason=f"as the row {start_row} has no free spaces")
 
         for row in self.drawer_rows:
             if row.get_column_length() < self.max_drawers_per_row:
                 return Position(row=row.index, column=row.get_column_length())
 
-        raise IndexError("Failed to add a new drawer as there is no more space in this storage!")
+        raise NoFreeSpacesError(item='drawer', relation=self.name)
 
     def _clamp_new_drawer_position(self, row: int = -1, column: int = -1):
         if row > -1:
             if not column > -1:
-                raise IndexError(f"Column was specified but not row!")
+                raise ValueError(f"Column was specified but not row!")
 
-            if self._is_pos_free:
+            if self._is_pos_free(row, column):
                 pos = Position(row, column)
             else:
-                raise IndexError(f"Column {column} at row {row} is occupied!")
+                raise SpaceOccupiedError(item='drawer', relation=self.name, pos=Position(row, column))
 
         else:
             pos = self.get_next_free_row_and_column()
