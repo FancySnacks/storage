@@ -1,6 +1,6 @@
 import pytest
 
-from storage.exceptions import DuplicateNameError, NoFreeSpacesError
+from storage.cli.exceptions import DuplicateNameError, NoFreeSpacesError
 
 
 def test_component_is_added_to_drawer(drawer, component_dict):

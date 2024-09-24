@@ -1,4 +1,4 @@
-from storage.console_message import ConsoleMessage
+from storage.cli.console_message import ConsoleMessage
 
 
 class StorageBaseException(Exception):

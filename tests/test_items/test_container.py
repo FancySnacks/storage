@@ -1,6 +1,6 @@
 import pytest
 
-from storage.exceptions import DuplicateNameError, NoFreeSpacesError
+from storage.cli.exceptions import DuplicateNameError, NoFreeSpacesError
 
 
 def test_drawer_is_added_to_container(container, test_drawer_name):
