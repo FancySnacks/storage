@@ -1,5 +1,7 @@
 import pytest
 
+from storage.exceptions import DuplicateNameError, NoFreeSpacesError
+
 
 def test_component_is_added_to_drawer(drawer, component_dict):
     drawer.add_component(**component_dict)
@@ -7,8 +9,14 @@ def test_component_is_added_to_drawer(drawer, component_dict):
 
 
 def test_duplicate_component_not_added(drawer, component_dict):
-    with pytest.raises(ValueError):
+    with pytest.raises(DuplicateNameError):
         drawer.add_component(**component_dict)
+        drawer.add_component(**component_dict)
+
+
+def test_new_component_not_added_when_drawer_is_full(drawer, component_dict):
+    with pytest.raises(NoFreeSpacesError):
+        drawer.parent_container.compartments_per_drawer = 0
         drawer.add_component(**component_dict)
 
 

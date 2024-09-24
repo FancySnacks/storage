@@ -1,5 +1,7 @@
 import pytest
 
+from storage.exceptions import DuplicateNameError, NoFreeSpacesError
+
 
 def test_drawer_is_added_to_container(container, test_drawer_name):
     container.add_drawer(test_drawer_name)
@@ -14,13 +16,13 @@ def test_container_is_resized(container):
 
 
 def test_duplicate_drawer_not_added(container, test_drawer_name):
-    with pytest.raises(ValueError):
+    with pytest.raises(DuplicateNameError):
         container.add_drawer(test_drawer_name)
         container.add_drawer(test_drawer_name)
 
 
 def test_new_drawer_not_added_when_row_is_full(container, test_drawer_name):
-    with pytest.raises(IndexError):
+    with pytest.raises(NoFreeSpacesError):
         container.resize_container(1, 1)
         container.add_drawer(test_drawer_name)
         container.get_next_free_row_and_column()

@@ -55,7 +55,7 @@ class Drawer:
         if self._component_already_exists(name):
             raise DuplicateNameError(item='component', name=name, relation=self.name)
 
-        if self._free_spot_exists(self.components):
+        if not self._free_spot_exists(self.components):
             raise NoFreeSpacesError(item='component', relation=self.name)
         else:
             target_compartment = self._clamp_new_component_location(compartment)
@@ -136,7 +136,7 @@ class Drawer:
     def _free_spot_exists(self, components: list[Component]) -> bool:
         """Check whether all compartments are taken or not."""
         if self.parent_container:
-            if len(components) > self.parent_container.compartments_per_drawer:
+            if len(components) < self.parent_container.compartments_per_drawer:
                 return True
 
         return False
