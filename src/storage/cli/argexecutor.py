@@ -2,12 +2,10 @@ from abc import ABC, abstractmethod
 from typing import Callable
 
 from storage.session import Session
-from storage.cli.subparser import Subparser
 
 
 class ArgExecutor(ABC):
     name: str = 'default'
-    aliases: list[str] = Subparser.aliases
 
     def __init__(self, session: Session, argv: list[str]):
         self.session: Session = session
@@ -22,9 +20,11 @@ class ArgExecutor(ABC):
     def item_func_mapping(self) -> dict[str, Callable]:
         pass
 
-    @abstractmethod
     def parse_args(self):
-        pass
+        item_function_to_call = self.get_item_related_function()
+        args = self._normalize_args(self.positional_args)
+        flags = self._separate_flags(self.positional_args)
+        item = item_function_to_call(*args, *flags)
 
     @abstractmethod
     def get_item_related_function(self) -> Callable:
@@ -41,6 +41,20 @@ class ArgExecutor(ABC):
     def _normalize_args(self, args: list[str]) -> list[str]:
         args_without_flags = list(filter(lambda arg: '--' not in arg, args))
         return [self._arg_type_match(arg) for arg in args_without_flags]
+
+    def _separate_flags(self, args: list[str]) -> list[bool]:
+        flags: list[str] = []
+
+        for x in range(0, len(args)):
+            try:
+                if '--' in args[x]:
+                    if '--' in args[x+1]:
+                        flags.append(args[x])
+            except IndexError:
+                flags.append(args[x])
+                continue
+
+        return [True for flag in flags]
 
     def _arg_type_match(self, arg: str) -> int | str:
         if arg.isdigit():
@@ -62,7 +76,16 @@ class CreateArgExecutor(ArgExecutor):
     def get_item_related_function(self) -> Callable:
         return self.item_func_mapping.get(self.item_type)
 
-    def parse_args(self):
-        item_function_to_call = self.get_item_related_function()
-        args = self._normalize_args(self.positional_args)
-        item = item_function_to_call(*args)
+
+class DeleteArgExecutor(ArgExecutor):
+    name: str = 'delete'
+
+    @property
+    def item_func_mapping(self) -> dict[str, Callable]:
+        d = {'container': self.session.delete_container,
+             'drawer': self.session.create_drawer,
+             'component': self.session.create_component}
+        return d
+
+    def get_item_related_function(self) -> Callable:
+        return self.item_func_mapping.get(self.item_type)

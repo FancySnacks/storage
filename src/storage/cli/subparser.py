@@ -12,7 +12,6 @@ class Subparser(ABC):
     subparser_name: str = 'Subparser'
     help: str = 'Help'
     subparsers_help: str = 'Choose'
-    aliases: list[str] = []
 
     def __init__(self, parser_parent):
         self.parser_parent = parser_parent
@@ -22,8 +21,7 @@ class Subparser(ABC):
     @abstractmethod
     def initialize_subparser(self):
         self.parser: ArgumentParser = self.parser_parent.subparsers.add_parser(self.subparser_name,
-                                                                               help=self.help,
-                                                                               aliases=self.aliases)
+                                                                               help=self.help)
         self.children_parsers = self.parser.add_subparsers(help=self.subparsers_help)
         self.post_init()
 
@@ -43,7 +41,6 @@ class CreateSubparser(Subparser):
     subparser_name = 'create'
     help: str = 'Create new container, drawer or component at target destination.'
     subparsers_help: str = 'Choose item to create'
-    aliases: list[str] = ['crt', 'c']
 
     def initialize_subparser(self):
         super().initialize_subparser()
@@ -147,7 +144,6 @@ class DeleteSubparser(Subparser):
     subparser_name: str = 'delete'
     help: str = 'Delete target container or drawer/component from its parent.'
     subparsers_help: str = 'Choose item to delete'
-    aliases: list[str] = ['del', 'd']
 
     def initialize_subparser(self):
         super().initialize_subparser()
@@ -160,6 +156,12 @@ class DeleteSubparser(Subparser):
                                              type=str,
                                              metavar="NAME",
                                              help="Container name")
+
+        delete_container_parser.add_argument('-f',
+                                             '--forced',
+                                             action='store_true',
+                                             default=False,
+                                             help="Delete container even if it has children drawers",)
 
         # ===== DELETE DRAWER ===== #
 

@@ -43,6 +43,10 @@ class DataManager(ABC):
     def save_data_to_file(self, obj_to_save, filepath):
         pass
 
+    def delete_container_file(self, container_name: str):
+        path = pathlib.Path(self.container_path).joinpath(f"{container_name}{self.file_suffix}")
+        os.remove(path)
+
     def _get_list_of_supported_files_in_dir(self, dir_path):
         ls = os.listdir(dir_path)
         return [pathlib.Path(CONTAINER_SAVE_PATH).joinpath(file) for file in ls if

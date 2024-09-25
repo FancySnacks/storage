@@ -3,7 +3,7 @@ from storage.items.container import Container
 from storage.items.drawer import Drawer
 from storage.items.component import Component
 from storage.const import ComponentType
-from storage.cli.exceptions import ContainerNotFoundError, ItemNotFoundError
+from storage.cli.exceptions import ContainerNotFoundError, ItemNotFoundError, ItemIsNotEmptyError
 
 
 class Session:
@@ -34,6 +34,15 @@ class Session:
         self.save_container_file_and_resync(new_container)
 
         return new_container
+
+    def delete_container(self, name: str, forced=False):
+        container_to_del = self.get_container_by_name(name)
+
+        if len(container_to_del.drawers) == 0 + forced > 0:
+            self.data_manager.delete_container_file(name)
+            self.containers.remove(container_to_del)
+        else:
+            raise ItemIsNotEmptyError(name=name, item='container', reason='because it has child drawers!')
 
     def create_drawer(self, name: str, parent_container_name: str, row: int = -1, column: int = -1) -> Drawer:
         container = self.get_container_by_name(parent_container_name)

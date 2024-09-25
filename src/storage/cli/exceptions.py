@@ -46,3 +46,9 @@ class ContainerNotFoundError(StorageBaseException):
 
 class ItemNotFoundAtPositionError(StorageBaseException):
     CONSOLE_MESSAGE = ConsoleMessage.ITEM_NOT_FOUND_POS
+
+
+# ===== DELETE ===== #
+
+class ItemIsNotEmptyError(StorageBaseException):
+    CONSOLE_MESSAGE = ConsoleMessage.DEL_FAIL_CONTAINER
