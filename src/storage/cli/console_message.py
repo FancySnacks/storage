@@ -9,4 +9,5 @@ class ConsoleMessage(StrEnum):
     DEL_SUCCESS = "'{name}' {item} was removed from '{relation}'"
     DEL_FAIL = "'{name}' {item} could not be removed from '{relation}' {reason}"
     ITEM_NOT_FOUND_NAME = "'{name}' {item} was not found inside '{relation}'"
+    CONTAINER_NOT_FOUND = "'{name}' container does not exist!"
     ITEM_NOT_FOUND_POS = "{item} was not found inside '{relation}' at position {pos}"

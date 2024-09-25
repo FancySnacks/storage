@@ -1,5 +1,6 @@
 import pytest
 
+from storage.session import Session
 from storage.items.container import Container
 from storage.items.drawer import Drawer
 
@@ -25,8 +26,18 @@ def test_component_name() -> str:
 
 
 @pytest.fixture
-def container() -> Container:
+def session() -> Session:
+    return Session()
+
+
+@pytest.fixture
+def container(test_container_name) -> Container:
     return Container(name=TEST_CONTAINER_NAME, total_rows=8)
+
+
+@pytest.fixture
+def container_dict() -> dict:
+    return {'name': TEST_CONTAINER_NAME, 'rows': 8, 'columns': 8}
 
 
 @pytest.fixture
@@ -35,5 +46,10 @@ def drawer(container) -> Drawer:
 
 
 @pytest.fixture
+def drawer_dict() -> dict:
+    return {'name': TEST_DRAWER_NAME, 'row': 0, 'column': 0, 'parent_container_name': TEST_CONTAINER_NAME}
+
+
+@pytest.fixture
 def component_dict() -> dict:
-    return {'name': TEST_COMPONENT_NAME, 'count': 1, 'type': 'Test', 'tags': {}}
+    return {'name': TEST_COMPONENT_NAME, 'count': 1, 'type': 'other', 'tags': {}}

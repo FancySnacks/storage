@@ -3,6 +3,7 @@ from storage.items.container import Container
 from storage.items.drawer import Drawer
 from storage.items.component import Component
 from storage.const import ComponentType
+from storage.cli.exceptions import ContainerNotFoundError, ItemNotFoundError
 
 
 class Session:
@@ -34,20 +35,21 @@ class Session:
 
         return new_container
 
-    def create_drawer(self, name: str, parent_container_name: str, row_pos: int = -1, column_pos: int = -1) -> Drawer:
+    def create_drawer(self, name: str, parent_container_name: str, row: int = -1, column: int = -1) -> Drawer:
         container = self.get_container_by_name(parent_container_name)
-        new_drawer = container.add_drawer(name, int(row_pos), int(column_pos))
+        new_drawer = container.add_drawer(name, int(row), int(column))
         self.save_container_file_and_resync(container)
 
         return new_drawer
 
-    def create_component(self, name: str, count, component_type: str, parent_container_name: str,
-                         parent_drawer_name: str, compartment: int = -1) -> Component:
+    def create_component(self, name: str, count, type: str, parent_container_name: str,
+                         parent_drawer_name: str, compartment: int = -1, tags=None) -> Component:
         container = self.get_container_by_name(parent_container_name)
         drawer = container.get_drawer_by_name(parent_drawer_name)
 
-        component_type = ComponentType(component_type)
-        new_component = drawer.add_component(name, component_type, {}, int(count), compartment)
+        type = ComponentType(type)
+        tags = {} if tags is None else tags
+        new_component = drawer.add_component(name, type, tags, int(count), compartment)
         self.save_container_file_and_resync(container)
 
         return new_component
@@ -57,11 +59,11 @@ class Session:
             if container.name == name:
                 return container
 
-        raise ValueError(f"Container with name '{name}' does not exist!")
+        raise ContainerNotFoundError(name=name)
 
     def get_drawer_by_name(self, name: str, container_name: str) -> Drawer:
         for container in self.containers:
             if container.name == container_name:
                 return container.get_drawer_by_name(name)
 
-        raise ValueError(f"Drawer with name '{name}' does not exist!")
+        raise ItemNotFoundError(name=name, type='drawer', relation=container_name)

@@ -40,5 +40,9 @@ class ItemNotFoundError(StorageBaseException):
     CONSOLE_MESSAGE = ConsoleMessage.ITEM_NOT_FOUND_NAME
 
 
+class ContainerNotFoundError(StorageBaseException):
+    CONSOLE_MESSAGE = ConsoleMessage.CONTAINER_NOT_FOUND
+
+
 class ItemNotFoundAtPositionError(StorageBaseException):
     CONSOLE_MESSAGE = ConsoleMessage.ITEM_NOT_FOUND_POS
