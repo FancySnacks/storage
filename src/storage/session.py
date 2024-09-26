@@ -41,8 +41,21 @@ class Session:
         if len(container_to_del.drawers) == 0 + forced > 0:
             self.data_manager.delete_container_file(name)
             self.containers.remove(container_to_del)
+
+            print(f"'{name}' drawer was removed")
         else:
             raise ItemIsNotEmptyError(name=name, item='container', reason='because it has child drawers!')
+
+    def delete_drawer(self, name: str, parent_container: str, forced=False):
+        container = self.get_container_by_name(parent_container)
+        container.remove_drawer_by_name(name, forced)
+        self.save_container_file_and_resync(container)
+
+    def delete_component(self, name: str, parent_drawer: str, parent_container: str):
+        container = self.get_container_by_name(parent_container)
+        drawer = container.get_drawer_by_name(parent_drawer)
+        drawer.remove_component_by_name(name)
+        self.save_container_file_and_resync(container)
 
     def create_drawer(self, name: str, parent_container_name: str, row: int = -1, column: int = -1) -> Drawer:
         container = self.get_container_by_name(parent_container_name)

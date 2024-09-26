@@ -177,6 +177,12 @@ class DeleteSubparser(Subparser):
                                           metavar="PARENT_CONTAINER_NAME",
                                           help="Parent container name")
 
+        delete_drawer_parser.add_argument('-f',
+                                          '--forced',
+                                          action='store_true',
+                                          default=False,
+                                          help="Delete drawer even if it has children components", )
+
         # ===== DELETE COMPONENT ===== #
 
         delete_component_parser: ArgumentParser = self.children_parsers.add_parser('component')

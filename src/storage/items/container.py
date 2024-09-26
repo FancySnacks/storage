@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 from storage.cli.exceptions import DuplicateNameError, SpaceOccupiedError, NoFreeSpacesError, ItemNotFoundError, \
-    ItemNotFoundAtPositionError
+    ItemNotFoundAtPositionError, ItemIsNotEmptyError
 from storage.items.row import Row
 from storage.items.drawer import Drawer, DrawerPlaceholder
 
@@ -97,16 +97,17 @@ class Container:
         except IndexError:
             raise ItemNotFoundAtPositionError(item='drawer', relation=self.name, pos=Position(row, column))
 
-    def remove_drawer_by_name(self, drawer_name: str):
-        drawer = self.get_drawer_by_name(drawer_name)
+    def remove_drawer_by_name(self, name: str, forced=False):
+        drawer_to_del = self.get_drawer_by_name(name)
 
-        if not drawer:
-            return
+        if (len(drawer_to_del.components) == 0) + forced > 0:
+            self.drawer_rows[drawer_to_del.row].pop_item(drawer_to_del.column)
+            self._drawers.remove(drawer_to_del)
 
-        self.drawer_rows[drawer.row].pop_item(drawer.column)
-        self._drawers.remove(drawer)
+            print(f"'{name}' drawer was removed from {self.name}")
 
-        print(f"'{drawer_name}' drawer was removed from {self.name}")
+        else:
+            raise ItemIsNotEmptyError(name=name, item='drawer', reason='because it has child components!')
 
     def remove_drawer_at_pos(self, row: int, column: int):
         drawer = self.get_drawer_at_pos(row, column)

@@ -83,8 +83,8 @@ class DeleteArgExecutor(ArgExecutor):
     @property
     def item_func_mapping(self) -> dict[str, Callable]:
         d = {'container': self.session.delete_container,
-             'drawer': self.session.create_drawer,
-             'component': self.session.create_component}
+             'drawer': self.session.delete_drawer,
+             'component': self.session.delete_component}
         return d
 
     def get_item_related_function(self) -> Callable:
