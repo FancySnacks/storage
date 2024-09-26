@@ -5,6 +5,11 @@ from storage.items.container import Container
 from storage.items.drawer import Drawer
 
 
+@pytest.fixture
+def session() -> Session:
+    return Session()
+
+
 TEST_CONTAINER_NAME = 'TestContainer'
 TEST_DRAWER_NAME = 'TestDrawer'
 TEST_COMPONENT_NAME = 'TestComponent'
@@ -23,11 +28,6 @@ def test_drawer_name() -> str:
 @pytest.fixture
 def test_component_name() -> str:
     return TEST_COMPONENT_NAME
-
-
-@pytest.fixture
-def session() -> Session:
-    return Session()
 
 
 @pytest.fixture

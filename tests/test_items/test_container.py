@@ -1,6 +1,6 @@
 import pytest
 
-from storage.cli.exceptions import DuplicateNameError, NoFreeSpacesError
+from storage.cli.exceptions import DuplicateNameError, NoFreeSpacesError, ItemIsNotEmptyError
 
 
 def test_drawer_is_added_to_container(container, test_drawer_name):
@@ -47,6 +47,13 @@ def test_drawer_is_removed_from_container_via_name(container, test_drawer_name):
     container.add_drawer(test_drawer_name)
     container.remove_drawer_by_name(test_drawer_name)
     assert len(container.drawers) == 0
+
+
+def test_non_empty_drawer_cannot_be_removed_from_container(container, test_drawer_name, component_dict):
+    with pytest.raises(ItemIsNotEmptyError):
+        drawer = container.add_drawer(test_drawer_name)
+        drawer.add_component(**component_dict)
+        container.remove_drawer_by_name(test_drawer_name)
 
 
 def test_container_is_cleared(container, test_drawer_name):
