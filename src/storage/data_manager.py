@@ -55,7 +55,7 @@ class DataManager(ABC):
     def _file_is_supported_by_manager(self, filepath) -> bool:
         return pathlib.Path(filepath).suffix == self.file_suffix
 
-    def _create_filepath(self, obj):
+    def create_filepath(self, obj):
         return pathlib.Path(self.container_path).joinpath(f"{obj.name}{self.file_suffix}")
 
 
@@ -70,7 +70,7 @@ class JSONDataManager(DataManager):
 
     def save_data_to_file(self, obj_to_save: JSONInterface, filepath=None):
         if not filepath:
-            filepath = self._create_filepath(obj_to_save)
+            filepath = self.create_filepath(obj_to_save)
 
         with open(filepath, 'w') as file:
             data = obj_to_save.to_json()
