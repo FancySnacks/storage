@@ -10,9 +10,9 @@ def session() -> Session:
     return Session()
 
 
-TEST_CONTAINER_NAME = 'TestContainer'
-TEST_DRAWER_NAME = 'TestDrawer'
-TEST_COMPONENT_NAME = 'TestComponent'
+TEST_CONTAINER_NAME = 'testContainer'
+TEST_DRAWER_NAME = 'testDrawer'
+TEST_COMPONENT_NAME = 'testComponent'
 
 
 @pytest.fixture
