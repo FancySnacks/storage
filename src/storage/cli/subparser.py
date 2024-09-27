@@ -201,3 +201,54 @@ class DeleteSubparser(Subparser):
                                              type=str,
                                              metavar="PARENT_CONTAINER_NAME",
                                              help="Parent container name")
+
+
+class ClearSubparser(Subparser):
+    subparser_name: str = 'clear'
+    help: str = 'Clear target item out of children items.'
+    subparsers_help: str = 'Choose item to clear'
+
+    def initialize_subparser(self):
+        super().initialize_subparser()
+
+        # ===== CLEAR CONTAINER ===== #
+
+        clear_container_parser: ArgumentParser = self.children_parsers.add_parser('container')
+
+        clear_container_parser.add_argument('name',
+                                            type=str,
+                                            metavar="NAME",
+                                            help="Container name")
+
+        # ===== CLEAR DRAWER ===== #
+
+        clear_drawer_parser: ArgumentParser = self.children_parsers.add_parser('drawer')
+
+        clear_drawer_parser.add_argument('name',
+                                         type=str,
+                                         metavar="NAME",
+                                         help="Drawer name")
+
+        clear_drawer_parser.add_argument('container',
+                                         type=str,
+                                         metavar="PARENT_CONTAINER_NAME",
+                                         help="Parent container name")
+
+        # ===== CLEAR COMPONENT ===== #
+
+        clear_component_parser: ArgumentParser = self.children_parsers.add_parser('component')
+
+        clear_component_parser.add_argument('name',
+                                            type=str,
+                                            metavar="NAME",
+                                            help="Component name")
+
+        clear_component_parser.add_argument('drawer',
+                                            type=str,
+                                            metavar="PARENT_DRAWER_NAME",
+                                            help="Parent drawer name")
+
+        clear_component_parser.add_argument('container',
+                                            type=str,
+                                            metavar="PARENT_CONTAINER_NAME",
+                                            help="Parent container name")
