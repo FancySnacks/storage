@@ -2,6 +2,16 @@ import pytest
 
 import pathlib
 
+from storage.session import Session
+
+
+s = Session()
+
+
+@pytest.fixture
+def executor_session() -> Session:
+    return s
+
 
 create_args_path = pathlib.Path(__file__).parent.joinpath('./create_args.txt')
 delete_args_path = pathlib.Path(__file__).parent.joinpath('./delete_args.txt')

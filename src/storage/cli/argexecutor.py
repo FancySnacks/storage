@@ -24,6 +24,7 @@ class ArgExecutor(ABC):
         item_function_to_call = self.get_item_related_function()
         args = self._normalize_args(self.positional_args)
         flags = self._separate_flags(self.positional_args)
+        print(flags)
         item = item_function_to_call(*args, *flags)
 
     @abstractmethod

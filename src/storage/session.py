@@ -13,6 +13,7 @@ class Session:
         self.containers: list[Container] = []
 
     def load_container_data_from_file(self):
+        self.containers = []
         container_data = self.data_manager.load_all_container_data_from_save_directory()
 
         for data in container_data:
@@ -38,7 +39,7 @@ class Session:
     def delete_container(self, name: str, forced=False):
         container_to_del = self.get_container_by_name(name)
 
-        if len(container_to_del.drawers) == 0 + forced > 0:
+        if (len(container_to_del.drawers) == 0) + forced > 0:
             self.data_manager.delete_container_file(name)
             self.containers.remove(container_to_del)
 
