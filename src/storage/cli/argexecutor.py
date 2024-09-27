@@ -90,3 +90,16 @@ class DeleteArgExecutor(ArgExecutor):
 
     def get_item_related_function(self) -> Callable:
         return self.item_func_mapping.get(self.item_type)
+
+
+class ClearArgExecutor(ArgExecutor):
+    name: str = 'clear'
+
+    @property
+    def item_func_mapping(self) -> dict[str, Callable]:
+        d = {'container': self.session.clear_container,
+             'drawer': self.session.clear_drawer}
+        return d
+
+    def get_item_related_function(self) -> Callable:
+        return self.item_func_mapping.get(self.item_type)

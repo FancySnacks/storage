@@ -233,22 +233,3 @@ class ClearSubparser(Subparser):
                                          type=str,
                                          metavar="PARENT_CONTAINER_NAME",
                                          help="Parent container name")
-
-        # ===== CLEAR COMPONENT ===== #
-
-        clear_component_parser: ArgumentParser = self.children_parsers.add_parser('component')
-
-        clear_component_parser.add_argument('name',
-                                            type=str,
-                                            metavar="NAME",
-                                            help="Component name")
-
-        clear_component_parser.add_argument('drawer',
-                                            type=str,
-                                            metavar="PARENT_DRAWER_NAME",
-                                            help="Parent drawer name")
-
-        clear_component_parser.add_argument('container',
-                                            type=str,
-                                            metavar="PARENT_CONTAINER_NAME",
-                                            help="Parent container name")
