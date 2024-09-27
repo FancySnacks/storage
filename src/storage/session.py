@@ -47,16 +47,9 @@ class Session:
         else:
             raise ItemIsNotEmptyError(name=name, item='container', reason='because it has child drawers!')
 
-    def delete_drawer(self, name: str, parent_container: str, forced=False):
-        container = self.get_container_by_name(parent_container)
-        container.remove_drawer_by_name(name, forced)
-        self.save_container_file_and_resync(container)
-
-    def delete_component(self, name: str, parent_drawer: str, parent_container: str):
-        container = self.get_container_by_name(parent_container)
-        drawer = container.get_drawer_by_name(parent_drawer)
-        drawer.remove_component_by_name(name)
-        self.save_container_file_and_resync(container)
+    def clear_container(self, name: str):
+        container_to_clear = self.get_container_by_name(name)
+        container_to_clear.clear_container()
 
     def create_drawer(self, name: str, parent_container_name: str, row: int = -1, column: int = -1) -> Drawer:
         container = self.get_container_by_name(parent_container_name)
@@ -64,6 +57,16 @@ class Session:
         self.save_container_file_and_resync(container)
 
         return new_drawer
+
+    def delete_drawer(self, name: str, parent_container: str, forced=False):
+        container = self.get_container_by_name(parent_container)
+        container.remove_drawer_by_name(name, forced)
+        self.save_container_file_and_resync(container)
+
+    def clear_drawer(self, name: str, parent_container_name: str):
+        container = self.get_container_by_name(parent_container_name)
+        drawer_to_clear = container.get_drawer_by_name(name)
+        drawer_to_clear.clear_drawer()
 
     def create_component(self, name: str, count, type: str, parent_container_name: str,
                          parent_drawer_name: str, compartment: int = -1, tags=None) -> Component:
@@ -76,6 +79,12 @@ class Session:
         self.save_container_file_and_resync(container)
 
         return new_component
+
+    def delete_component(self, name: str, parent_drawer: str, parent_container: str):
+        container = self.get_container_by_name(parent_container)
+        drawer = container.get_drawer_by_name(parent_drawer)
+        drawer.remove_component_by_name(name)
+        self.save_container_file_and_resync(container)
 
     def get_container_by_name(self, name: str) -> Container:
         for container in self.containers:
