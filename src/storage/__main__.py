@@ -5,7 +5,7 @@ from sys import argv
 from storage.session import Session
 from storage.cli.parser import ArgParser
 from storage.cli.subparser import CreateSubparser, DeleteSubparser, ClearSubparser, GetSubparser
-from storage.cli.argexecutor import ArgExecutor, CreateArgExecutor, DeleteArgExecutor, ClearArgExecutor
+from storage.cli.argexecutor import ArgExecutor, CreateArgExecutor, DeleteArgExecutor, ClearArgExecutor, GetArgExecutor
 
 
 def get_arg_executor_from_argv(session, args: list[str]) -> ArgExecutor:
@@ -14,6 +14,9 @@ def get_arg_executor_from_argv(session, args: list[str]) -> ArgExecutor:
 
     if 'delete' in args:
         return DeleteArgExecutor(session, args)
+
+    if 'get' in args:
+        return GetArgExecutor(session, args)
 
     if 'clear' in args:
         return ClearArgExecutor(session, args)
