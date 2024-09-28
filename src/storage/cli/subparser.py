@@ -140,6 +140,83 @@ class CreateSubparser(Subparser):
                                              metavar="COMPARTMENT")
 
 
+class GetSubparser(Subparser):
+    subparser_name: str = 'get'
+    help: str = 'Search for and print out retrieved information about target item.'
+    subparsers_help: str = 'Choose item to retrieve'
+
+    def initialize_subparser(self):
+        super().initialize_subparser()
+
+        # ===== GET CONTAINER ===== #
+
+        get_container_parser: ArgumentParser = self.children_parsers.add_parser('container')
+
+        get_container_parser.add_argument('name',
+                                          type=str,
+                                          metavar="NAME",
+                                          help="Container name")
+
+        # ===== GET DRAWER ===== #
+
+        get_drawer_parser: ArgumentParser = self.children_parsers.add_parser('drawer')
+
+        get_drawer_parser.add_argument('name',
+                                       type=str,
+                                       metavar="NAME",
+                                       help="Drawer name")
+
+        get_drawer_parser.add_argument('--container',
+                                       type=str,
+                                       metavar="PARENT_CONTAINER_NAME",
+                                       help="Parent container name")
+
+        # ===== GET COMPONENT ===== #
+
+        get_component_parser: ArgumentParser = self.children_parsers.add_parser('component')
+
+        get_component_parser.add_argument('name',
+                                          type=str,
+                                          metavar="NAME",
+                                          help="Component name")
+
+        get_component_parser.add_argument('--mode',
+                                          type=str,
+                                          metavar="SEARCH_MODE",
+                                          default='match',
+                                          choices=['all', 'any'],
+                                          help="Search mode\n"
+                                               "'all' - find all components that match ALL the provided tags\n"
+                                               "'any' - find all components that match ANY of the provided tags\n")
+
+        get_component_parser.add_argument('--filter',
+                                          type=str,
+                                          metavar="FILTER",
+                                          help="Filter items via certain key and value.\n"
+                                               "Applied first, before sorting and before count limit.")
+
+        get_component_parser.add_argument('--sort',
+                                          type=str,
+                                          metavar="SORT",
+                                          help="Sort returned components by specific key and value.\n"
+                                               "Applied after filtering.")
+
+        get_component_parser.add_argument('--count',
+                                          type=str,
+                                          metavar="MAX_COUNT",
+                                          help="Max amount of printed results, applied after filtering and sorting.")
+
+        get_component_parser.add_argument('--drawer',
+                                          type=str,
+                                          metavar="PARENT_DRAWER_NAME",
+                                          help="Parent drawer name")
+
+        get_component_parser.add_argument('--container',
+                                          type=str,
+                                          metavar="PARENT_CONTAINER_NAME",
+                                          help="Parent container name")
+
+
 class DeleteSubparser(Subparser):
     subparser_name: str = 'delete'
     help: str = 'Delete target container or drawer/component from its parent.'
@@ -233,80 +310,3 @@ class ClearSubparser(Subparser):
                                          type=str,
                                          metavar="PARENT_CONTAINER_NAME",
                                          help="Parent container name")
-
-
-class GetSubparser(Subparser):
-    subparser_name: str = 'get'
-    help: str = 'Search for and print out retrieved information about target item.'
-    subparsers_help: str = 'Choose item to find'
-
-    def initialize_subparser(self):
-        super().initialize_subparser()
-
-        # ===== GET CONTAINER ===== #
-
-        get_container_parser: ArgumentParser = self.children_parsers.add_parser('container')
-
-        get_container_parser.add_argument('name',
-                                          type=str,
-                                          metavar="NAME",
-                                          help="Container name")
-
-        # ===== GET DRAWER ===== #
-
-        get_drawer_parser: ArgumentParser = self.children_parsers.add_parser('drawer')
-
-        get_drawer_parser.add_argument('name',
-                                       type=str,
-                                       metavar="NAME",
-                                       help="Drawer name")
-
-        get_drawer_parser.add_argument('--container',
-                                       type=str,
-                                       metavar="PARENT_CONTAINER_NAME",
-                                       help="Parent container name")
-
-        # ===== GET COMPONENT ===== #
-
-        get_component_parser: ArgumentParser = self.children_parsers.add_parser('component')
-
-        get_component_parser.add_argument('name',
-                                          type=str,
-                                          metavar="NAME",
-                                          help="Component name")
-
-        get_component_parser.add_argument('--mode',
-                                          type=str,
-                                          metavar="SEARCH_MODE",
-                                          default='match',
-                                          choices=['all', 'any'],
-                                          help="Search mode\n"
-                                               "'all' - find all components that match ALL the provided tags\n"
-                                               "'any' - find all components that match ANY of the provided tags\n")
-
-        get_component_parser.add_argument('--filter',
-                                          type=str,
-                                          metavar="FILTER",
-                                          help="Filter items via certain key and value.\n"
-                                               "Applied first, before sorting and before count limit.")
-
-        get_component_parser.add_argument('--sort',
-                                          type=str,
-                                          metavar="SORT",
-                                          help="Sort returned components by specific key and value.\n"
-                                               "Applied after filtering.")
-
-        get_component_parser.add_argument('--count',
-                                          type=str,
-                                          metavar="MAX_COUNT",
-                                          help="Max amount of printed results, applied after filtering and sorting.")
-
-        get_component_parser.add_argument('--drawer',
-                                          type=str,
-                                          metavar="PARENT_DRAWER_NAME",
-                                          help="Parent drawer name")
-
-        get_component_parser.add_argument('--container',
-                                          type=str,
-                                          metavar="PARENT_CONTAINER_NAME",
-                                          help="Parent container name")

@@ -75,6 +75,19 @@ class CreateArgExecutor(ArgExecutor):
         return d
 
 
+
+class GetArgExecutor(ArgExecutor):
+    """Handles 'get' subparser and executes functions related to retrieving items."""
+    name: str = 'get'
+
+    @property
+    def item_func_mapping(self) -> dict[str, Callable]:
+        d = {'container': self.session.clear_drawer,
+             'drawer': self.session.clear_drawer,
+             'component': self.session.clear_drawer}
+        return d
+
+
 class DeleteArgExecutor(ArgExecutor):
     """Handles 'delete' subparser and executes functions related to deletion of an item."""
     name: str = 'delete'
@@ -95,16 +108,4 @@ class ClearArgExecutor(ArgExecutor):
     def item_func_mapping(self) -> dict[str, Callable]:
         d = {'container': self.session.clear_container,
              'drawer': self.session.clear_drawer}
-        return d
-
-
-class GetArgExecutor(ArgExecutor):
-    """Handles 'get' subparser and executes functions related to retrieving items."""
-    name: str = 'get'
-
-    @property
-    def item_func_mapping(self) -> dict[str, Callable]:
-        d = {'container': self.session.clear_drawer,
-             'drawer': self.session.clear_drawer,
-             'component': self.session.clear_drawer}
         return d
