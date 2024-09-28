@@ -5,6 +5,7 @@ from storage.session import Session
 
 
 class ArgExecutor(ABC):
+    """Handles specific subparser by calling dedicated functions with provided args and flags."""
     name: str = 'default'
 
     def __init__(self, session: Session, argv: list[str]):
@@ -24,12 +25,10 @@ class ArgExecutor(ABC):
         item_function_to_call = self.get_item_related_function()
         args = self._normalize_args(self.positional_args)
         flags = self._separate_flags(self.positional_args)
-        print(flags)
         item = item_function_to_call(*args, *flags)
 
-    @abstractmethod
     def get_item_related_function(self) -> Callable:
-        pass
+        return self.item_func_mapping.get(self.item_type)
 
     def get_positional_args_from_argv(self, argv: list[str]) -> list[str]:
         arg_start = argv.index(self.name) + 1
@@ -65,6 +64,7 @@ class ArgExecutor(ABC):
 
 
 class CreateArgExecutor(ArgExecutor):
+    """Handles 'create' subparser and executes functions related to creation of an item."""
     name: str = 'create'
 
     @property
@@ -74,11 +74,9 @@ class CreateArgExecutor(ArgExecutor):
              'component': self.session.create_component}
         return d
 
-    def get_item_related_function(self) -> Callable:
-        return self.item_func_mapping.get(self.item_type)
-
 
 class DeleteArgExecutor(ArgExecutor):
+    """Handles 'delete' subparser and executes functions related to deletion of an item."""
     name: str = 'delete'
 
     @property
@@ -88,11 +86,9 @@ class DeleteArgExecutor(ArgExecutor):
              'component': self.session.delete_component}
         return d
 
-    def get_item_related_function(self) -> Callable:
-        return self.item_func_mapping.get(self.item_type)
-
 
 class ClearArgExecutor(ArgExecutor):
+    """Handles 'clear' subparser and executes functions related to clearing items out of children."""
     name: str = 'clear'
 
     @property
@@ -101,5 +97,14 @@ class ClearArgExecutor(ArgExecutor):
              'drawer': self.session.clear_drawer}
         return d
 
-    def get_item_related_function(self) -> Callable:
-        return self.item_func_mapping.get(self.item_type)
+
+class GetArgExecutor(ArgExecutor):
+    """Handles 'get' subparser and executes functions related to retrieving items."""
+    name: str = 'get'
+
+    @property
+    def item_func_mapping(self) -> dict[str, Callable]:
+        d = {'container': self.session.clear_drawer,
+             'drawer': self.session.clear_drawer,
+             'component': self.session.clear_drawer}
+        return d
