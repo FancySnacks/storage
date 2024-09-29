@@ -145,6 +145,13 @@ class GetSubparser(Subparser):
     help: str = 'Search for and print out retrieved information about target item.'
     subparsers_help: str = 'Choose item to retrieve'
 
+    def add_verbosity_flag(self):
+        for parser in self.children_parsers.choices.values():
+            parser.add_argument('-v',
+                                '--verbose',
+                                action='count',
+                                help="Verbosity level of console output")
+
     def initialize_subparser(self):
         super().initialize_subparser()
 
@@ -152,10 +159,11 @@ class GetSubparser(Subparser):
 
         get_container_parser: ArgumentParser = self.children_parsers.add_parser('container')
 
-        get_container_parser.add_argument('name',
+        get_container_parser.add_argument('--name',
                                           type=str,
+                                          default='*',
                                           metavar="NAME",
-                                          help="Container name")
+                                          help="Container name;  default '*' - outputs all containers")
 
         # ===== GET DRAWER ===== #
 
@@ -215,6 +223,8 @@ class GetSubparser(Subparser):
                                           type=str,
                                           metavar="PARENT_CONTAINER_NAME",
                                           help="Parent container name")
+
+        self.add_verbosity_flag()
 
 
 class DeleteSubparser(Subparser):
