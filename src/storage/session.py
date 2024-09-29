@@ -99,3 +99,7 @@ class Session:
                 return container.get_drawer_by_name(name)
 
         raise ItemNotFoundError(name=name, type='drawer', relation=container_name)
+
+    def print_container_info(self, name: str, verbosity_level: int = 1):
+        container = self.get_container_by_name(name)
+        print(container)

@@ -145,21 +145,41 @@ class GetSubparser(Subparser):
     help: str = 'Search for and print out retrieved information about target item.'
     subparsers_help: str = 'Choose item to retrieve'
 
-    def add_verbosity_flag(self):
+    def add_shared_arguments(self):
         for parser in self.children_parsers.choices.values():
-            parser.add_argument('-v',
-                                '--verbose',
-                                action='count',
-                                help="Verbosity level of console output")
+            self.add_verbosity_flag(parser)
+            self.add_sort_argument(parser)
+            self.add_filter_argument(parser)
+            self.add_count_argument(parser)
 
-    def add_sort_argument(self):
-        for parser in self.children_parsers.choices.values():
-            parser.add_argument('--sort',
-                                help="Sort returned items via specific key")
+    def add_verbosity_flag(self, parser):
+        parser.add_argument('-v',
+                            '--verbose',
+                            action='count',
+                            default=1,
+                            help="Verbosity level of console output")
 
-            parser.add_argument('--reverse',
-                                action='store_true',
-                                help="Return sorted items in reverse order, does nothing without '--sort' argument")
+    def add_sort_argument(self, parser):
+        parser.add_argument('--sort',
+                            help="Sort returned items via specific key\n"
+                                 "Applied after filtering")
+
+        parser.add_argument('--reverse',
+                            action='store_true',
+                            help="Return sorted items in reverse order, does nothing without '--sort' argument")
+
+    def add_filter_argument(self, parser):
+        parser.add_argument('--filter',
+                            type=str,
+                            metavar="FILTER_KEY",
+                            help="Filter items via certain key and value.\n"
+                                 "Applied first, before sorting and before count limit.")
+
+    def add_count_argument(self, parser):
+        parser.add_argument('--count',
+                            type=str,
+                            metavar="MAX_COUNT",
+                            help="Max amount of printed results, applied after filtering and sorting.")
 
     def initialize_subparser(self):
         super().initialize_subparser()
@@ -206,23 +226,6 @@ class GetSubparser(Subparser):
                                                "'all' - find all components that match ALL the provided tags\n"
                                                "'any' - find all components that match ANY of the provided tags\n")
 
-        get_component_parser.add_argument('--filter',
-                                          type=str,
-                                          metavar="FILTER",
-                                          help="Filter items via certain key and value.\n"
-                                               "Applied first, before sorting and before count limit.")
-
-        get_component_parser.add_argument('--sort',
-                                          type=str,
-                                          metavar="SORT",
-                                          help="Sort returned components by specific key and value.\n"
-                                               "Applied after filtering.")
-
-        get_component_parser.add_argument('--count',
-                                          type=str,
-                                          metavar="MAX_COUNT",
-                                          help="Max amount of printed results, applied after filtering and sorting.")
-
         get_component_parser.add_argument('--drawer',
                                           type=str,
                                           metavar="PARENT_DRAWER_NAME",
@@ -233,8 +236,7 @@ class GetSubparser(Subparser):
                                           metavar="PARENT_CONTAINER_NAME",
                                           help="Parent container name")
 
-        self.add_verbosity_flag()
-        self.add_sort_argument()
+        self.add_shared_arguments()
 
 
 class DeleteSubparser(Subparser):
