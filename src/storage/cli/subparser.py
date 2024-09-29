@@ -152,6 +152,15 @@ class GetSubparser(Subparser):
                                 action='count',
                                 help="Verbosity level of console output")
 
+    def add_sort_argument(self):
+        for parser in self.children_parsers.choices.values():
+            parser.add_argument('--sort',
+                                help="Sort returned items via specific key")
+
+            parser.add_argument('--reverse',
+                                action='store_true',
+                                help="Return sorted items in reverse order, does nothing without '--sort' argument")
+
     def initialize_subparser(self):
         super().initialize_subparser()
 
@@ -225,6 +234,7 @@ class GetSubparser(Subparser):
                                           help="Parent container name")
 
         self.add_verbosity_flag()
+        self.add_sort_argument()
 
 
 class DeleteSubparser(Subparser):
