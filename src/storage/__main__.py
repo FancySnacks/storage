@@ -1,5 +1,5 @@
 """Main entry point of the software."""
-
+import sys
 from sys import argv
 
 from storage.session import Session
@@ -8,18 +8,18 @@ from storage.cli.subparser import CreateSubparser, DeleteSubparser, ClearSubpars
 from storage.cli.argexecutor import ArgExecutor, CreateArgExecutor, DeleteArgExecutor, ClearArgExecutor, GetArgExecutor
 
 
-def get_arg_executor_from_argv(session, args: list[str]) -> ArgExecutor:
-    if 'create' in args:
-        return CreateArgExecutor(session, args)
+def get_arg_executor_from_argv(session, item_type: str, parsed_args: dict) -> ArgExecutor:
+    if 'create' in parsed_args:
+        return CreateArgExecutor(session, item_type, parsed_args)
 
-    if 'delete' in args:
-        return DeleteArgExecutor(session, args)
+    if 'delete' in parsed_args:
+        return DeleteArgExecutor(session, item_type, parsed_args)
 
-    if 'get' in args:
-        return GetArgExecutor(session, args)
+    if 'get' in parsed_args:
+        return GetArgExecutor(session, item_type, parsed_args)
 
-    if 'clear' in args:
-        return ClearArgExecutor(session, args)
+    if 'clear' in parsed_args:
+        return ClearArgExecutor(session, item_type,  parsed_args)
 
     return None
 
@@ -39,8 +39,10 @@ def main(args: list[str] | None = None) -> int:
     parser.setup_args()
     setup_subparsers(parser)
 
+    item_type = sys.argv[2]
     parsed_args: dict = parser.parse_args(args)
-    arg_executor = get_arg_executor_from_argv(session, argv)
+
+    arg_executor = get_arg_executor_from_argv(session, item_type, parsed_args)
 
     if parsed_args.get('printargs'):
         print(parsed_args)

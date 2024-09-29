@@ -47,7 +47,7 @@ def drawer(container) -> Drawer:
 
 @pytest.fixture
 def drawer_dict() -> dict:
-    return {'name': TEST_DRAWER_NAME, 'row': 0, 'column': 0, 'parent_container_name': TEST_CONTAINER_NAME}
+    return {'name': TEST_DRAWER_NAME, 'row': 0, 'column': 0, 'container': TEST_CONTAINER_NAME}
 
 
 @pytest.fixture

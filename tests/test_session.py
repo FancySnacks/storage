@@ -15,8 +15,7 @@ def test_create_new_drawer(session, container_dict, drawer_dict):
 def test_create_new_component(session, container_dict, drawer_dict, component_dict):
     session.create_container(**container_dict)
     session.create_drawer(**drawer_dict)
-    session.create_component(**component_dict, parent_drawer_name=drawer_dict['name'],
-                             parent_container_name=container_dict['name'])
+    session.create_component(**component_dict, drawer=drawer_dict['name'], container=container_dict['name'])
 
 
 def test_raises_container_not_found_exception(session):

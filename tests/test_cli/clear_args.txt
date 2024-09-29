@@ -1,2 +1,2 @@
-storage,clear,drawer,testDrawer,testContainer
-storage,clear,container,testContainer
+storage clear drawer testDrawer testContainer
+storage clear container testContainer

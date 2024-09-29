@@ -3,11 +3,12 @@ from storage.items.container import Container
 from storage.items.drawer import Drawer
 from storage.items.component import Component
 from storage.const import ComponentType
-from storage.cli.exceptions import ContainerNotFoundError, ItemNotFoundError, ItemIsNotEmptyError
+from storage.cli.exceptions import ContainerNotFoundError, ItemIsNotEmptyError
 
 
 class Session:
     """Session is a program instance that handles data-processing tasks."""
+
     def __init__(self, data_manager=JSONDataManager):
         self.data_manager = data_manager()
         self.containers: list[Container] = []
@@ -30,13 +31,13 @@ class Session:
         self.data_manager.save_data_to_file(container)
         self.load_container_data_from_file()
 
-    def create_container(self, name: str, rows: int, columns: int, drawer_compartments: int = 3) -> Container:
+    def create_container(self, name: str, rows: int, columns: int, drawer_compartments: int = 3, **kwargs) -> Container:
         new_container = Container(name, rows, columns, compartments_per_drawer=drawer_compartments)
         self.save_container_file_and_resync(new_container)
 
         return new_container
 
-    def delete_container(self, name: str, forced=False):
+    def delete_container(self, name: str, forced=False, **kwargs):
         container_to_del = self.get_container_by_name(name)
 
         if (len(container_to_del.drawers) == 0) + forced > 0:
@@ -47,31 +48,31 @@ class Session:
         else:
             raise ItemIsNotEmptyError(name=name, item='container', reason='because it has child drawers!')
 
-    def clear_container(self, name: str):
+    def clear_container(self, name: str, **kwargs):
         container_to_clear = self.get_container_by_name(name)
         container_to_clear.clear_container()
 
-    def create_drawer(self, name: str, parent_container_name: str, row: int = -1, column: int = -1) -> Drawer:
-        container = self.get_container_by_name(parent_container_name)
+    def create_drawer(self, name: str, container: str, row: int = -1, column: int = -1, **kwargs) -> Drawer:
+        container = self.get_container_by_name(container)
         new_drawer = container.add_drawer(name, int(row), int(column))
         self.save_container_file_and_resync(container)
 
         return new_drawer
 
-    def delete_drawer(self, name: str, parent_container: str, forced=False):
-        container = self.get_container_by_name(parent_container)
+    def delete_drawer(self, name: str, container: str, forced=False, **kwargs):
+        container = self.get_container_by_name(container)
         container.remove_drawer_by_name(name, forced)
         self.save_container_file_and_resync(container)
 
-    def clear_drawer(self, name: str, parent_container_name: str):
-        container = self.get_container_by_name(parent_container_name)
+    def clear_drawer(self, name: str, container: str, **kwargs):
+        container = self.get_container_by_name(container)
         drawer_to_clear = container.get_drawer_by_name(name)
         drawer_to_clear.clear_drawer()
 
-    def create_component(self, name: str, count, type: str, parent_container_name: str,
-                         parent_drawer_name: str, compartment: int = -1, tags=None) -> Component:
-        container = self.get_container_by_name(parent_container_name)
-        drawer = container.get_drawer_by_name(parent_drawer_name)
+    def create_component(self, name: str, count, type: str, container: str,
+                         drawer: str, compartment: int = -1, tags=None, **kwargs) -> Component:
+        container = self.get_container_by_name(container)
+        drawer = container.get_drawer_by_name(drawer)
 
         type = ComponentType(type)
         tags = {} if tags is None else tags
@@ -80,26 +81,40 @@ class Session:
 
         return new_component
 
-    def delete_component(self, name: str, parent_drawer: str, parent_container: str):
-        container = self.get_container_by_name(parent_container)
-        drawer = container.get_drawer_by_name(parent_drawer)
+    def delete_component(self, name: str, drawer: str, container: str, **kwargs):
+        container = self.get_container_by_name(container)
+        drawer = container.get_drawer_by_name(drawer)
         drawer.remove_component_by_name(name)
         self.save_container_file_and_resync(container)
 
-    def get_container_by_name(self, name: str) -> Container:
+    def get_container_by_name(self, name: str, **kwargs) -> Container:
         for container in self.containers:
             if container.name == name:
                 return container
 
         raise ContainerNotFoundError(name=name)
 
-    def get_drawer_by_name(self, name: str, container_name: str) -> Drawer:
-        for container in self.containers:
-            if container.name == container_name:
-                return container.get_drawer_by_name(name)
+    def get_drawer_by_name(self, name: str, container: str, **kwargs) -> Drawer:
+        container = self.get_container_by_name(container)
+        return container.get_drawer_by_name(name)
 
-        raise ItemNotFoundError(name=name, type='drawer', relation=container_name)
+    def get_component_by_name(self, name: str, drawer: str, container: str, **kwargs) -> Component:
+        container = self.get_container_by_name(container)
+        drawer = container.get_drawer_by_name(drawer)
+        return drawer.get_component_by_name(name)
 
-    def print_container_info(self, name: str, verbosity_level: int = 1):
+    def print_container_info(self, name: str, verbosity: int = 1, **kwargs):
+        if name == '*':
+            for container in self.containers:
+                print(container)
+
         container = self.get_container_by_name(name)
         print(container)
+
+    def print_drawer_info(self, name: str, container: str, verbosity: int = 1, **kwargs):
+        drawer = self.get_drawer_by_name(name, container)
+        print(drawer)
+
+    def print_component_info(self, name: str, drawer: str, container: str, verbosity: int = 1, **kwargs):
+        component = self.get_component_by_name(name, drawer, container)
+        print(component)

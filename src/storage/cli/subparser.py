@@ -123,15 +123,15 @@ class CreateSubparser(Subparser):
                                              help="Component type. "
                                                   f"Choices: {ComponentType.get_component_types()}")
 
-        create_component_parser.add_argument('container',
-                                             type=str,
-                                             metavar="PARENT_CONTAINER_NAME",
-                                             help="Parent container name")
-
         create_component_parser.add_argument('drawer',
                                              type=str,
                                              metavar="PARENT_DRAWER_NAME",
                                              help="Parent drawer name")
+
+        create_component_parser.add_argument('container',
+                                             type=str,
+                                             metavar="PARENT_CONTAINER_NAME",
+                                             help="Parent container name")
 
         create_component_parser.add_argument('--compartment',
                                              '--c',
@@ -157,6 +157,7 @@ class GetSubparser(Subparser):
                             '--verbose',
                             action='count',
                             default=1,
+                            dest='verbosity',
                             help="Verbosity level of console output")
 
     def add_sort_argument(self, parser):

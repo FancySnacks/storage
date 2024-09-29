@@ -13,7 +13,7 @@ def test_container_is_saved_to_file(tmp_path, container):
 
 
 def test_container_file_is_updated(tmp_path, container, drawer_dict):
-    drawer_dict.pop('parent_container_name')
+    drawer_dict.pop('container')
 
     data_manager = JSONDataManager()
     data_manager.container_path = tmp_path

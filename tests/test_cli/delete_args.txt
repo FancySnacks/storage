@@ -1,3 +1,3 @@
-storage,delete,component,testComponent,testDrawer,testContainer
-storage,delete,drawer,testDrawer,testContainer
-storage,delete,container,testContainer,--forced
+storage delete component testComponent testDrawer testContainer
+storage delete drawer testDrawer testContainer
+storage delete container testContainer --forced

@@ -8,13 +8,12 @@ class ArgExecutor(ABC):
     """Handles specific subparser by calling dedicated functions with provided args and flags."""
     name: str = 'default'
 
-    def __init__(self, session: Session, argv: list[str]):
+    def __init__(self, session: Session, item_type: str, parsed_args: dict):
         self.session: Session = session
-        self.argv: list[str] = argv
-        self.positional_args: list[str] = self.get_positional_args_from_argv(argv)[1::]
-        self.item_type: str = self.get_item_type(argv)
-        print(self.argv)
-        print(self.positional_args)
+        self.parsed_args = parsed_args
+        self.item_type: str = item_type
+        print(self.item_type)
+        print(self.parsed_args)
 
     @property
     @abstractmethod
@@ -23,44 +22,10 @@ class ArgExecutor(ABC):
 
     def parse_args(self):
         item_function_to_call = self.get_item_related_function()
-        args = self._normalize_args(self.positional_args)
-        flags = self._separate_flags(self.positional_args)
-        item = item_function_to_call(*args, *flags)
+        item_function_to_call(**self.parsed_args)
 
     def get_item_related_function(self) -> Callable:
         return self.item_func_mapping.get(self.item_type)
-
-    def get_positional_args_from_argv(self, argv: list[str]) -> list[str]:
-        arg_start = argv.index(self.name) + 1
-        return argv[arg_start::]
-
-    def get_item_type(self, args: list[str]) -> str:
-        positionals = self.get_positional_args_from_argv(args)
-        return positionals[0]
-
-    def _normalize_args(self, args: list[str]) -> list[str]:
-        args_without_flags = list(filter(lambda arg: '--' not in arg, args))
-        return [self._arg_type_match(arg) for arg in args_without_flags]
-
-    def _separate_flags(self, args: list[str]) -> list[bool]:
-        flags: list[str] = []
-
-        for x in range(0, len(args)):
-            try:
-                if '--' in args[x]:
-                    if '--' in args[x+1]:
-                        flags.append(args[x])
-            except IndexError:
-                flags.append(args[x])
-                continue
-
-        return [True for flag in flags]
-
-    def _arg_type_match(self, arg: str) -> int | str:
-        if arg.isdigit():
-            return int(arg)
-        else:
-            return arg
 
 
 class CreateArgExecutor(ArgExecutor):
@@ -75,16 +40,15 @@ class CreateArgExecutor(ArgExecutor):
         return d
 
 
-
 class GetArgExecutor(ArgExecutor):
     """Handles 'get' subparser and executes functions related to retrieving items."""
     name: str = 'get'
 
     @property
     def item_func_mapping(self) -> dict[str, Callable]:
-        d = {'container': self.session.clear_drawer,
-             'drawer': self.session.clear_drawer,
-             'component': self.session.clear_drawer}
+        d = {'container': self.session.print_container_info,
+             'drawer': self.session.print_drawer_info,
+             'component': self.session.print_component_info}
         return d
 
 
