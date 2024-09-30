@@ -142,15 +142,12 @@ class CreateSubparser(Subparser):
 
 class GetSubparser(Subparser):
     subparser_name: str = 'get'
-    help: str = 'Search for and print out retrieved information about target item.'
+    help: str = 'Print out information about target item.'
     subparsers_help: str = 'Choose item to retrieve'
 
     def add_shared_arguments(self):
         for parser in self.children_parsers.choices.values():
             self.add_verbosity_flag(parser)
-            self.add_sort_argument(parser)
-            self.add_filter_argument(parser)
-            self.add_count_argument(parser)
 
     def add_verbosity_flag(self, parser):
         parser.add_argument('-v',
@@ -159,28 +156,6 @@ class GetSubparser(Subparser):
                             default=1,
                             dest='verbosity',
                             help="Verbosity level of console output")
-
-    def add_sort_argument(self, parser):
-        parser.add_argument('--sort',
-                            help="Sort returned items via specific key\n"
-                                 "Applied after filtering")
-
-        parser.add_argument('--reverse',
-                            action='store_true',
-                            help="Return sorted items in reverse order, does nothing without '--sort' argument")
-
-    def add_filter_argument(self, parser):
-        parser.add_argument('--filter',
-                            type=str,
-                            metavar="FILTER_KEY",
-                            help="Filter items via certain key and value.\n"
-                                 "Applied first, before sorting and before count limit.")
-
-    def add_count_argument(self, parser):
-        parser.add_argument('--count',
-                            type=str,
-                            metavar="MAX_COUNT",
-                            help="Max amount of printed results, applied after filtering and sorting.")
 
     def initialize_subparser(self):
         super().initialize_subparser()
@@ -228,6 +203,108 @@ class GetSubparser(Subparser):
                                           metavar="PARENT_CONTAINER_NAME",
                                           help="Parent container name")
 
+        self.add_shared_arguments()
+
+
+class FindSubparser(Subparser):
+    subparser_name: str = 'find'
+    help: str = 'Search for target item or group of items.'
+    subparsers_help: str = 'Choose item to find'
+
+    def add_shared_arguments(self):
+        for parser in self.children_parsers.choices.values():
+            self.add_verbosity_flag(parser)
+            self.add_sort_argument(parser)
+            self.add_filter_argument(parser)
+            self.add_count_argument(parser)
+
+    def add_verbosity_flag(self, parser):
+        parser.add_argument('-v',
+                            '--verbose',
+                            action='count',
+                            default=1,
+                            dest='verbosity',
+                            help="Verbosity level of console output")
+
+    def add_sort_argument(self, parser):
+        parser.add_argument('--sort',
+                            help="Sort returned items via specific key\n"
+                                 "Applied after filtering")
+
+        parser.add_argument('--reverse',
+                            action='store_true',
+                            help="Return sorted items in reverse order, does nothing without '--sort' argument")
+
+    def add_filter_argument(self, parser):
+        parser.add_argument('--filter',
+                            type=str,
+                            metavar="FILTER_KEY",
+                            help="Filter items via certain key and value.\n"
+                                 "Applied first, before sorting and before count limit.")
+
+    def add_count_argument(self, parser):
+        parser.add_argument('--count',
+                            type=str,
+                            metavar="MAX_COUNT",
+                            help="Max amount of printed results, applied after filtering and sorting.")
+
+    def initialize_subparser(self):
+        super().initialize_subparser()
+
+        # ===== GET CONTAINER ===== #
+
+        get_container_parser: ArgumentParser = self.children_parsers.add_parser('container')
+
+        get_container_parser.add_argument('--mode',
+                                          type=str,
+                                          metavar="SEARCH_MODE",
+                                          default='match',
+                                          choices=['all', 'any'],
+                                          help="Search mode\n"
+                                               "'all' - find all containers that match ALL the provided tags\n"
+                                               "'any' - find all containers that match ANY of the provided tags\n")
+
+        get_container_parser.add_argument('tags',
+                                          type=str,
+                                          nargs='*',
+                                          default=['*'],
+                                          metavar="TAGS_AND_VALUES",
+                                          help="List of tags, identifiers or 'key=value' pairs")
+
+        # ===== GET DRAWER ===== #
+
+        get_drawer_parser: ArgumentParser = self.children_parsers.add_parser('drawer')
+
+        get_drawer_parser.add_argument('--container',
+                                       type=str,
+                                       metavar="CONTAINER_NAME",
+                                       help="Parent container name")
+
+        get_drawer_parser.add_argument('--mode',
+                                       type=str,
+                                       metavar="SEARCH_MODE",
+                                       default='match',
+                                       choices=['all', 'any'],
+                                       help="Search mode\n"
+                                            "'all' - find all drawers that match ALL the provided tags\n"
+                                            "'any' - find all drawers that match ANY of the provided tags\n")
+
+        get_drawer_parser.add_argument('tags',
+                                       type=str,
+                                       nargs='*',
+                                       default=['*'],
+                                       metavar="TAGS_AND_VALUES",
+                                       help="List of tags, identifiers or 'key=value' pairs")
+
+        # ===== GET COMPONENT ===== #
+
+        get_component_parser: ArgumentParser = self.children_parsers.add_parser('component')
+
+        get_component_parser.add_argument('--container',
+                                          type=str,
+                                          metavar="CONTAINER_NAME",
+                                          help="Parent container name")
+
         get_component_parser.add_argument('--mode',
                                           type=str,
                                           metavar="SEARCH_MODE",
@@ -236,6 +313,13 @@ class GetSubparser(Subparser):
                                           help="Search mode\n"
                                                "'all' - find all components that match ALL the provided tags\n"
                                                "'any' - find all components that match ANY of the provided tags\n")
+
+        get_component_parser.add_argument('tags',
+                                          type=str,
+                                          nargs='*',
+                                          default=['*'],
+                                          metavar="TAGS_AND_VALUES",
+                                          help="List of tags, identifiers or 'key=value' pairs")
 
         self.add_shared_arguments()
 
@@ -261,7 +345,7 @@ class DeleteSubparser(Subparser):
                                              '--forced',
                                              action='store_true',
                                              default=False,
-                                             help="Delete container even if it has children drawers",)
+                                             help="Delete container even if it has children drawers", )
 
         # ===== DELETE DRAWER ===== #
 
