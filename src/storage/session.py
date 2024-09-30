@@ -118,3 +118,12 @@ class Session:
     def print_component_info(self, name: str, drawer: str, container: str, verbosity: int = 1, **kwargs):
         component = self.get_component_by_name(name, drawer, container)
         print(component)
+
+    def find_container(self):
+        raise NotImplementedError
+
+    def find_drawer(self):
+        raise NotImplementedError
+
+    def find_component(self):
+        raise NotImplementedError

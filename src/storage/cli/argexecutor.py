@@ -52,6 +52,18 @@ class GetArgExecutor(ArgExecutor):
         return d
 
 
+class FindArgExecutor(ArgExecutor):
+    """Handles 'find' subparser and executes functions related to finding items via tags."""
+    name: str = 'find'
+
+    @property
+    def item_func_mapping(self) -> dict[str, Callable]:
+        d = {'container': self.session.find_container,
+             'drawer': self.session.find_drawer,
+             'component': self.session.find_component}
+        return d
+
+
 class DeleteArgExecutor(ArgExecutor):
     """Handles 'delete' subparser and executes functions related to deletion of an item."""
     name: str = 'delete'
