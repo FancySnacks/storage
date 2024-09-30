@@ -1,0 +1,3 @@
+storage get container testContainer
+storage get drawer testDrawer testContainer
+storage get component testComponent testDrawer testContainer
