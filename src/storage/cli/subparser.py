@@ -218,6 +218,16 @@ class GetSubparser(Subparser):
                                           metavar="NAME",
                                           help="Component name")
 
+        get_component_parser.add_argument('drawer',
+                                          type=str,
+                                          metavar="PARENT_DRAWER_NAME",
+                                          help="Parent drawer name")
+
+        get_component_parser.add_argument('container',
+                                          type=str,
+                                          metavar="PARENT_CONTAINER_NAME",
+                                          help="Parent container name")
+
         get_component_parser.add_argument('--mode',
                                           type=str,
                                           metavar="SEARCH_MODE",
@@ -226,16 +236,6 @@ class GetSubparser(Subparser):
                                           help="Search mode\n"
                                                "'all' - find all components that match ALL the provided tags\n"
                                                "'any' - find all components that match ANY of the provided tags\n")
-
-        get_component_parser.add_argument('--drawer',
-                                          type=str,
-                                          metavar="PARENT_DRAWER_NAME",
-                                          help="Parent drawer name")
-
-        get_component_parser.add_argument('--container',
-                                          type=str,
-                                          metavar="PARENT_CONTAINER_NAME",
-                                          help="Parent container name")
 
         self.add_shared_arguments()
 
