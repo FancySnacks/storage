@@ -149,7 +149,7 @@ class Drawer:
     def get_readable_format(self) -> str:
         components = [f"{comp.get_readable_format()}" for comp in self.components]
         components = ', '.join(components)
-        return f"{self.get_pos_str()} {self.name} [{components}]\n"
+        return f"[DRAWER] {self.get_pos_str()} {self.name} [{components}]\n"
 
     def get_pos_str(self) -> str:
         """Get drawer position in storage as formatted string."""

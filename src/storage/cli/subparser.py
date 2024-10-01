@@ -164,11 +164,10 @@ class GetSubparser(Subparser):
 
         get_container_parser: ArgumentParser = self.children_parsers.add_parser('container')
 
-        get_container_parser.add_argument('--name',
+        get_container_parser.add_argument('name',
                                           type=str,
-                                          default='*',
                                           metavar="NAME",
-                                          help="Container name;  default '*' - outputs all containers")
+                                          help="Container name")
 
         # ===== GET DRAWER ===== #
 
@@ -179,7 +178,7 @@ class GetSubparser(Subparser):
                                        metavar="NAME",
                                        help="Drawer name")
 
-        get_drawer_parser.add_argument('--container',
+        get_drawer_parser.add_argument('container',
                                        type=str,
                                        metavar="PARENT_CONTAINER_NAME",
                                        help="Parent container name")

@@ -97,6 +97,9 @@ class Container:
         except IndexError:
             raise ItemNotFoundAtPositionError(item='drawer', relation=self.name, pos=Position(row, column))
 
+    def get_all_components(self):
+        return [drawer.components for drawer in self.drawers]
+
     def remove_drawer_by_name(self, name: str, forced=False):
         drawer_to_del = self.get_drawer_by_name(name)
 
@@ -194,3 +197,6 @@ class Container:
                 "max_drawers_per_row": self.max_drawers_per_row,
                 "compartments_per_drawer": self.compartments_per_drawer,
                 "drawers": self._drawers_to_dict_list()}
+
+    def __repr__(self) -> str:
+        return f"[CONTAINER] {self.name} - {len(self.drawers)} drawers | {len(self.get_all_components())} components"
