@@ -81,6 +81,18 @@ class CreateSubparser(Subparser):
                                              help="Number of compartments/separators per drawer - aka max count of "
                                                   "unique components in a single drawer")
 
+        create_container_parser.add_argument('--tags',
+                                             action=ParseKwargs,
+                                             nargs='*',
+                                             type=str,
+                                             metavar="TAGS",
+                                             default={},
+                                             help="Custom tags defined by the user, used for searching commands.\n"
+                                                  "Arguments should be passed as 'key=value' pairs, "
+                                                  "separated by spaces.\n"
+                                                  "Example: 'manufacturer=StrongBox' 'model=W201A'"
+                                                  "Some tags are created automatically by passed positional args.")
+
         # ===== CREATE DRAWER ===== #
 
         create_drawer_parser: ArgumentParser = self.children_parsers.add_parser('drawer')
@@ -112,6 +124,17 @@ class CreateSubparser(Subparser):
                                           default=-1,
                                           metavar="COLUMN")
 
+        create_drawer_parser.add_argument('--tags',
+                                          action=ParseKwargs,
+                                          nargs='*',
+                                          type=str,
+                                          metavar="TAGS",
+                                          default={},
+                                          help="Custom tags defined by the user, used for searching commands.\n"
+                                               "Arguments should be passed as 'key=value' pairs, "
+                                               "separated by spaces.\n"
+                                               "Example: 'depth=10cm' 'color=red'"
+                                               "Some tags are created automatically by passed positional args.")
         # ===== CREATE COMPONENT ===== #
 
         create_component_parser: ArgumentParser = self.children_parsers.add_parser('component')
@@ -148,6 +171,18 @@ class CreateSubparser(Subparser):
                                              type=int,
                                              default=-1,
                                              metavar="COMPARTMENT")
+
+        create_component_parser.add_argument('--tags',
+                                             action=ParseKwargs,
+                                             nargs='*',
+                                             type=str,
+                                             metavar="TAGS",
+                                             default={},
+                                             help="Custom tags defined by the user, used for searching commands.\n"
+                                                  "Arguments should be passed as 'key=value' pairs, "
+                                                  "separated by spaces.\n"
+                                                  "Example: 'max_current=500mA' 'type=NPN'"
+                                                  "Some tags are created automatically by passed positional args.")
 
 
 class GetSubparser(Subparser):
