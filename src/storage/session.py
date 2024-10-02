@@ -31,8 +31,11 @@ class Session:
         self.data_manager.save_data_to_file(container)
         self.load_container_data_from_file()
 
-    def create_container(self, name: str, rows: int, columns: int, drawer_compartments: int = 3, **kwargs) -> Container:
-        new_container = Container(name, rows, columns, compartments_per_drawer=drawer_compartments)
+    def create_container(self, name: str, rows: int, columns: int, drawer_compartments: int = 3, tags=None,
+                         **kwargs) -> Container:
+        tags = {} if tags is None else tags
+        tags.update({'name': name})
+        new_container = Container(name, rows, columns, compartments_per_drawer=drawer_compartments, tags=tags)
         self.save_container_file_and_resync(new_container)
 
         return new_container
@@ -52,9 +55,11 @@ class Session:
         container_to_clear = self.get_container_by_name(name)
         container_to_clear.clear_container()
 
-    def create_drawer(self, name: str, container: str, row: int = -1, column: int = -1, **kwargs) -> Drawer:
+    def create_drawer(self, name: str, container: str, row: int = -1, column: int = -1, tags=None, **kwargs) -> Drawer:
         container = self.get_container_by_name(container)
-        new_drawer = container.add_drawer(name, int(row), int(column))
+        tags = {} if tags is None else tags
+        tags.update({'name': name})
+        new_drawer = container.add_drawer(name, int(row), int(column), tags)
         self.save_container_file_and_resync(container)
 
         return new_drawer
@@ -76,6 +81,7 @@ class Session:
 
         type = ComponentType(type)
         tags = {} if tags is None else tags
+        tags.update({'name': name, 'count': count, 'type': type})
         new_component = drawer.add_component(name, type, tags, int(count), compartment)
         self.save_container_file_and_resync(container)
 

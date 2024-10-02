@@ -30,6 +30,7 @@ class Container:
     total_rows: int
     max_drawers_per_row: int = 8
     compartments_per_drawer: int = 3
+    tags: dict = field(repr=False, default_factory=dict)
 
     drawer_rows: list[Row] = field(default_factory=list)
     _drawers: list[Drawer] = field(default_factory=list)
@@ -58,7 +59,7 @@ class Container:
         self.max_drawers_per_row = drawers_per_row
         self.clear_container()
 
-    def add_drawer(self, name: str, row: int = -1, column: int = -1, components=None) -> Drawer:
+    def add_drawer(self, name: str, row: int = -1, column: int = -1, tags=None, components=None) -> Drawer:
         """Add new Drawer child class identified by unique name.\n
         List of child components can be empty.\n
         Returns a new drawer if successful."""
@@ -79,7 +80,7 @@ class Container:
         self._drawers.append(new_drawer)
 
         print(f"{new_drawer.name} drawer was added to {self.name} at [{pos.row},{pos.column}]")
-        
+
         return new_drawer
 
     def get_drawer_by_name(self, drawer_name: str) -> Drawer:
@@ -196,6 +197,7 @@ class Container:
                 "total_rows": self.total_rows,
                 "max_drawers_per_row": self.max_drawers_per_row,
                 "compartments_per_drawer": self.compartments_per_drawer,
+                "tags": self.tags,
                 "drawers": self._drawers_to_dict_list()}
 
     def __repr__(self) -> str:

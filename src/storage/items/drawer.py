@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 from storage.cli.exceptions import DuplicateNameError, NoFreeSpacesError, ItemNotFoundError, ItemNotFoundAtPositionError, \
@@ -23,6 +23,7 @@ class Drawer:
     row: int
     column: int
 
+    tags: dict = field(repr=False, default_factory=dict)
     parent_container: Container = None
     _row: Row = None
 
@@ -162,6 +163,7 @@ class Drawer:
         return {"name": self.name,
                 "row": self.row,
                 "column": self.column,
+                "tags": self.tags,
                 "components": self._row_to_dict_list()}
 
     def __repr__(self) -> str:
