@@ -5,6 +5,8 @@ from storage.items.component import Component
 from storage.const import ComponentType
 from storage.cli.exceptions import ContainerNotFoundError, ItemIsNotEmptyError
 
+from storage.search_query import SearchQuery, SearchResult, Searcher
+
 
 class Session:
     """Session is a program instance that handles data-processing tasks."""
@@ -132,4 +134,8 @@ class Session:
         raise NotImplementedError
 
     def find_component(self, **kwargs):
-        raise NotImplementedError
+        query = SearchQuery('all')
+        searcher = Searcher(query)
+        comps = self.containers[1].drawers[0].components
+        items = searcher.search_through_items(comps, ["5", "wattage"], {})
+        print(items)
