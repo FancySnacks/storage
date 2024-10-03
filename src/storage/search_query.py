@@ -29,10 +29,12 @@ class Searcher:
 
             vals = item.tags.items()
 
-            if not search_result:
-                search_result = SearchResult(item_ref=item, query=self.query)
             matches = self.get_matching_keywords(vals, tags_keywords)
-            search_result.matched_keywords = matches
+
+            if matches:
+                if not search_result:
+                    search_result = SearchResult(item_ref=item, query=self.query)
+                search_result.matched_keywords = matches
 
             for k, v in vals:
                 k = str(k)
@@ -54,4 +56,12 @@ class Searcher:
         return valid_items
 
     def get_matching_keywords(self, items: list[tuple], tags_keywords: dict) -> dict:
+        tags_keywords = self._normalize_dict_values(tags_keywords)
+
         return {item[0]: item[1] for item in items if item in tags_keywords.items()}
+
+    def _normalize_dict_values(self, tags_keywords: dict) -> dict:
+        for k, v in tags_keywords.items():
+            if v.isdigit():
+                tags_keywords[k] = int(v)
+        return tags_keywords

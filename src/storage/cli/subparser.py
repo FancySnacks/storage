@@ -25,7 +25,6 @@ class ParseKwargs(argparse.Action):
             getattr(namespace, self.dest)[key] = value
 
         setattr(namespace, 'tags_positional', positional_args)
-        print(positional_args)
 
 
 class Subparser(ABC):

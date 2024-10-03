@@ -128,14 +128,33 @@ class Session:
         print(component)
 
     def find_container(self, **kwargs):
-        raise NotImplementedError
+        tags_positional: list[str] = kwargs.get('tags_positional')
+        tags_keywords: dict = kwargs.get('tags')
 
-    def find_drawer(self, **kwargs):
-        raise NotImplementedError
-
-    def find_component(self, **kwargs):
         query = SearchQuery('all')
         searcher = Searcher(query)
+
+        items = searcher.search_through_items(self.containers, tags_positional, tags_keywords)
+        print(items)
+
+    def find_drawer(self, **kwargs):
+        tags_positional: list[str] = kwargs.get('tags_positional')
+        tags_keywords: dict = kwargs.get('tags')
+
+        query = SearchQuery('all')
+        searcher = Searcher(query)
+
+        drawers = self.containers[1].drawers
+        items = searcher.search_through_items(drawers, tags_positional, tags_keywords)
+        print(items)
+
+    def find_component(self, **kwargs):
+        tags_positional: list[str] = kwargs.get('tags_positional')
+        tags_keywords: dict = kwargs.get('tags')
+
+        query = SearchQuery('all')
+        searcher = Searcher(query)
+
         comps = self.containers[1].drawers[0].components
-        items = searcher.search_through_items(comps, ["5", "wattage"], {})
+        items = searcher.search_through_items(comps, tags_positional, tags_keywords)
         print(items)
