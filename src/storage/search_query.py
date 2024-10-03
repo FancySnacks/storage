@@ -29,6 +29,11 @@ class Searcher:
 
             vals = item.tags.items()
 
+            if not search_result:
+                search_result = SearchResult(item_ref=item, query=self.query)
+            matches = self.get_matching_keywords(vals, tags_keywords)
+            search_result.matched_keywords = matches
+
             for k, v in vals:
                 k = str(k)
                 v = str(v)
@@ -47,3 +52,6 @@ class Searcher:
                 valid_items.append(search_result)
 
         return valid_items
+
+    def get_matching_keywords(self, items: list[tuple], tags_keywords: dict) -> dict:
+        return {item[0]: item[1] for item in items if item in tags_keywords.items()}
