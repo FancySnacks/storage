@@ -12,10 +12,20 @@ from storage.const import ComponentType
 class ParseKwargs(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
         setattr(namespace, self.dest, dict())
+        setattr(namespace, self.dest, dict())
+
+        positional_args: list[str] = []
 
         for value in values:
+            if '=' not in value:
+                positional_args.append(value)
+                continue
+
             key, value = value.split("=")
             getattr(namespace, self.dest)[key] = value
+
+        setattr(namespace, 'tags_positional', positional_args)
+        print(positional_args)
 
 
 class Subparser(ABC):
@@ -259,7 +269,6 @@ class FindSubparser(Subparser):
         for parser in self.children_parsers.choices.values():
             self.add_verbosity_flag(parser)
             self.add_sort_argument(parser)
-            self.add_filter_argument(parser)
             self.add_count_argument(parser)
 
     def add_verbosity_flag(self, parser):
@@ -279,13 +288,6 @@ class FindSubparser(Subparser):
                             action='store_true',
                             help="Return sorted items in reverse order, does nothing without '--sort' argument")
 
-    def add_filter_argument(self, parser):
-        parser.add_argument('--filter',
-                            type=str,
-                            metavar="FILTER_KEY",
-                            help="Filter items via certain key and value.\n"
-                                 "Applied first, before sorting and before count limit.")
-
     def add_count_argument(self, parser):
         parser.add_argument('--count',
                             type=str,
@@ -295,75 +297,90 @@ class FindSubparser(Subparser):
     def initialize_subparser(self):
         super().initialize_subparser()
 
-        # ===== GET CONTAINER ===== #
+        # ===== FIND CONTAINER ===== #
 
-        get_container_parser: ArgumentParser = self.children_parsers.add_parser('container')
+        find_container_parser: ArgumentParser = self.children_parsers.add_parser('container')
 
-        get_container_parser.add_argument('--mode',
-                                          type=str,
-                                          metavar="SEARCH_MODE",
-                                          default='match',
-                                          choices=['all', 'any'],
-                                          help="Search mode\n"
-                                               "'all' - find all containers that match ALL the provided tags\n"
-                                               "'any' - find all containers that match ANY of the provided tags\n")
+        find_container_parser.add_argument('--mode',
+                                           type=str,
+                                           metavar="SEARCH_MODE",
+                                           default='match',
+                                           choices=['all', 'any'],
+                                           help="Search mode\n"
+                                                "'all' - find all containers that match ALL the provided tags\n"
+                                                "'any' - find all containers that match ANY of the provided tags\n")
 
-        get_container_parser.add_argument('tags',
-                                          type=str,
-                                          nargs='*',
-                                          default=['*'],
-                                          metavar="TAGS_AND_VALUES",
-                                          help="List of tags, identifiers or 'key=value' pairs")
+        find_container_parser.add_argument('tags',
+                                           action=ParseKwargs,
+                                           nargs='*',
+                                           type=str,
+                                           metavar="TAGS",
+                                           default={},
+                                           help="Enter tags that searched items have to match.\n"
+                                                "Arguments should be passed as strings or as 'key=value' pairs, "
+                                                "separated by spaces.\n"
+                                                "Example: 'manufacturer=StrongBox' 'model=AE86'"
+                                                "Some tags are created automatically by passed positional args.")
 
-        # ===== GET DRAWER ===== #
+        # ===== FIND DRAWER ===== #
 
-        get_drawer_parser: ArgumentParser = self.children_parsers.add_parser('drawer')
+        find_drawer_parser: ArgumentParser = self.children_parsers.add_parser('drawer')
 
-        get_drawer_parser.add_argument('--container',
-                                       type=str,
-                                       metavar="CONTAINER_NAME",
-                                       help="Parent container name")
+        find_drawer_parser.add_argument('--container',
+                                        type=str,
+                                        metavar="CONTAINER_NAME",
+                                        help="Parent container name")
 
-        get_drawer_parser.add_argument('--mode',
-                                       type=str,
-                                       metavar="SEARCH_MODE",
-                                       default='match',
-                                       choices=['all', 'any'],
-                                       help="Search mode\n"
-                                            "'all' - find all drawers that match ALL the provided tags\n"
-                                            "'any' - find all drawers that match ANY of the provided tags\n")
+        find_drawer_parser.add_argument('--mode',
+                                        type=str,
+                                        metavar="SEARCH_MODE",
+                                        default='match',
+                                        choices=['all', 'any'],
+                                        help="Search mode\n"
+                                             "'all' - find all drawers that match ALL the provided tags\n"
+                                             "'any' - find all drawers that match ANY of the provided tags\n")
 
-        get_drawer_parser.add_argument('tags',
-                                       type=str,
-                                       nargs='*',
-                                       default=['*'],
-                                       metavar="TAGS_AND_VALUES",
-                                       help="List of tags, identifiers or 'key=value' pairs")
+        find_drawer_parser.add_argument('tags',
+                                        action=ParseKwargs,
+                                        nargs='*',
+                                        type=str,
+                                        metavar="TAGS",
+                                        default={},
+                                        help="Enter tags that searched items have to match.\n"
+                                             "Arguments should be passed as strings or as 'key=value' pairs, "
+                                             "separated by spaces.\n"
+                                             "Example: 'depth=10cm' 'color=red'"
+                                             "Some tags are created automatically by passed positional args.")
 
-        # ===== GET COMPONENT ===== #
+        # ===== FIND COMPONENT ===== #
 
-        get_component_parser: ArgumentParser = self.children_parsers.add_parser('component')
+        find_component_parser: ArgumentParser = self.children_parsers.add_parser('component')
 
-        get_component_parser.add_argument('--container',
-                                          type=str,
-                                          metavar="CONTAINER_NAME",
-                                          help="Parent container name")
+        find_component_parser.add_argument('--container',
+                                           type=str,
+                                           metavar="CONTAINER_NAME",
+                                           help="Parent container name")
 
-        get_component_parser.add_argument('--mode',
-                                          type=str,
-                                          metavar="SEARCH_MODE",
-                                          default='match',
-                                          choices=['all', 'any'],
-                                          help="Search mode\n"
-                                               "'all' - find all components that match ALL the provided tags\n"
-                                               "'any' - find all components that match ANY of the provided tags\n")
+        find_component_parser.add_argument('--mode',
+                                           type=str,
+                                           metavar="SEARCH_MODE",
+                                           default='match',
+                                           choices=['all', 'any'],
+                                           help="Search mode\n"
+                                                "'all' - find all components that match ALL the provided tags\n"
+                                                "'any' - find all components that match ANY of the provided tags\n")
 
-        get_component_parser.add_argument('tags',
-                                          type=str,
-                                          nargs='*',
-                                          default=['*'],
-                                          metavar="TAGS_AND_VALUES",
-                                          help="List of tags, identifiers or 'key=value' pairs")
+        find_component_parser.add_argument('tags',
+                                           action=ParseKwargs,
+                                           nargs='*',
+                                           type=str,
+                                           metavar="TAGS",
+                                           default={},
+                                           help="Enter tags that searched items have to match.\n"
+                                                "Arguments should be passed as strings or as 'key=value' pairs, "
+                                                "separated by spaces.\n"
+                                                "Example: 'max_current=500mA' 'type=NPN'"
+                                                "Some tags are created automatically by passed positional args.")
 
         self.add_shared_arguments()
 
