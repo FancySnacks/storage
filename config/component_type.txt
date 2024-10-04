@@ -1,0 +1,8 @@
+resistor
+capacitor
+diode
+inductor
+transistor
+ic
+microcontroller
+other

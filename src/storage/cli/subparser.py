@@ -6,7 +6,7 @@ import argparse
 from abc import ABC, abstractmethod
 from argparse import ArgumentParser
 
-from storage.const import ComponentType
+from storage.const import ComponentType, get_component_types
 
 
 class ParseKwargs(argparse.Action):
@@ -161,9 +161,9 @@ class CreateSubparser(Subparser):
         create_component_parser.add_argument('type',
                                              type=str,
                                              metavar="TYPE",
-                                             choices=ComponentType.get_component_types(),
+                                             choices=get_component_types(ComponentType),
                                              help="Component type. "
-                                                  f"Choices: {ComponentType.get_component_types()}")
+                                                  f"Choices: {get_component_types(ComponentType)}")
 
         create_component_parser.add_argument('drawer',
                                              type=str,
