@@ -1,6 +1,8 @@
 from dataclasses import dataclass, field
 from typing import Literal
 
+from storage.const import ITEM
+
 
 @dataclass
 class SearchQuery:
@@ -11,17 +13,23 @@ class SearchQuery:
 
 @dataclass
 class SearchResult:
-    item_ref: object
+    item_ref: ITEM
     matched_positionals: list[str] = field(init=False, default_factory=list)
     matched_keywords: dict = field(init=False, default_factory=dict)
     query: SearchQuery
+
+    def matched_tags_sum(self) -> int:
+        return len(self.matched_keywords) + len(self.matched_positionals)
+
+    def __repr__(self) -> str:
+        return f"{self.item_ref.name} (matches: {self.matched_tags_sum}) keywords"
 
 
 class Searcher:
     def __init__(self, query: SearchQuery):
         self.query = query
 
-    def search_through_items(self, items: list, tags_positionals, tags_keywords: dict) -> list:
+    def search_through_items(self, items: list[ITEM], tags_positionals, tags_keywords: dict) -> list:
         valid_items = []
 
         for item in items:
@@ -29,7 +37,7 @@ class Searcher:
 
             vals = item.tags.items()
 
-            matches = self.get_matching_keywords(vals, tags_keywords)
+            matches = self.get_matching_keywords(list(vals), tags_keywords)
 
             if matches:
                 if not search_result:

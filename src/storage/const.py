@@ -1,6 +1,11 @@
 import pathlib
 
-from enum import StrEnum, Enum
+from typing import Union
+from enum import StrEnum
+
+from storage.items.container import Container
+from storage.items.drawer import Drawer
+from storage.items.component import Component
 
 
 MODULE_ROOT_PATH = pathlib.Path.cwd()
@@ -12,6 +17,9 @@ CONTAINER_SAVE_PATH = SAVE_PATH.joinpath('containers')
 # ===== Config Files ===== #
 CONFIG_PATH = MODULE_ROOT_PATH.joinpath('config')
 COMPONENT_TYPE_CONFIG_PATH = CONFIG_PATH.joinpath('component_type.txt')
+
+
+ITEM = Union[Container, Drawer, Component]
 
 
 def create_component_type_enum_from_file() -> dict:
