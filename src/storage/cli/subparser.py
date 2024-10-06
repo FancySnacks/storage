@@ -303,7 +303,7 @@ class FindSubparser(Subparser):
         find_container_parser.add_argument('--mode',
                                            type=str,
                                            metavar="SEARCH_MODE",
-                                           default='match',
+                                           default='any',
                                            choices=['all', 'any'],
                                            help="Search mode\n"
                                                 "'all' - find all containers that match ALL the provided tags\n"
@@ -333,7 +333,7 @@ class FindSubparser(Subparser):
         find_drawer_parser.add_argument('--mode',
                                         type=str,
                                         metavar="SEARCH_MODE",
-                                        default='match',
+                                        default='any',
                                         choices=['all', 'any'],
                                         help="Search mode\n"
                                              "'all' - find all drawers that match ALL the provided tags\n"
@@ -363,7 +363,7 @@ class FindSubparser(Subparser):
         find_component_parser.add_argument('--mode',
                                            type=str,
                                            metavar="SEARCH_MODE",
-                                           default='match',
+                                           default='any',
                                            choices=['all', 'any'],
                                            help="Search mode\n"
                                                 "'all' - find all components that match ALL the provided tags\n"

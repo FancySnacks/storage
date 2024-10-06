@@ -38,7 +38,7 @@ class Searcher:
                 if any((keyword_matches, positional_matches)):
                     search_result = SearchResult(item_ref=item, query=self.query)
                     search_result.matched_positionals = positional_matches
-                    search_result.matched_keywords =  keyword_matches
+                    search_result.matched_keywords = keyword_matches
             elif self.query.mode == SearchMode.ALL:
                 search_result = SearchResult(item_ref=item, query=self.query)
                 search_result.matched_positionals = positional_matches
@@ -77,7 +77,7 @@ class Searcher:
     def all_tags_matched(self, search_result, positional_tags: list[str], keyword_tags: dict) -> bool:
         all_positionals_matched: bool = len(search_result.matched_positionals) == len(positional_tags)
         all_keywords_matched: bool = len(search_result.matched_keywords) == len(keyword_tags)
-        return all_positionals_matched + all_keywords_matched > 0
+        return all_positionals_matched + all_keywords_matched > 1
 
     def _normalize_dict_values(self, tags_keywords: dict) -> dict:
         """Turn any occurring digit string values into actual ints"""

@@ -4,10 +4,10 @@ from storage.data_manager import JSONDataManager
 from storage.items.container import Container
 from storage.items.drawer import Drawer
 from storage.items.component import Component
-from storage.const import ComponentType
+from storage.const import ComponentType, SearchMode
 from storage.cli.exceptions import ContainerNotFoundError, ItemIsNotEmptyError
 
-from storage.search import SearchQuery, SearchResult, Searcher
+from storage.search import SearchQuery, Searcher
 
 
 class Session:
@@ -132,8 +132,9 @@ class Session:
     def find_container(self, **kwargs):
         tags_positional: list[str] = kwargs.get('tags_positional')
         tags_keywords: dict = kwargs.get('tags')
+        search_mode = SearchMode(kwargs.get('mode'))
 
-        query = SearchQuery('all')
+        query = SearchQuery(search_mode)
         searcher = Searcher(query)
 
         items = searcher.search_through_items(self.containers, tags_positional, tags_keywords)
@@ -142,8 +143,9 @@ class Session:
     def find_drawer(self, **kwargs):
         tags_positional: list[str] = kwargs.get('tags_positional')
         tags_keywords: dict = kwargs.get('tags')
+        search_mode = SearchMode(kwargs.get('mode'))
 
-        query = SearchQuery('all')
+        query = SearchQuery(search_mode)
         searcher = Searcher(query)
 
         drawers = self.containers[1].drawers
@@ -153,8 +155,9 @@ class Session:
     def find_component(self, **kwargs):
         tags_positional: list[str] = kwargs.get('tags_positional')
         tags_keywords: dict = kwargs.get('tags')
+        search_mode = SearchMode(kwargs.get('mode'))
 
-        query = SearchQuery('all')
+        query = SearchQuery(search_mode)
         searcher = Searcher(query)
 
         comps = self.containers[1].drawers[0].components
