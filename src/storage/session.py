@@ -1,3 +1,5 @@
+"""Single program instance, initialized upon """
+
 from storage.data_manager import JSONDataManager
 from storage.items.container import Container
 from storage.items.drawer import Drawer

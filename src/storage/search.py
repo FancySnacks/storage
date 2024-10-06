@@ -1,12 +1,15 @@
+"""Search and filter items through positional and keyword tags"""
+
 from dataclasses import dataclass, field
-from typing import Literal
+
+from storage.const import SearchMode
 
 
 @dataclass
 class SearchQuery:
     tags_positionals: list[str] = field(init=False, default_factory=list)
     tags_keywords: dict = field(init=False, default_factory=dict)
-    mode: Literal['all', 'any']
+    mode: SearchMode
 
 
 @dataclass
@@ -31,12 +34,12 @@ class Searcher:
             keyword_matches = self.get_matching_keywords(vals, tags_keywords)
             positional_matches = self.get_matching_positionals(vals, tags_positionals)
 
-            if self.query.mode == 'any':
+            if self.query.mode == SearchMode.ANY:
                 if any((keyword_matches, positional_matches)):
                     search_result = SearchResult(item_ref=item, query=self.query)
                     search_result.matched_positionals = positional_matches
                     search_result.matched_keywords =  keyword_matches
-            elif self.query.mode == 'all':
+            elif self.query.mode == SearchMode.ALL:
                 search_result = SearchResult(item_ref=item, query=self.query)
                 search_result.matched_positionals = positional_matches
                 search_result.matched_keywords = keyword_matches

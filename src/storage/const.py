@@ -1,7 +1,9 @@
+"""Constant variables, classes and functions"""
+
 import pathlib
 
 from typing import Union
-from enum import StrEnum
+from enum import StrEnum, auto
 
 from storage.items.container import Container
 from storage.items.drawer import Drawer
@@ -22,6 +24,20 @@ COMPONENT_TYPE_CONFIG_PATH = CONFIG_PATH.joinpath('component_type.txt')
 ITEM = Union[Container, Drawer, Component]
 
 
+class SearchMode(StrEnum):
+    ANY = auto()
+    ALL = auto()
+
+
+class ComponentType(StrEnum):
+    RESISTOR = auto()
+    CAPACITOR = auto()
+    DIODE = auto()
+    INDUCTOR = auto()
+    TRANSISTOR = auto()
+    IC = auto()
+    MICROCONTROLLER = auto()
+    OTHER = auto()
 def create_component_type_enum_from_file() -> dict:
     with open(COMPONENT_TYPE_CONFIG_PATH, 'r') as file:
         lines = [line.strip() for line in file.readlines()]
