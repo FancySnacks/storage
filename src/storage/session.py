@@ -5,7 +5,7 @@ from storage.items.component import Component
 from storage.const import ComponentType
 from storage.cli.exceptions import ContainerNotFoundError, ItemIsNotEmptyError
 
-from storage.search_query import SearchQuery, SearchResult, Searcher
+from storage.search import SearchQuery, SearchResult, Searcher
 
 
 class Session:
