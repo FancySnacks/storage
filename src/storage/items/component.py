@@ -4,6 +4,8 @@ from dataclasses import dataclass, field
 
 from typing import TYPE_CHECKING
 
+from storage.const import Position
+
 if TYPE_CHECKING:
     from storage.items.drawer import Drawer
 
@@ -22,8 +24,16 @@ class Component:
     tags: dict = field(repr=False, default_factory=dict)
     parent_drawer: Drawer = None
 
+    @property
+    def location(self) -> tuple[Position, int]:
+        """Returns drawer position and compartment at which this component is located"""
+        return self.parent_drawer.location, self.compartment
+
     def get_readable_format(self) -> str:
         return f"{self.name} (x{self.count})"
+
+    def get_location_readable_format(self) -> str:
+        return f"{self.name} at {self.location[0]} compartment {self.location[1]}"
 
     def to_json(self) -> dict:
         return {"name": self.name,

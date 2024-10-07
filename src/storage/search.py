@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass, field
 
-from storage.const import SearchMode
+from storage.const import SearchMode, ITEM, DICT_ITEMS
 
 
 @dataclass
@@ -11,23 +11,26 @@ class SearchQuery:
     tags_keywords: dict = field(init=False, default_factory=dict)
     mode: SearchMode
 
-
 @dataclass
 class SearchResult:
-    item_ref: object
+    item_ref: ITEM
     matched_positionals: list[str] = field(init=False, default_factory=list)
     matched_keywords: dict = field(init=False, default_factory=dict)
     query: SearchQuery
 
+    def __repr__(self) -> str:
+        return self.item_ref.get_location_readable_format()
+
 
 class Searcher:
-    def __init__(self, query: SearchQuery):
+    def __init__(self, query: SearchQuery, items: list[ITEM]):
         self.query = query
+        self.items = items
 
-    def search_through_items(self, items: list, tags_positionals, tags_keywords: dict) -> list:
+    def search_through_items(self, tags_positionals, tags_keywords: dict) -> list:
         valid_items = []
 
-        for item in items:
+        for item in self.items:
             search_result = None
             vals = item.tags.items()
 
@@ -52,12 +55,12 @@ class Searcher:
 
         return valid_items
 
-    def get_matching_keywords(self, item_tags: list[tuple], tags_keywords: dict) -> dict:
+    def get_matching_keywords(self, item_tags: DICT_ITEMS, tags_keywords: dict) -> dict:
         """Return shared tags between item_tags (dict_items) and passed tags_keywords arg (dict)"""
         tags_keywords = self._normalize_dict_values(tags_keywords)
         return {item[0]: item[1] for item in item_tags if item in tags_keywords.items()}
 
-    def get_matching_positionals(self, item_tags: list[tuple], tags_positionals: list[str]) -> list[str]:
+    def get_matching_positionals(self, item_tags: DICT_ITEMS, tags_positionals: list[str]) -> list[str]:
         """Return a list of shared strings (key or value) between the item_tags (dict_items)
         and tags_positionals (list[str])"""
         matched_positionals: list[str] = []
@@ -74,7 +77,7 @@ class Searcher:
 
         return matched_positionals
 
-    def all_tags_matched(self, search_result, positional_tags: list[str], keyword_tags: dict) -> bool:
+    def all_tags_matched(self, search_result: SearchResult, positional_tags: list[str], keyword_tags: dict) -> bool:
         all_positionals_matched: bool = len(search_result.matched_positionals) == len(positional_tags)
         all_keywords_matched: bool = len(search_result.matched_keywords) == len(keyword_tags)
         return all_positionals_matched + all_keywords_matched > 1

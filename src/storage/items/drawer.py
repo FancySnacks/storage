@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
+from storage.const import Position
 from storage.cli.exceptions import DuplicateNameError, NoFreeSpacesError, ItemNotFoundError, ItemNotFoundAtPositionError, \
     SpaceOccupiedError
 from storage.items.component import Component, ComponentPlaceholder
@@ -29,6 +30,10 @@ class Drawer:
 
     def __post_init__(self):
         self.create_component_spaces()
+
+    @property
+    def location(self) -> Position:
+        return Position(self.row, self.column)
 
     @property
     def components(self) -> list[Component]:

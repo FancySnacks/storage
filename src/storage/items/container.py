@@ -2,24 +2,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+from storage.const import Position
 from storage.cli.exceptions import DuplicateNameError, SpaceOccupiedError, NoFreeSpacesError, ItemNotFoundError, \
     ItemNotFoundAtPositionError, ItemIsNotEmptyError
 from storage.items.row import Row
 from storage.items.drawer import Drawer, DrawerPlaceholder
-
-
-@dataclass
-class Position:
-    """A class containing x,y coordinates of a drawer."""
-    row: int
-    column: int
-
-    @classmethod
-    def from_drawer(cls, drawer: Drawer) -> Position:
-        return Position(drawer.row, drawer.column)
-
-    def __repr__(self) -> str:
-        return f"[{self.row},{self.column}]"
 
 
 @dataclass
@@ -69,7 +56,7 @@ class Container:
             raise DuplicateNameError(item='drawer', name=name, relation=self.name, pos=Position.from_drawer(drawer))
 
         pos = self._clamp_new_drawer_position(row, column)
-        new_drawer = Drawer(name, pos.row, pos.column, parent_container=self)
+        new_drawer = Drawer(name, pos.row, pos.column, parent_container=self, tags=tags or {})
 
         if components:
             for comp in components:
