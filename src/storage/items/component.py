@@ -1,13 +1,10 @@
 from __future__ import annotations
-
 from dataclasses import dataclass, field
-
 from typing import TYPE_CHECKING
-
-from storage.const import Position
 
 if TYPE_CHECKING:
     from storage.items.drawer import Drawer
+    from storage.items.position import Position
 
 
 class ComponentPlaceholder:
@@ -33,7 +30,7 @@ class Component:
         return f"{self.name} (x{self.count})"
 
     def get_location_readable_format(self) -> str:
-        return f"{self.name} at {self.location[0]} compartment {self.location[1]}"
+        return f"{self.name} at {self.location[0]} compartment {self.location[1] + 1}"
 
     def to_json(self) -> dict:
         return {"name": self.name,

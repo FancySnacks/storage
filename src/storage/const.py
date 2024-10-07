@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import pathlib
-from dataclasses import dataclass
 
 from typing import Union, Any, NewType
 from enum import StrEnum, auto
@@ -25,20 +24,6 @@ COMPONENT_TYPE_CONFIG_PATH = CONFIG_PATH.joinpath('component_type.txt')
 
 ITEM = Union[Container, Drawer, Component]
 DICT_ITEMS = NewType('dict_items', list[tuple[str, Any]])
-
-
-@dataclass
-class Position:
-    """A class containing x,y coordinates of a drawer."""
-    row: int
-    column: int
-
-    @classmethod
-    def from_drawer(cls, drawer: Drawer) -> Position:
-        return Position(drawer.row, drawer.column)
-
-    def __repr__(self) -> str:
-        return f"[{self.row},{self.column}]"
 
 
 class SearchMode(StrEnum):

@@ -3,10 +3,10 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
-from storage.const import Position
-from storage.cli.exceptions import DuplicateNameError, NoFreeSpacesError, ItemNotFoundError, ItemNotFoundAtPositionError, \
-    SpaceOccupiedError
+from storage.cli.exceptions import DuplicateNameError, NoFreeSpacesError, ItemNotFoundError, \
+    ItemNotFoundAtPositionError, SpaceOccupiedError
 from storage.items.component import Component, ComponentPlaceholder
+from storage.items.position import Position
 from storage.items.row import Row
 
 if TYPE_CHECKING:

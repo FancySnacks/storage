@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from storage.const import Position
 from storage.cli.exceptions import DuplicateNameError, SpaceOccupiedError, NoFreeSpacesError, ItemNotFoundError, \
     ItemNotFoundAtPositionError, ItemIsNotEmptyError
 from storage.items.row import Row
+from storage.items.position import Position
 from storage.items.drawer import Drawer, DrawerPlaceholder
 
 

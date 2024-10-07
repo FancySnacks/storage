@@ -135,9 +135,9 @@ class Session:
         search_mode = SearchMode(kwargs.get('mode'))
 
         query = SearchQuery(search_mode)
-        searcher = Searcher(query)
+        searcher = Searcher(query, self.containers)
 
-        items = searcher.search_through_items(self.containers, tags_positional, tags_keywords)
+        items = searcher.search_through_items(tags_positional, tags_keywords)
         print(items)
 
     def find_drawer(self, **kwargs):
@@ -145,11 +145,12 @@ class Session:
         tags_keywords: dict = kwargs.get('tags')
         search_mode = SearchMode(kwargs.get('mode'))
 
-        query = SearchQuery(search_mode)
-        searcher = Searcher(query)
-
         drawers = self.containers[1].drawers
-        items = searcher.search_through_items(drawers, tags_positional, tags_keywords)
+
+        query = SearchQuery(search_mode)
+        searcher = Searcher(query, drawers)
+
+        items = searcher.search_through_items(tags_positional, tags_keywords)
         print(items)
 
     def find_component(self, **kwargs):
@@ -157,9 +158,10 @@ class Session:
         tags_keywords: dict = kwargs.get('tags')
         search_mode = SearchMode(kwargs.get('mode'))
 
-        query = SearchQuery(search_mode)
-        searcher = Searcher(query)
-
         comps = self.containers[1].drawers[0].components
-        items = searcher.search_through_items(comps, tags_positional, tags_keywords)
+
+        query = SearchQuery(search_mode)
+        searcher = Searcher(query, comps)
+
+        items = searcher.search_through_items(tags_positional, tags_keywords)
         print(items)
