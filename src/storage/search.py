@@ -11,6 +11,7 @@ class SearchQuery:
     tags_keywords: dict = field(init=False, default_factory=dict)
     mode: SearchMode
 
+
 @dataclass
 class SearchResult:
     item_ref: ITEM

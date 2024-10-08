@@ -30,7 +30,9 @@ class Component:
         return f"{self.name} (x{self.count})"
 
     def get_location_readable_format(self) -> str:
-        return f"{self.name} at {self.location[0]} compartment {self.location[1] + 1}"
+        return f"'{self.name}' " \
+               f"in {self.parent_drawer.parent_container.name}/{self.parent_drawer.name} " \
+               f"at {self.location[0]} ({self.location[1] + 1})"
 
     def to_json(self) -> dict:
         return {"name": self.name,
