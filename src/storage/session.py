@@ -8,6 +8,7 @@ from storage.const import ComponentType, SearchMode
 from storage.cli.exceptions import ContainerNotFoundError, ItemIsNotEmptyError
 
 from storage.search import SearchQuery, Searcher
+from storage.sorter import Sorter
 
 
 class Session:
@@ -145,7 +146,15 @@ class Session:
         tags_keywords: dict = kwargs.get('tags')
         search_mode = SearchMode(kwargs.get('mode'))
 
-        drawers = self.containers[1].drawers
+        if kwargs.get('container'):
+            container_name = kwargs.get('container')
+            container = self.get_container_by_name(container_name)
+
+            drawers = container.drawers
+        else:
+            all_drawers = [container.drawers for container in self.containers]
+            drawers = []
+            [drawers.extend(drawer_list) for drawer_list in all_drawers]
 
         query = SearchQuery(search_mode)
         searcher = Searcher(query, drawers)
@@ -158,10 +167,23 @@ class Session:
         tags_keywords: dict = kwargs.get('tags')
         search_mode = SearchMode(kwargs.get('mode'))
 
-        comps = self.containers[1].drawers[0].components
+        if kwargs.get('container'):
+            container_name = kwargs.get('container')
+            container = self.get_container_by_name(container_name)
+
+            comps = container.get_all_components()
+        else:
+            all_comps = [container.get_all_components() for container in self.containers]
+            comps = []
+            [comps.extend(comp_list) for comp_list in all_comps]
 
         query = SearchQuery(search_mode)
         searcher = Searcher(query, comps)
 
         items = searcher.search_through_items(tags_positional, tags_keywords)
+
+        if kwargs.get('sort') == 'tags':
+            s = Sorter(items)
+            items.sort(key=s, reverse=True)
+
         print(items)

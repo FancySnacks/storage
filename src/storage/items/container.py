@@ -86,7 +86,10 @@ class Container:
             raise ItemNotFoundAtPositionError(item='drawer', relation=self.name, pos=Position(row, column))
 
     def get_all_components(self):
-        return [drawer.components for drawer in self.drawers]
+        all_comps = [drawer.components for drawer in self.drawers]
+        comps_joined = []
+        [comps_joined.extend(comp_list) for comp_list in all_comps]
+        return comps_joined
 
     def remove_drawer_by_name(self, name: str, forced=False):
         drawer_to_del = self.get_drawer_by_name(name)

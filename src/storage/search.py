@@ -19,8 +19,11 @@ class SearchResult:
     matched_keywords: dict = field(init=False, default_factory=dict)
     query: SearchQuery
 
+    def len_of_matches(self) -> int:
+        return len(self.matched_positionals) + len(self.matched_keywords)
+
     def __repr__(self) -> str:
-        return self.item_ref.get_location_readable_format()
+        return f"{self.item_ref.get_location_readable_format()} ({self.len_of_matches()} matches)"
 
 
 class Searcher:
@@ -86,6 +89,10 @@ class Searcher:
     def _normalize_dict_values(self, tags_keywords: dict) -> dict:
         """Turn any occurring digit string values into actual ints"""
         for k, v in tags_keywords.items():
-            if v.isdigit():
-                tags_keywords[k] = int(v)
+            try:
+                if v.isdigit():
+                    tags_keywords[k] = int(v)
+            except AttributeError:
+                continue
+
         return tags_keywords

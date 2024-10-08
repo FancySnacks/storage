@@ -269,6 +269,7 @@ class FindSubparser(Subparser):
             self.add_verbosity_flag(parser)
             self.add_sort_argument(parser)
             self.add_count_argument(parser)
+            self.add_mode_parser(parser)
 
     def add_verbosity_flag(self, parser):
         parser.add_argument('-v',
@@ -280,6 +281,8 @@ class FindSubparser(Subparser):
 
     def add_sort_argument(self, parser):
         parser.add_argument('--sort',
+                            type=str,
+                            default='tags',
                             help="Sort returned items via specific key\n"
                                  "Applied after filtering")
 
@@ -293,21 +296,23 @@ class FindSubparser(Subparser):
                             metavar="MAX_COUNT",
                             help="Max amount of printed results, applied after filtering and sorting.")
 
+    def add_mode_parser(self, parser):
+        parser.add_argument('--mode',
+                            type=str,
+                            metavar="SEARCH_MODE",
+                            default='any',
+                            choices=['all', 'any'],
+                            help="Search mode\n"
+                                 "'all' - find all items that match ALL the provided tags\n"
+                                 "'any' - find all items that match ANY of the provided tags\n")
+
+
     def initialize_subparser(self):
         super().initialize_subparser()
 
         # ===== FIND CONTAINER ===== #
 
         find_container_parser: ArgumentParser = self.children_parsers.add_parser('container')
-
-        find_container_parser.add_argument('--mode',
-                                           type=str,
-                                           metavar="SEARCH_MODE",
-                                           default='any',
-                                           choices=['all', 'any'],
-                                           help="Search mode\n"
-                                                "'all' - find all containers that match ALL the provided tags\n"
-                                                "'any' - find all containers that match ANY of the provided tags\n")
 
         find_container_parser.add_argument('tags',
                                            action=ParseKwargs,
@@ -330,15 +335,6 @@ class FindSubparser(Subparser):
                                         metavar="CONTAINER_NAME",
                                         help="Parent container name")
 
-        find_drawer_parser.add_argument('--mode',
-                                        type=str,
-                                        metavar="SEARCH_MODE",
-                                        default='any',
-                                        choices=['all', 'any'],
-                                        help="Search mode\n"
-                                             "'all' - find all drawers that match ALL the provided tags\n"
-                                             "'any' - find all drawers that match ANY of the provided tags\n")
-
         find_drawer_parser.add_argument('tags',
                                         action=ParseKwargs,
                                         nargs='*',
@@ -359,15 +355,6 @@ class FindSubparser(Subparser):
                                            type=str,
                                            metavar="CONTAINER_NAME",
                                            help="Parent container name")
-
-        find_component_parser.add_argument('--mode',
-                                           type=str,
-                                           metavar="SEARCH_MODE",
-                                           default='any',
-                                           choices=['all', 'any'],
-                                           help="Search mode\n"
-                                                "'all' - find all components that match ALL the provided tags\n"
-                                                "'any' - find all components that match ANY of the provided tags\n")
 
         find_component_parser.add_argument('tags',
                                            action=ParseKwargs,
