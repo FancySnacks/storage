@@ -183,7 +183,7 @@ class Session:
         items = searcher.search_through_items(tags_positional, tags_keywords)
 
         if kwargs.get('sort') == 'tags':
-            s = Sorter(items)
+            s = Sorter()
             items.sort(key=s, reverse=True)
 
         print(items)
