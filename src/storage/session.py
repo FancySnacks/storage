@@ -134,18 +134,24 @@ class Session:
         tags_positional: list[str] = kwargs.get('tags_positional')
         tags_keywords: dict = kwargs.get('tags')
         search_mode = SearchMode(kwargs.get('mode'))
+        max_count = int(kwargs.get('count'))
 
         query = SearchQuery(search_mode)
         searcher = Searcher(query, self.containers)
 
         items = searcher.search_through_items(tags_positional, tags_keywords)
         items = sort_items(items, kwargs.get('sort'), kwargs.get('reverse'))
+
+        if max_count:
+            items = items[:max_count:]
+
         print(items)
 
     def find_drawer(self, **kwargs):
         tags_positional: list[str] = kwargs.get('tags_positional')
         tags_keywords: dict = kwargs.get('tags')
         search_mode = SearchMode(kwargs.get('mode'))
+        max_count = int(kwargs.get('count'))
 
         if kwargs.get('container'):
             container_name = kwargs.get('container')
@@ -162,12 +168,17 @@ class Session:
 
         items = searcher.search_through_items(tags_positional, tags_keywords)
         items = sort_items(items, kwargs.get('sort'), kwargs.get('reverse'))
+
+        if max_count:
+            items = items[:max_count:]
+
         print(items)
 
     def find_component(self, **kwargs):
         tags_positional: list[str] = kwargs.get('tags_positional')
         tags_keywords: dict = kwargs.get('tags')
         search_mode = SearchMode(kwargs.get('mode'))
+        max_count = int(kwargs.get('count'))
 
         if kwargs.get('container'):
             container_name = kwargs.get('container')
@@ -184,4 +195,8 @@ class Session:
 
         items = searcher.search_through_items(tags_positional, tags_keywords)
         items = sort_items(items, kwargs.get('sort'), kwargs.get('reverse'))
+
+        if max_count:
+            items = items[:max_count:]
+
         print(items)
