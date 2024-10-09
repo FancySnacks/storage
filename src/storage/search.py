@@ -23,7 +23,7 @@ class SearchResult:
         return len(self.matched_positionals) + len(self.matched_keywords)
 
     def __repr__(self) -> str:
-        return f"{self.item_ref.get_location_readable_format()} ({self.len_of_matches()} matches)"
+        return f"{self.item_ref.get_location_readable_format()} (Matched Tags: {self.len_of_matches()})"
 
 
 class Searcher:

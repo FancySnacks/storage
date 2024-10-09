@@ -282,7 +282,7 @@ class FindSubparser(Subparser):
     def add_sort_argument(self, parser):
         parser.add_argument('--sort',
                             type=str,
-                            default='tags',
+                            default='accuracy',
                             help="Sort returned items via specific key\n"
                                  "Applied after filtering")
 

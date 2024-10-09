@@ -4,11 +4,11 @@ from storage.data_manager import JSONDataManager
 from storage.items.container import Container
 from storage.items.drawer import Drawer
 from storage.items.component import Component
-from storage.const import ComponentType, SearchMode
+from storage.const import ComponentType, SearchMode, ITEM
 from storage.cli.exceptions import ContainerNotFoundError, ItemIsNotEmptyError
 
 from storage.search import SearchQuery, Searcher
-from storage.sorter import Sorter
+from storage.sorter import sort_items
 
 
 class Session:
@@ -139,6 +139,7 @@ class Session:
         searcher = Searcher(query, self.containers)
 
         items = searcher.search_through_items(tags_positional, tags_keywords)
+        items = sort_items(items, kwargs.get('sort'), kwargs.get('reverse'))
         print(items)
 
     def find_drawer(self, **kwargs):
@@ -160,6 +161,7 @@ class Session:
         searcher = Searcher(query, drawers)
 
         items = searcher.search_through_items(tags_positional, tags_keywords)
+        items = sort_items(items, kwargs.get('sort'), kwargs.get('reverse'))
         print(items)
 
     def find_component(self, **kwargs):
@@ -181,9 +183,5 @@ class Session:
         searcher = Searcher(query, comps)
 
         items = searcher.search_through_items(tags_positional, tags_keywords)
-
-        if kwargs.get('sort') == 'tags':
-            s = Sorter()
-            items.sort(key=s, reverse=True)
-
+        items = sort_items(items, kwargs.get('sort'), kwargs.get('reverse'))
         print(items)
