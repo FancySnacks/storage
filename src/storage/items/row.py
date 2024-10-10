@@ -11,6 +11,7 @@ class Row:
     items: list
     item_class: Any
     placeholder_item_class: Any
+    _max_items: int = 1
 
     def pop_item(self, column: int = -1) -> item_class:
         old_item = self.items[column]
@@ -18,6 +19,8 @@ class Row:
         return old_item
 
     def fill_columns(self, max_items_per_row):
+        self._max_items = max_items_per_row
+
         for column_n in range(0, max_items_per_row):
             self.items.append(self.placeholder_item_class())
 
@@ -27,6 +30,12 @@ class Row:
     def is_column_free(self, column: int) -> bool:
         item = self.items[column]
         return isinstance(item, self.placeholder_item_class)
+
+    def has_free_space(self) -> bool:
+        if self._max_items > len(self.items):
+            return True
+        else:
+            return False
 
     def get_all_valid_items(self) -> list[item_class]:
         items = []

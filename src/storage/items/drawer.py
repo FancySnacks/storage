@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from datetime import datetime
 from typing import TYPE_CHECKING
 
 from storage.cli.exceptions import DuplicateNameError, NoFreeSpacesError, ItemNotFoundError, \
@@ -30,6 +31,7 @@ class Drawer:
 
     def __post_init__(self):
         self.create_component_spaces()
+        self._add_special_tags()
 
     @property
     def location(self) -> Position:
@@ -46,6 +48,11 @@ class Drawer:
     @property
     def position(self) -> tuple[int, int]:
         return self.row, self.column
+
+    def _add_special_tags(self):
+        self.tags['last_update'] = datetime.now().strftime("%d/%m/%Y, %H:%M")
+        self.tags['children_count'] = len(self.components)
+        self.tags['free_space'] = self._free_spot_exists(self.components)
 
     def create_component_spaces(self):
         new_row = Row(0, [], Component, ComponentPlaceholder)
@@ -69,6 +76,7 @@ class Drawer:
                                       compartment=target_compartment, tags=tags)
             self.move_component_to(new_component, target_compartment)
 
+            self._add_special_tags()
             print(f"[SUCCESS] {new_component.name} component was added to "
                   f"{self.parent_container.name}/{self.name} [{self.row},{self.column}] "
                   f"at compartment {len(self.components)}")
@@ -91,6 +99,7 @@ class Drawer:
             return
 
         self._row.pop_item(index)
+        self._add_special_tags()
         print(f"[SUCCESS] '{component_name}' component was removed from {self.parent_container.name}/{self.name}")
 
     def remove_component_by_index(self, component_index: int):
@@ -100,6 +109,7 @@ class Drawer:
 
             component = self._row.pop_item(component_index)
             component_name = component.name
+            self._add_special_tags()
             print(f"[SUCCESS] '{component_name}' component was removed from {self.parent_container.name}/{self.name}")
 
         except ValueError:
@@ -108,6 +118,7 @@ class Drawer:
     def clear_drawer(self):
         self._row.items.clear()
         self._row.fill_columns(self.parent_container.compartments_per_drawer)
+        self._add_special_tags()
         print(f"[SUCCESS] {self.name} has been cleared!")
 
     def move_component_to(self, component: Component, compartment: int, forced: bool = False):
@@ -121,6 +132,7 @@ class Drawer:
             self._row.pop_item(compartment)
             self._row.items[compartment] = component
             component.compartment = compartment
+            self._add_special_tags()
         else:
             raise SpaceOccupiedError(itme='component', relation=self.name, pos=f"compartment {compartment}")
 

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime
 from dataclasses import dataclass, field
 
 from storage.cli.exceptions import DuplicateNameError, SpaceOccupiedError, NoFreeSpacesError, ItemNotFoundError, \
@@ -32,6 +33,14 @@ class Container:
 
     def __post_init__(self):
         self.create_rows()
+        self._add_special_tags()
+
+    def _add_special_tags(self):
+        self.tags['rows'] = self.total_rows
+        self.tags['columns'] = self.max_drawers_per_row
+        self.tags['last_update'] = datetime.now().strftime("%d/%m/%Y, %H:%M")
+        self.tags['children_count'] = len(self.drawers)
+        self.tags['free_space'] = all([row.has_free_space() for row in self.drawer_rows])
 
     def create_rows(self, fill_empty_spaces=True):
         for row_n in range(0, self.total_rows):
@@ -42,6 +51,7 @@ class Container:
                 new_row.fill_columns(self.max_drawers_per_row)
 
     def resize_container(self, rows: int, drawers_per_row: int):
+        """Change amount of rows and columns. This will remove all drawers."""
         self.total_rows = rows
         self.max_drawers_per_row = drawers_per_row
         self.clear_container()
@@ -66,6 +76,7 @@ class Container:
         row.items[pos.column] = new_drawer
         self._drawers.append(new_drawer)
 
+        self._add_special_tags()
         print(f"{new_drawer.name} drawer was added to {self.name} at [{pos.row},{pos.column}]")
 
         return new_drawer
@@ -86,6 +97,7 @@ class Container:
             raise ItemNotFoundAtPositionError(item='drawer', relation=self.name, pos=Position(row, column))
 
     def get_all_components(self):
+        """Get components of all children drawers"""
         all_comps = [drawer.components for drawer in self.drawers]
         comps_joined = []
         [comps_joined.extend(comp_list) for comp_list in all_comps]
@@ -98,6 +110,7 @@ class Container:
             self.drawer_rows[drawer_to_del.row].pop_item(drawer_to_del.column)
             self._drawers.remove(drawer_to_del)
 
+            self._add_special_tags()
             print(f"'{name}' drawer was removed from {self.name}")
 
         else:
@@ -112,9 +125,13 @@ class Container:
         drawer = self.drawer_rows[row].pop_item(column)
         self._drawers.remove(drawer)
 
+        self._add_special_tags()
         print(f"'{drawer.name}' drawer at {Position(row, column)} was removed from {self.name}")
 
     def move_drawer_to(self, drawer_obj: Drawer, row: int, column: int, forced=False):
+        """This method will fail if target location is occupied.
+        Forced=True will remove drawer at target location without throwing error if it exists and
+        move the desired drawer there."""
         target_row = self.drawer_rows[row]
         is_space_free = self._is_pos_free(row, column)
         old_pos = drawer_obj.position
@@ -124,6 +141,8 @@ class Container:
             drawer_obj.row = row
             drawer_obj.column = column
             self.drawer_rows[old_pos[0]].items[old_pos[1]] = DrawerPlaceholder()
+
+            self._add_special_tags()
         else:
             raise SpaceOccupiedError(itme='drawer', relation=self.name, pos=Position(row, column))
 
@@ -131,6 +150,7 @@ class Container:
         self._drawers.clear()
         self.drawer_rows.clear()
         self.create_rows()
+        self._add_special_tags()
 
         print(f"[SUCCESS] {self.name} has been cleared!")
 
@@ -151,6 +171,7 @@ class Container:
         raise NoFreeSpacesError(item='drawer', relation=self.name)
 
     def _clamp_new_drawer_position(self, row: int = -1, column: int = -1):
+        """Place the drawer at either specified location via args or at the next free space if defaults are passed"""
         if row > -1:
             if not column > -1:
                 raise ValueError(f"Column was specified but not row!")
