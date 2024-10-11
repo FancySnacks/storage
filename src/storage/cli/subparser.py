@@ -7,6 +7,7 @@ from abc import ABC, abstractmethod
 from argparse import ArgumentParser
 
 from storage.const import ComponentType, get_component_types
+from storage.util import get_operator
 
 
 class ParseKwargs(argparse.Action):
@@ -18,7 +19,7 @@ class ParseKwargs(argparse.Action):
 
         for value in values:
             try:
-                operator = self.get_operator(value)
+                operator = get_operator(value)
             except ValueError:
                 positional_args.append(value)
                 continue
@@ -33,15 +34,6 @@ class ParseKwargs(argparse.Action):
 
         setattr(namespace, 'tags_positional', positional_args)
         setattr(namespace, 'tags_comparison', comparison_args)
-
-    def get_operator(self, value: str) -> str:
-        operators = ["<", ">", "<=", ">=", "="]
-
-        for op in operators:
-            if op in value:
-                return op
-
-        raise ValueError("No operator ['=', '<', '>', '<=', '>='] has been passed!")
 
     def range_operator_exists(self, value: str) -> bool:
         if '-' in value:

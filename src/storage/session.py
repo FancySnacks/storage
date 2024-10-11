@@ -132,6 +132,7 @@ class Session:
 
     def find_container(self, **kwargs):
         tags_positional: list[str] = kwargs.get('tags_positional')
+        tags_comparison: list[str] = kwargs.get('tags_comparison')
         tags_keywords: dict = kwargs.get('tags')
         search_mode = SearchMode(kwargs.get('mode'))
         max_count = self._get_max_count(kwargs)
@@ -139,7 +140,7 @@ class Session:
         query = SearchQuery(search_mode)
         searcher = Searcher(query, self.containers)
 
-        items = searcher.search_through_items(tags_positional, tags_keywords)
+        items = searcher.search_through_items(tags_positional, tags_keywords, tags_comparison)
         items = sort_items(items, kwargs.get('sort'), kwargs.get('reverse'))
 
         if max_count > 0:
@@ -149,6 +150,7 @@ class Session:
 
     def find_drawer(self, **kwargs):
         tags_positional: list[str] = kwargs.get('tags_positional')
+        tags_comparison: list[str] = kwargs.get('tags_comparison')
         tags_keywords: dict = kwargs.get('tags')
         search_mode = SearchMode(kwargs.get('mode'))
         max_count = self._get_max_count(kwargs)
@@ -166,7 +168,7 @@ class Session:
         query = SearchQuery(search_mode)
         searcher = Searcher(query, drawers)
 
-        items = searcher.search_through_items(tags_positional, tags_keywords)
+        items = searcher.search_through_items(tags_positional, tags_keywords, tags_comparison)
         items = sort_items(items, kwargs.get('sort'), kwargs.get('reverse'))
 
         if max_count > 0:
@@ -176,6 +178,7 @@ class Session:
 
     def find_component(self, **kwargs):
         tags_positional: list[str] = kwargs.get('tags_positional')
+        tags_comparison: list[str] = kwargs.get('tags_comparison')
         tags_keywords: dict = kwargs.get('tags')
         search_mode = SearchMode(kwargs.get('mode'))
         max_count = self._get_max_count(kwargs)
@@ -193,7 +196,7 @@ class Session:
         query = SearchQuery(search_mode)
         searcher = Searcher(query, comps)
 
-        items = searcher.search_through_items(tags_positional, tags_keywords)
+        items = searcher.search_through_items(tags_positional, tags_keywords, tags_comparison)
         items = sort_items(items, kwargs.get('sort'), kwargs.get('reverse'))
 
         if max_count > 0:
