@@ -23,7 +23,7 @@ class ParseKwargs(argparse.Action):
                 positional_args.append(value)
                 continue
             else:
-                if operator == "=":
+                if operator == "=" and not self.range_operator_exists(value):
                     key, value = value.split(operator)
                     getattr(namespace, self.dest)[key] = value
                 else:
@@ -34,7 +34,7 @@ class ParseKwargs(argparse.Action):
         setattr(namespace, 'tags_positional', positional_args)
         setattr(namespace, 'tags_comparison', comparison_args)
 
-    def get_operator(self, value: str):
+    def get_operator(self, value: str) -> str:
         operators = ["<", ">", "<=", ">=", "="]
 
         for op in operators:
@@ -43,8 +43,12 @@ class ParseKwargs(argparse.Action):
 
         raise ValueError("No operator ['=', '<', '>', '<=', '>='] has been passed!")
 
-    def find_range_operator(self):
-        pass
+    def range_operator_exists(self, value: str) -> bool:
+        if '-' in value:
+            return True
+        else:
+            return False
+
 
 
 class Subparser(ABC):
