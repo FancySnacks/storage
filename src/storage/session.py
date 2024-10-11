@@ -134,7 +134,7 @@ class Session:
         tags_positional: list[str] = kwargs.get('tags_positional')
         tags_keywords: dict = kwargs.get('tags')
         search_mode = SearchMode(kwargs.get('mode'))
-        max_count = int(kwargs.get('count'))
+        max_count = self._get_max_count(kwargs)
 
         query = SearchQuery(search_mode)
         searcher = Searcher(query, self.containers)
@@ -142,7 +142,7 @@ class Session:
         items = searcher.search_through_items(tags_positional, tags_keywords)
         items = sort_items(items, kwargs.get('sort'), kwargs.get('reverse'))
 
-        if max_count:
+        if max_count > 0:
             items = items[:max_count:]
 
         print(items)
@@ -151,7 +151,7 @@ class Session:
         tags_positional: list[str] = kwargs.get('tags_positional')
         tags_keywords: dict = kwargs.get('tags')
         search_mode = SearchMode(kwargs.get('mode'))
-        max_count = int(kwargs.get('count'))
+        max_count = self._get_max_count(kwargs)
 
         if kwargs.get('container'):
             container_name = kwargs.get('container')
@@ -169,7 +169,7 @@ class Session:
         items = searcher.search_through_items(tags_positional, tags_keywords)
         items = sort_items(items, kwargs.get('sort'), kwargs.get('reverse'))
 
-        if max_count:
+        if max_count > 0:
             items = items[:max_count:]
 
         print(items)
@@ -178,7 +178,7 @@ class Session:
         tags_positional: list[str] = kwargs.get('tags_positional')
         tags_keywords: dict = kwargs.get('tags')
         search_mode = SearchMode(kwargs.get('mode'))
-        max_count = int(kwargs.get('count'))
+        max_count = self._get_max_count(kwargs)
 
         if kwargs.get('container'):
             container_name = kwargs.get('container')
@@ -196,7 +196,14 @@ class Session:
         items = searcher.search_through_items(tags_positional, tags_keywords)
         items = sort_items(items, kwargs.get('sort'), kwargs.get('reverse'))
 
-        if max_count:
+        if max_count > 0:
             items = items[:max_count:]
 
         print(items)
+
+    def _get_max_count(self, kwargs) -> int:
+        count = kwargs.get('count')
+        if count:
+            return int(count)
+        else:
+            return 0

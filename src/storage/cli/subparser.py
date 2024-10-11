@@ -12,19 +12,39 @@ from storage.const import ComponentType, get_component_types
 class ParseKwargs(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
         setattr(namespace, self.dest, dict())
-        setattr(namespace, self.dest, dict())
 
         positional_args: list[str] = []
+        comparison_args: list[str] = []
 
         for value in values:
-            if '=' not in value:
+            try:
+                operator = self.get_operator(value)
+            except ValueError:
                 positional_args.append(value)
                 continue
-
-            key, value = value.split("=")
-            getattr(namespace, self.dest)[key] = value
+            else:
+                if operator == "=":
+                    key, value = value.split(operator)
+                    getattr(namespace, self.dest)[key] = value
+                else:
+                    key, value = value.split(operator)
+                    item = f"{key}{operator}{value}"
+                    comparison_args.append(item)
 
         setattr(namespace, 'tags_positional', positional_args)
+        setattr(namespace, 'tags_comparison', comparison_args)
+
+    def get_operator(self, value: str):
+        operators = ["<", ">", "<=", ">=", "="]
+
+        for op in operators:
+            if op in value:
+                return op
+
+        raise ValueError("No operator ['=', '<', '>', '<=', '>='] has been passed!")
+
+    def find_range_operator(self):
+        pass
 
 
 class Subparser(ABC):
