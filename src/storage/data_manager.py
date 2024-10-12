@@ -26,10 +26,15 @@ class DataManager(ABC):
         self.container_path = container_dir_path
 
         self.create_save_dir()
+        self.create_container_save_dir()
 
     def create_save_dir(self):
         if not self.save_path.exists():
             os.mkdir(self.save_path)
+
+    def create_container_save_dir(self):
+        if not self.container_path.exists():
+            os.mkdir(self.container_path)
 
     def load_all_container_data_from_save_directory(self) -> list[dict]:
         container_files = self._get_list_of_supported_files_in_dir(self.container_path)
