@@ -1,14 +1,16 @@
 """Single program instance, initialized upon """
 
+from storage.search import SearchQuery, Searcher
+from storage.sorter import sort_items
 from storage.data_manager import JSONDataManager
+from storage.const import ComponentType, SearchMode
+
 from storage.items.container import Container
 from storage.items.drawer import Drawer
 from storage.items.component import Component
-from storage.const import ComponentType, SearchMode, ITEM
-from storage.cli.exceptions import ContainerNotFoundError, ItemIsNotEmptyError
 
-from storage.search import SearchQuery, Searcher
-from storage.sorter import sort_items
+from storage.cli.exceptions import ContainerNotFoundError, ItemIsNotEmptyError
+from storage.cli.printer import Printer
 
 
 class Session:
@@ -42,6 +44,9 @@ class Session:
         tags.update({'name': name})
         new_container = Container(name, rows, columns, compartments_per_drawer=drawer_compartments, tags=tags)
         self.save_container_file_and_resync(new_container)
+
+        out = Printer.get_message("ADD_SUCCESS", verbosity=1, name=new_container.name, item='container')
+        print(out)
 
         return new_container
 
