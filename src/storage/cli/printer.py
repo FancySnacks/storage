@@ -16,6 +16,8 @@ class Printer:
                              3: "'{name}' {item} could not be removed from '{relation}' at {pos} {reason}"},
                 "DEL_FAIL_CONTAINER": {1: "'{name}' {item} could not be removed",
                                        2: "'{name}' {item} could not be removed {reason}"},
+                "CLEAR_SUCCESS": {1: "'{name}' {item} was cleared from children",
+                                  2: "'{name}' {item} at {pos} was cleared from children"},
                 "ITEM_NOT_FOUND_NAME": {1: "'{name}' {item} was not found",
                                         2: "'{name}' {item} was not found inside '{relation}'"},
                 "CONTAINER_NOT_FOUND": {1: "'{name}' container does not exist"},

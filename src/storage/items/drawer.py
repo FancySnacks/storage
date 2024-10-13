@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 
 from storage.cli.exceptions import DuplicateNameError, NoFreeSpacesError, ItemNotFoundError, \
     ItemNotFoundAtPositionError, SpaceOccupiedError
+from storage.cli.printer import Printer
 from storage.items.component import Component, ComponentPlaceholder
 from storage.items.position import Position
 from storage.items.row import Row
@@ -81,6 +82,13 @@ class Drawer:
                   f"{self.parent_container.name}/{self.name} [{self.row},{self.column}] "
                   f"at compartment {len(self.components)}")
 
+            m = Printer.get_message("ADD_SUCCESS", 2,
+                                    item='component',
+                                    name=new_component.name,
+                                    relation=f"{self.parent_container.name}/{self.name}")
+
+            print(m)
+
             return new_component
 
     def get_component_by_name(self, component_name: str) -> Component:
@@ -100,7 +108,13 @@ class Drawer:
 
         self._row.pop_item(index)
         self._add_special_tags()
-        print(f"[SUCCESS] '{component_name}' component was removed from {self.parent_container.name}/{self.name}")
+
+        m = Printer.get_message("DEL_SUCCESS", 2,
+                                item='component',
+                                name=component.name,
+                                relation=f"{self.parent_container.name}/{self.name}")
+
+        print(m)
 
     def remove_component_by_index(self, component_index: int):
         try:
@@ -110,7 +124,13 @@ class Drawer:
             component = self._row.pop_item(component_index)
             component_name = component.name
             self._add_special_tags()
-            print(f"[SUCCESS] '{component_name}' component was removed from {self.parent_container.name}/{self.name}")
+
+            m = Printer.get_message("DEL_SUCCESS", 2,
+                                    item='component',
+                                    name=component_name,
+                                    relation=f"{self.parent_container.name}/{self.name}")
+
+            print(m)
 
         except ValueError:
             raise ItemNotFoundAtPositionError(item='component', relation=self.name, pos=f"index {component_index}")
@@ -119,69 +139,85 @@ class Drawer:
         self._row.items.clear()
         self._row.fill_columns(self.parent_container.compartments_per_drawer)
         self._add_special_tags()
-        print(f"[SUCCESS] {self.name} has been cleared!")
 
-    def move_component_to(self, component: Component, compartment: int, forced: bool = False):
-        max_compartments = self.parent_container.compartments_per_drawer - 1
+        m = Printer.get_message("CLEAR_SUCCESS", 1,
+                                item='component',
+                                name=self.name,
+                                pos=self.position)
 
-        if compartment > max_compartments:
-            raise NoFreeSpacesError(item='component', relation=self.name,
-                                    reason=f"as specified compartment number is not valid")
+        print(m)
 
-        if self._row.is_column_free(compartment) + forced > 0:
-            self._row.pop_item(compartment)
-            self._row.items[compartment] = component
-            component.compartment = compartment
-            self._add_special_tags()
+
+def move_component_to(self, component: Component, compartment: int, forced: bool = False):
+    max_compartments = self.parent_container.compartments_per_drawer - 1
+
+    if compartment > max_compartments:
+        raise NoFreeSpacesError(item='component', relation=self.name,
+                                reason=f"as specified compartment number is not valid")
+
+    if self._row.is_column_free(compartment) + forced > 0:
+        self._row.pop_item(compartment)
+        self._row.items[compartment] = component
+        component.compartment = compartment
+        self._add_special_tags()
+    else:
+        raise SpaceOccupiedError(itme='component', relation=self.name, pos=f"compartment {compartment}")
+
+
+def _clamp_new_component_location(self, compartment: int = -1):
+    if compartment > -1:
+        if self._row.is_column_free(compartment):
+            return compartment
         else:
             raise SpaceOccupiedError(itme='component', relation=self.name, pos=f"compartment {compartment}")
+    else:
+        return self.get_next_free_compartment()
 
-    def _clamp_new_component_location(self, compartment: int = -1):
-        if compartment > -1:
-            if self._row.is_column_free(compartment):
-                return compartment
-            else:
-                raise SpaceOccupiedError(itme='component', relation=self.name, pos=f"compartment {compartment}")
-        else:
-            return self.get_next_free_compartment()
 
-    def get_next_free_compartment(self) -> int:
-        for i, space in enumerate(self._row.items):
-            if self._row.is_column_free(i):
-                return i
-        raise NoFreeSpacesError(item='component', relation=self.name)
+def get_next_free_compartment(self) -> int:
+    for i, space in enumerate(self._row.items):
+        if self._row.is_column_free(i):
+            return i
+    raise NoFreeSpacesError(item='component', relation=self.name)
 
-    def _free_spot_exists(self, components: list[Component]) -> bool:
-        """Check whether all compartments are taken or not."""
-        if self.parent_container:
-            if len(components) < self.parent_container.compartments_per_drawer:
-                return True
 
-        return False
-    
-    def _component_already_exists(self, component_name) -> bool:
-        if component_name in self.component_names:
+def _free_spot_exists(self, components: list[Component]) -> bool:
+    """Check whether all compartments are taken or not."""
+    if self.parent_container:
+        if len(components) < self.parent_container.compartments_per_drawer:
             return True
-        return False
 
-    def get_readable_format(self) -> str:
-        components = [f"{comp.get_readable_format()}" for comp in self.components]
-        components = ', '.join(components)
-        return f"[DRAWER] {self.get_pos_str()} {self.name} [{components}]\n"
+    return False
 
-    def get_pos_str(self) -> str:
-        """Get drawer position in storage as formatted string."""
-        return f"[{self.row},{self.column}]"
 
-    def _row_to_dict_list(self) -> list[dict]:
-        return [comp.to_json() for comp in self.components]
+def _component_already_exists(self, component_name) -> bool:
+    if component_name in self.component_names:
+        return True
+    return False
 
-    def to_json(self) -> dict:
-        return {"name": self.name,
-                "row": self.row,
-                "column": self.column,
-                "tags": self.tags,
-                "components": self._row_to_dict_list()}
 
-    def __repr__(self) -> str:
-        return self.get_readable_format()
+def get_readable_format(self) -> str:
+    components = [f"{comp.get_readable_format()}" for comp in self.components]
+    components = ', '.join(components)
+    return f"[DRAWER] {self.get_pos_str()} {self.name} [{components}]\n"
+
+
+def get_pos_str(self) -> str:
+    """Get drawer position in storage as formatted string."""
+    return f"[{self.row},{self.column}]"
+
+
+def _row_to_dict_list(self) -> list[dict]:
+    return [comp.to_json() for comp in self.components]
+
+
+def to_json(self) -> dict:
+    return {"name": self.name,
+            "row": self.row,
+            "column": self.column,
+            "tags": self.tags,
+            "components": self._row_to_dict_list()}
+
+
+def __repr__(self) -> str:
+    return self.get_readable_format()

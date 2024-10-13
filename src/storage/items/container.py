@@ -123,7 +123,14 @@ def remove_drawer_by_name(self, name: str, forced=False):
         self._drawers.remove(drawer_to_del)
 
         self._add_special_tags()
-        print(f"'{name}' drawer was removed from {self.name}")
+
+        m = Printer.get_message("DEL_SUCCESS", 2,
+                                item='drawer',
+                                name=self.name,
+                                relation=self.name,
+                                pos=self.position)
+
+        print(m)
 
     else:
         raise ItemIsNotEmptyError(name=name, item='drawer', reason='because it has child components!')
@@ -139,7 +146,14 @@ def remove_drawer_at_pos(self, row: int, column: int):
     self._drawers.remove(drawer)
 
     self._add_special_tags()
-    print(f"'{drawer.name}' drawer at {Position(row, column)} was removed from {self.name}")
+
+    m = Printer.get_message("DEL_SUCCESS", 2,
+                            item='drawer',
+                            name=self.name,
+                            relation=self.name,
+                            pos=self.position)
+
+    print(m)
 
 
 def move_drawer_to(self, drawer_obj: Drawer, row: int, column: int, forced=False):
@@ -167,7 +181,11 @@ def clear_container(self):
     self.create_rows()
     self._add_special_tags()
 
-    print(f"[SUCCESS] {self.name} has been cleared!")
+    m = Printer.get_message("DEL_SUCCESS", 1,
+                            item='component',
+                            name=self.name)
+
+    print(m)
 
 
 def get_next_free_row_and_column(self, start_row: int = -1) -> Position:
