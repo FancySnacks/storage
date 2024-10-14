@@ -3,12 +3,13 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from typing import Literal
 
 from storage.const import ITEM
 from storage.search import SearchResult
 
 
-def get_sorter(sorter_type: str) -> Sorter:
+def get_sorter(sorter_type: Literal['accuracy'] | str) -> Sorter:
     match sorter_type:
         case 'accuracy':
             return TagMatchCountSorter()
@@ -47,8 +48,13 @@ class TagValueSorter(Sorter):
         self.tag_name = tag_name
 
     def __call__(self, search_result: SearchResult):
-        item_ref = search_result.item_ref
-        value = item_ref.tags.get(self.tag_name, 9999)
+        if isinstance(search_result, SearchResult):
+            item_ref = search_result.item_ref
+            value = item_ref.tags.get(self.tag_name, 9999)
+        else:
+            print(search_result.tags)
+            value = search_result.tags.get(self.tag_name, 9999)
+            print(value)
         return self._normalize_arg(value)
 
     def _normalize_arg(self, arg: str):

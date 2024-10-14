@@ -57,7 +57,8 @@ class Session:
             self.data_manager.delete_container_file(name)
             self.containers.remove(container_to_del)
 
-            print(f"'{name}' drawer was removed")
+            out = Printer.get_message("DEL_SUCCESS", verbosity=1, name=container_to_del.name, item='container')
+            print(out)
         else:
             raise ItemIsNotEmptyError(name=name, item='container', reason='because it has child drawers!')
 
