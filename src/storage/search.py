@@ -120,7 +120,7 @@ class Searcher:
         all_keywords_matched: bool = len(search_result.matched_keywords) == len(keyword_tags)
         all_comparisons_matched: bool = len(search_result.matched_comparisons) == len(comparison_tags)
 
-        return all_positionals_matched + all_keywords_matched + all_comparisons_matched > 1
+        return all_positionals_matched + all_keywords_matched + all_comparisons_matched > 2
 
     def _normalize_dict_values(self, tags_keywords: dict) -> dict:
         """Turn any occurring digit string values into actual ints"""
