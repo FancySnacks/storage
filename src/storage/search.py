@@ -144,7 +144,15 @@ class OperatorHandler:
 
     def get_result(self, operator: str, *args) -> bool:
         comparison_func: Callable = self.op_mapping.get(operator)
+        args = [self._normalize_arg(arg) for arg in args]
         return comparison_func(*args)
+
+    def _normalize_arg(self, arg) -> int | str:
+        try:
+            if arg.isdigit():
+                return int(arg)
+        except AttributeError:
+            return arg
 
     def lesser(self, val, other_val) -> bool:
         return val < other_val

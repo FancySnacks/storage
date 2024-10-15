@@ -17,7 +17,8 @@ def get_sorter(sorter_type: Literal['accuracy'] | str) -> Sorter:
             return TagValueSorter(sorter_type)
 
 
-def sort_items(items: list[ITEM], sorter_name: str, reverse=False) -> list[ITEM]:
+def sort_items(items: list[ITEM], sorter_name: Literal['accuracy'] | str, reverse=False) -> list[ITEM]:
+    reverse = True if sorter_name == 'accuracy' else False
     sorter = get_sorter(sorter_name)
     items.sort(key=sorter, reverse=reverse)
     return items
@@ -26,7 +27,7 @@ def sort_items(items: list[ITEM], sorter_name: str, reverse=False) -> list[ITEM]
 class Sorter(ABC):
     @abstractmethod
     def __call__(self, search_result: SearchResult):
-        return search_result.len_of_matches()
+        pass
 
 
 class TagMatchCountSorter(Sorter):
