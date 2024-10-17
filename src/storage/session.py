@@ -21,6 +21,8 @@ class Session:
         self.containers: list[Container] = []
 
     def load_container_data_from_file(self):
+        Printer.silent = True
+
         self.containers = []
         container_data = self.data_manager.load_all_container_data_from_save_directory()
 
@@ -33,6 +35,8 @@ class Session:
                 new_container.add_drawer(**drawer)
 
             self.containers.append(new_container)
+
+        Printer.silent = False
 
     def save_container_file_and_resync(self, container: Container):
         self.data_manager.save_data_to_file(container)
