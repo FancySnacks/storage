@@ -321,7 +321,6 @@ class FindSubparser(Subparser):
                                  "'all' - find all items that match ALL the provided tags\n"
                                  "'any' - find all items that match ANY of the provided tags\n")
 
-
     def initialize_subparser(self):
         super().initialize_subparser()
 
@@ -479,3 +478,86 @@ class ClearSubparser(Subparser):
                                          type=str,
                                          metavar="PARENT_CONTAINER_NAME",
                                          help="Parent container name")
+
+
+class UpdateSubparser(Subparser):
+    subparser_name: str = 'update'
+    help: str = 'Update target item properties.'
+    subparsers_help: str = 'Choose item to update'
+
+    def initialize_subparser(self):
+        super().initialize_subparser()
+
+        # ===== FIND CONTAINER ===== #
+
+        update_container_parser: ArgumentParser = self.children_parsers.add_parser('container')
+
+        update_container_parser.add_argument('name',
+                                             type=str,
+                                             metavar="NAME",
+                                             help="Container name")
+
+        update_container_parser.add_argument('values',
+                                             action=ParseKwargs,
+                                             nargs='*',
+                                             type=str,
+                                             metavar="VALUES",
+                                             default={},
+                                             help="Enter properties to update along with their new values.\n"
+                                                  "Arguments should be passed as strings or as 'key=value' pairs, "
+                                                  "separated by spaces.\n"
+                                                  "Example: 'max_current=500mA' 'type=NPN'")
+
+        # ===== FIND DRAWER ===== #
+
+        update_drawer_parser: ArgumentParser = self.children_parsers.add_parser('drawer')
+
+        update_drawer_parser.add_argument('name',
+                                          type=str,
+                                          metavar="NAME",
+                                          help="Drawer name")
+
+        update_drawer_parser.add_argument('--container',
+                                          type=str,
+                                          metavar="CONTAINER_NAME",
+                                          help="Parent container name")
+
+        update_drawer_parser.add_argument('values',
+                                          action=ParseKwargs,
+                                          nargs='*',
+                                          type=str,
+                                          metavar="VALUES",
+                                          default={},
+                                          help="Enter properties to update along with their new values.\n"
+                                               "Arguments should be passed as strings or as 'key=value' pairs, "
+                                               "separated by spaces.\n"
+                                               "Example: 'max_current=500mA' 'type=NPN'")
+        # ===== FIND COMPONENT ===== #
+
+        update_component_parser: ArgumentParser = self.children_parsers.add_parser('component')
+
+        update_component_parser.add_argument('name',
+                                             type=str,
+                                             metavar="NAME",
+                                             help="Drawer name")
+
+        update_component_parser.add_argument('--container',
+                                             type=str,
+                                             metavar="CONTAINER_NAME",
+                                             help="Parent container name")
+
+        update_component_parser.add_argument('--drawer',
+                                             type=str,
+                                             metavar="DRAWER_NAME",
+                                             help="Parent drawer name")
+
+        update_component_parser.add_argument('values',
+                                             action=ParseKwargs,
+                                             nargs='*',
+                                             type=str,
+                                             metavar="VALUES",
+                                             default={},
+                                             help="Enter properties to update along with their new values.\n"
+                                                  "Arguments should be passed as strings or as 'key=value' pairs, "
+                                                  "separated by spaces.\n"
+                                                  "Example: 'max_current=500mA' 'type=NPN'")

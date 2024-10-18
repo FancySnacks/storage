@@ -4,9 +4,10 @@ from sys import argv
 
 from storage.session import Session
 from storage.cli.parser import ArgParser
-from storage.cli.subparser import CreateSubparser, GetSubparser, FindSubparser, DeleteSubparser, ClearSubparser
-from storage.cli.argexecutor import ArgExecutor, CreateArgExecutor, GetArgExecutor, FindArgExecutor, DeleteArgExecutor,\
-    ClearArgExecutor
+from storage.cli.subparser import CreateSubparser, GetSubparser, FindSubparser, DeleteSubparser, ClearSubparser, \
+    UpdateSubparser
+from storage.cli.argexecutor import ArgExecutor, CreateArgExecutor, GetArgExecutor, FindArgExecutor, DeleteArgExecutor, \
+    ClearArgExecutor, UpdateArgExecutor
 
 
 def get_arg_executor_from_argv(session, item_type: str, parsed_args: dict, args: list[str]) -> ArgExecutor:
@@ -23,7 +24,10 @@ def get_arg_executor_from_argv(session, item_type: str, parsed_args: dict, args:
         return DeleteArgExecutor(session, item_type, parsed_args)
 
     if 'clear' in args:
-        return ClearArgExecutor(session, item_type,  parsed_args)
+        return ClearArgExecutor(session, item_type, parsed_args)
+
+    if 'update' in args:
+        return UpdateArgExecutor(session, item_type, parsed_args)
 
     raise ValueError("Cannot initialize a valid subparser!")
 
@@ -34,6 +38,7 @@ def setup_subparsers(parser: ArgParser):
     parser.add_subparser(FindSubparser(parser))
     parser.add_subparser(DeleteSubparser(parser))
     parser.add_subparser(ClearSubparser(parser))
+    parser.add_subparser(UpdateSubparser(parser))
 
 
 def main(args: list[str] | None = None) -> int:

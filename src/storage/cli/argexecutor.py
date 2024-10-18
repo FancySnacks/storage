@@ -12,8 +12,6 @@ class ArgExecutor(ABC):
         self.session: Session = session
         self.parsed_args = parsed_args
         self.item_type: str = item_type
-        print(self.item_type)
-        print(self.parsed_args)
 
     @property
     @abstractmethod
@@ -84,4 +82,16 @@ class ClearArgExecutor(ArgExecutor):
     def item_func_mapping(self) -> dict[str, Callable]:
         d = {'container': self.session.clear_container,
              'drawer': self.session.clear_drawer}
+        return d
+
+
+class UpdateArgExecutor(ArgExecutor):
+    """Handles 'update' subparser and executes functions related to updating item properties."""
+    name: str = 'update'
+
+    @property
+    def item_func_mapping(self) -> dict[str, Callable]:
+        d = {'container': self.session.update_container,
+             'drawer': self.session.update_drawer,
+             'component': self.session.update_component}
         return d
