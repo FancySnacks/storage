@@ -214,6 +214,15 @@ class Session:
 
         print(items)
 
+    def update_container(self):
+        raise NotImplementedError
+
+    def update_drawer(self):
+        raise NotImplementedError
+
+    def update_component(self):
+        raise NotImplementedError
+
     def _get_max_count(self, kwargs) -> int:
         count = kwargs.get('count')
         if count:
