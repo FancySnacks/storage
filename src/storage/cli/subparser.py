@@ -10,6 +10,15 @@ from storage.const import ComponentType, get_component_types
 from storage.util import get_operator
 
 
+class ParseKwargsUpdate(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        setattr(namespace, self.dest, dict())
+
+        for value in values:
+            key, value = value.split("=")
+            getattr(namespace, self.dest)[key] = value
+
+
 class ParseKwargs(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
         setattr(namespace, self.dest, dict())
@@ -498,7 +507,7 @@ class UpdateSubparser(Subparser):
                                              help="Container name")
 
         update_container_parser.add_argument('values',
-                                             action=ParseKwargs,
+                                             action=ParseKwargsUpdate,
                                              nargs='*',
                                              type=str,
                                              metavar="VALUES",
