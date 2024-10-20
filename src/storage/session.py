@@ -50,7 +50,8 @@ class Session:
         self.save_container_file_and_resync(new_container)
 
         out = Printer.get_message("ADD_SUCCESS", verbosity=1, name=new_container.name, item='container')
-        print(out)
+        if out:
+            print(out)
 
         return new_container
 
@@ -214,8 +215,8 @@ class Session:
 
         print(items)
 
-    def update_container(self):
-        raise NotImplementedError
+    def update_container(self, **kwargs):
+        print(kwargs)
 
     def update_drawer(self):
         raise NotImplementedError

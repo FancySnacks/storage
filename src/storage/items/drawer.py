@@ -80,12 +80,13 @@ class Drawer:
             self._add_special_tags()
             new_component.tags.update({'name': name, 'count': count, 'type': type})
 
-            m = Printer.get_message("ADD_SUCCESS", 2,
+            out = Printer.get_message("ADD_SUCCESS", 2,
                                     item='component',
                                     name=new_component.name,
                                     relation=f"{self.parent_container.name}/{self.name}")
 
-            print(m)
+            if out:
+                print(out)
 
             return new_component
 

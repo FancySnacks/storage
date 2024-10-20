@@ -85,7 +85,8 @@ class Container:
                                   item='drawer',
                                   relation=self.name,
                                   pos=pos)
-        print(out)
+        if out:
+            print(out)
 
         return new_drawer
 
