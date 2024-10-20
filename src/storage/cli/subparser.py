@@ -16,7 +16,16 @@ class ParseKwargsUpdate(argparse.Action):
 
         for value in values:
             key, value = value.split("=")
+            value = self._normalize_arg(value)
             getattr(namespace, self.dest)[key] = value
+
+    def _normalize_arg(self, arg: str):
+        if arg.isdigit():
+            return int(arg)
+        if arg.isdecimal():
+            return float(arg)
+
+        return arg
 
 
 class ParseKwargs(argparse.Action):
@@ -526,7 +535,7 @@ class UpdateSubparser(Subparser):
                                           metavar="NAME",
                                           help="Drawer name")
 
-        update_drawer_parser.add_argument('--container',
+        update_drawer_parser.add_argument('container',
                                           type=str,
                                           metavar="CONTAINER_NAME",
                                           help="Parent container name")
@@ -550,15 +559,15 @@ class UpdateSubparser(Subparser):
                                              metavar="NAME",
                                              help="Drawer name")
 
-        update_component_parser.add_argument('--container',
-                                             type=str,
-                                             metavar="CONTAINER_NAME",
-                                             help="Parent container name")
-
-        update_component_parser.add_argument('--drawer',
+        update_component_parser.add_argument('drawer',
                                              type=str,
                                              metavar="DRAWER_NAME",
                                              help="Parent drawer name")
+
+        update_component_parser.add_argument('container',
+                                             type=str,
+                                             metavar="CONTAINER_NAME",
+                                             help="Parent container name")
 
         update_component_parser.add_argument('values',
                                              action=ParseKwargs,

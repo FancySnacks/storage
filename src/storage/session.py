@@ -216,13 +216,43 @@ class Session:
         print(items)
 
     def update_container(self, **kwargs):
-        print(kwargs)
+        container_name = kwargs.get('name')
+        container = self.get_container_by_name(container_name)
 
-    def update_drawer(self):
-        raise NotImplementedError
+        values_to_update: dict = kwargs.get('values')
 
-    def update_component(self):
-        raise NotImplementedError
+        for k, v in values_to_update.items():
+            setattr(container, k, v)
+
+        self.save_container_file_and_resync(container)
+
+    def update_drawer(self, **kwargs):
+        container_name = kwargs.get('container')
+        container = self.get_container_by_name(container_name)
+        drawer_name = kwargs.get('name')
+        drawer = container.get_drawer_by_name(drawer_name)
+
+        values_to_update: dict = kwargs.get('values')
+
+        for k, v in values_to_update.items():
+            setattr(drawer, k, v)
+
+        self.save_container_file_and_resync(container)
+
+    def update_component(self, **kwargs):
+        container_name = kwargs.get('container')
+        container = self.get_container_by_name(container_name)
+        drawer_name = kwargs.get('drawer')
+        drawer = container.get_drawer_by_name(drawer_name)
+        component_name = kwargs.get('name')
+        component = drawer.get_component_by_name(component_name)
+
+        values_to_update: dict = kwargs.get('values')
+
+        for k, v in values_to_update.items():
+            setattr(component, k, v)
+
+        self.save_container_file_and_resync(container)
 
     def _get_max_count(self, kwargs) -> int:
         count = kwargs.get('count')
