@@ -5,7 +5,7 @@ from sys import argv
 from storage.session import Session
 from storage.cli.parser import ArgParser
 from storage.cli.subparser import CreateSubparser, GetSubparser, FindSubparser, DeleteSubparser, ClearSubparser, \
-    UpdateSubparser
+    UpdateSubparser, was_subparser_specified
 from storage.cli.argexecutor import ArgExecutor, CreateArgExecutor, GetArgExecutor, FindArgExecutor, DeleteArgExecutor, \
     ClearArgExecutor, UpdateArgExecutor
 
@@ -58,7 +58,7 @@ def main(args: list[str] | None = None) -> int:
         item_type = argv[2]
         arg_executor = get_arg_executor_from_argv(session, item_type, parsed_args, argv)
         arg_executor.parse_args()
-    elif len(argv) == 2:
+    elif not was_subparser_specified(argv):
         raise ValueError(f"You attempted to use '{argv[1]}' but did not specify an item: "
                          "{container, drawer, component}")
 

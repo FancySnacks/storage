@@ -10,6 +10,15 @@ from storage.const import ComponentType, get_component_types
 from storage.util import get_operator
 
 
+SUBPARSERS = ['create', 'delete', 'clear', 'update', 'get', 'find']
+
+
+def was_subparser_specified(argv: list[str]) -> bool:
+    if len(argv) == 2:
+        return argv[1] not in SUBPARSERS
+    return False
+
+
 class ParseKwargsUpdate(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
         setattr(namespace, self.dest, dict())
