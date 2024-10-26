@@ -157,7 +157,7 @@ class Session:
         if max_count > 0:
             items = items[:max_count:]
 
-        print(items)
+        self._print_search_results(items)
 
     def find_drawer(self, **kwargs):
         tags_positional: list[str] = kwargs.get('tags_positional')
@@ -185,7 +185,7 @@ class Session:
         if max_count > 0:
             items = items[:max_count:]
 
-        print(items)
+        self._print_search_results(items)
 
     def find_component(self, **kwargs):
         tags_positional: list[str] = kwargs.get('tags_positional')
@@ -213,7 +213,7 @@ class Session:
         if max_count > 0:
             items = items[:max_count:]
 
-        print(items)
+        self._print_search_results(items)
 
     def update_container(self, **kwargs):
         container_name = kwargs.get('name')
@@ -260,3 +260,6 @@ class Session:
             return int(count)
         else:
             return 0
+
+    def _print_search_results(self, items: list):
+        print(str(items).replace('[', '').replace(']', ''))
