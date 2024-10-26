@@ -58,9 +58,10 @@ def main(args: list[str] | None = None) -> int:
         item_type = argv[2]
         arg_executor = get_arg_executor_from_argv(session, item_type, parsed_args, argv)
         arg_executor.parse_args()
-    elif not was_subparser_specified(argv):
-        raise ValueError(f"You attempted to use '{argv[1]}' but did not specify an item: "
-                         "{container, drawer, component}")
+    elif len(argv) > 1:
+        if not was_subparser_specified(argv):
+            raise ValueError(f"You attempted to use '{argv[1]}' but did not specify an item: "
+                             "{container, drawer, component}")
 
     return 0
 
