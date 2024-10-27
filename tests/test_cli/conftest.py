@@ -3,7 +3,7 @@ import pytest
 import pathlib
 
 from storage.cli.parser import ArgParser
-from storage.cli.subparser import CreateSubparser, GetSubparser, DeleteSubparser, ClearSubparser
+from storage.cli.subparser import CreateSubparser, GetSubparser, DeleteSubparser, ClearSubparser, UpdateSubparser
 from storage.session import Session
 
 
@@ -21,6 +21,7 @@ arg_parser.add_subparser(CreateSubparser(arg_parser))
 arg_parser.add_subparser(GetSubparser(arg_parser))
 arg_parser.add_subparser(DeleteSubparser(arg_parser))
 arg_parser.add_subparser(ClearSubparser(arg_parser))
+arg_parser.add_subparser(UpdateSubparser(arg_parser))
 
 arg_parser.setup_args()
 
@@ -33,6 +34,7 @@ def parser() -> ArgParser:
 create_args_path = pathlib.Path(__file__).parent.joinpath('./create_args.txt')
 delete_args_path = pathlib.Path(__file__).parent.joinpath('./delete_args.txt')
 clear_args_path = pathlib.Path(__file__).parent.joinpath('./clear_args.txt')
+update_args_path = pathlib.Path(__file__).parent.joinpath('./update_args.txt')
 
 with open(create_args_path, 'r') as f:
     create_args: list[str] = f.readlines()
@@ -46,6 +48,11 @@ with open(clear_args_path, 'r') as f:
     clear_args: list[str] = f.readlines()
     clear_args = [line.replace(" ", ",").replace("\n", "").replace('"', "") for line in clear_args]
 
+with open(update_args_path, 'r') as f:
+    update_args: list[str] = f.readlines()
+    print(update_args)
+    update_args = [line.replace(" ", ",").replace("\n", "").replace('"', "") for line in update_args]
+
 
 ARGV_CREATE_CONTAINER = create_args[0].split(',')
 ARGV_CREATE_DRAWER = create_args[1].split(',')
@@ -57,6 +64,10 @@ ARGV_DELETE_COMPONENT = delete_args[0].split(',')
 
 ARGV_CLEAR_CONTAINER = clear_args[1].split(',')
 ARGV_CLEAR_DRAWER = clear_args[0].split(',')
+
+ARGV_UPDATE_CONTAINER = update_args[0].split(',')
+ARGV_UPDATE_DRAWER = update_args[1].split(',')
+ARGV_UPDATE_COMPONENT = update_args[2].split(',')
 
 
 @pytest.fixture
@@ -97,3 +108,18 @@ def argv_clear_container() -> list[str]:
 @pytest.fixture
 def argv_clear_drawer() -> list[str]:
     return ARGV_CLEAR_DRAWER
+
+
+@pytest.fixture
+def argv_update_container() -> list[str]:
+    return ARGV_UPDATE_CONTAINER
+
+
+@pytest.fixture
+def argv_update_drawer() -> list[str]:
+    return ARGV_UPDATE_DRAWER
+
+
+@pytest.fixture
+def argv_update_component() -> list[str]:
+    return ARGV_UPDATE_COMPONENT

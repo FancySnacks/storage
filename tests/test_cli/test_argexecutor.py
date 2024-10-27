@@ -1,6 +1,6 @@
 import pytest
 
-from storage.cli.argexecutor import CreateArgExecutor, DeleteArgExecutor, ClearArgExecutor
+from storage.cli.argexecutor import CreateArgExecutor, DeleteArgExecutor, ClearArgExecutor, UpdateArgExecutor
 from storage.cli.exceptions import ContainerNotFoundError, ItemNotFoundError
 
 
@@ -79,3 +79,16 @@ def test_container_deleted(argv_delete_container, executor_session, test_contain
         executor = DeleteArgExecutor(executor_session, 'container', args)
         executor.parse_args()
         executor_session.get_container_by_name(test_container_name)
+
+
+def test_container_updated(argv_update_container, argv_create_container, executor_session, parser):
+    args = parser.parse_args(argv_create_container[1::])
+    executor = CreateArgExecutor(executor_session, 'container', args)
+    executor.parse_args()
+
+    args = parser.parse_args(argv_update_container[1::])
+    executor = UpdateArgExecutor(executor_session, 'container', args)
+    executor.parse_args()
+
+    container = executor_session.get_container_by_name('testContainer')
+    assert container.total_rows == 8

@@ -220,6 +220,7 @@ class Session:
         container = self.get_container_by_name(container_name)
 
         values_to_update: dict = kwargs.get('values')
+        print(values_to_update)
 
         for k, v in values_to_update.items():
             setattr(container, k, v)
