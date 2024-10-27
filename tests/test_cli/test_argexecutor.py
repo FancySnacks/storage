@@ -52,7 +52,9 @@ def test_new_component_created(argv_create_component, executor_session, parser):
     executor = CreateArgExecutor(executor_session, 'component', args)
     executor.parse_args()
 
-    assert len(executor_session.containers[-1].drawers[-1].components) > 0
+    drawer = executor_session.get_drawer_by_name('testDrawer', 'testContainer')
+
+    assert len(drawer.components) > 0
 
 
 def test_component_deleted(argv_delete_component, executor_session, test_drawer_name, test_container_name, parser):
