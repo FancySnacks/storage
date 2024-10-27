@@ -1,0 +1,6 @@
+resistor
+capacitor
+transistor
+inductor
+diode
+other
