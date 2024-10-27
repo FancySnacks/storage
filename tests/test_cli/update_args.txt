@@ -1,0 +1,3 @@
+storage update container "testContainer" "rows=8"
+storage update drawer "testDrawer" "testContainer" "compartments="5"
+storage update component "testComponent" "count=10"
