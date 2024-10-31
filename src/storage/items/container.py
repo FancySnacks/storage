@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from dataclasses import dataclass, field
 
+from storage.validator import RowValidator
 from storage.cli.exceptions import DuplicateNameError, SpaceOccupiedError, NoFreeSpacesError, ItemNotFoundError, \
     ItemNotFoundAtPositionError, ItemIsNotEmptyError
 from storage.cli.printer import Printer
@@ -16,13 +17,17 @@ class Container:
     """A container containing rows of drawers that contain groups of components allocated in many compartment
     or divisions."""
     name: str
-    total_rows: int
+    total_rows: int = RowValidator()
     max_drawers_per_row: int = 8
     compartments_per_drawer: int = 3
     tags: dict = field(repr=False, default_factory=dict)
 
     drawer_rows: list[Row] = field(default_factory=list)
     _drawers: list[Drawer] = field(default_factory=list)
+
+    def __post_init__(self):
+        self.create_rows()
+        self._add_special_tags()
 
     @property
     def drawers(self) -> list[Drawer]:
@@ -31,10 +36,6 @@ class Container:
     @property
     def get_max_drawer_count(self) -> int:
         return self.total_rows * self.max_drawers_per_row
-
-    def __post_init__(self):
-        self.create_rows()
-        self._add_special_tags()
 
     def _add_special_tags(self):
         self.tags['rows'] = self.total_rows
@@ -50,12 +51,6 @@ class Container:
 
             if fill_empty_spaces:
                 new_row.fill_columns(self.max_drawers_per_row)
-
-    def resize_container(self, rows: int, drawers_per_row: int):
-        """Change amount of rows and columns. This will remove all drawers."""
-        self.total_rows = rows
-        self.max_drawers_per_row = drawers_per_row
-        self.clear_container()
 
     def add_drawer(self, name: str, row: int = -1, column: int = -1, tags=None, components=None) -> Drawer:
         """Add new Drawer child class identified by unique name.\n

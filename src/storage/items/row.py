@@ -37,6 +37,9 @@ class Row:
         else:
             return False
 
+    def has_items(self) -> bool:
+        return len(self.get_all_valid_items()) > 0
+
     def get_all_valid_items(self) -> list[item_class]:
         items = []
 
