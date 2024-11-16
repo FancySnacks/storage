@@ -48,3 +48,6 @@ class Row:
                 items.append(item)
 
         return items
+
+    def is_valid_item(self, item) -> bool:
+        return not isinstance(item, self.placeholder_item_class)

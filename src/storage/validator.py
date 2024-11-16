@@ -34,7 +34,7 @@ class RowValidator(Validator):
 
         setattr(obj, self.private_name, value)
 
-    def _get_overflowing_rows(self, new_row_count: int):
+    def _get_overflowing_rows(self, new_row_count: int) -> list:
         """Get rows that will overflow when resizing container down"""
         overflowing_rows = self.owner.drawer_rows[new_row_count::]
         overflowing_rows = [row for row in overflowing_rows if row.has_items()]
@@ -52,13 +52,29 @@ class ColumnValidator(Validator):
 
                 if len(overflowing_cols) > 0:
                     print("Column Overflow!")
-                    # update Column list
+                    raise ValueError(f"Column Overflow {len(overflowing_cols)}")
                 else:
                     setattr(obj, self.private_name, value)
 
 
         setattr(obj, self.private_name, value)
 
-    def _get_overflowing_cols(self, new_col_count: int):
+    def _get_overflowing_cols(self, new_col_count: int) -> list:
         """Get columns that will overflow when resizing container down"""
-        return []
+        rows = self.owner.drawer_rows
+        all_cols = [row.items for row in rows]
+        overflowing_cols: list[list] = [cols[new_col_count::] for cols in all_cols]
+
+        # join overflowing items into a single list from list of lists
+        joined_overflowing_items = self._join_col_matrix(overflowing_cols)
+
+        # remove items that act as placeholder
+        joined_filtered_overflowing_items: list = [col for col in joined_overflowing_items if rows[0].is_valid_item(col)]
+
+        return joined_filtered_overflowing_items
+
+    def _join_col_matrix(self, cols: list[list]) -> list:
+        joined_overflowing_cols: list = []
+        [joined_overflowing_cols.extend(col) for col in cols]
+
+        return joined_overflowing_cols
