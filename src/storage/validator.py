@@ -26,7 +26,11 @@ class RowValidator(Validator):
                 overflowing_rows = self._get_overflowing_rows(value)
 
                 if len(overflowing_rows) > 0:
-                    raise ValueError(f"Column Overflow {len(overflowing_rows)}")
+                    choice = input(
+                        f"WARNING: There are {len(overflowing_rows)} overflowing drawers.\n"
+                        f"If you choose to change the number of rows x drawers will be moved and reassigned to"
+                        f"remaining free spaces and x drawers will be deleted permanently.\n"
+                        f"Proceed anyway? (y/n)")
                 else:
                     setattr(obj, self.private_name, value)
 
@@ -49,7 +53,11 @@ class ColumnValidator(Validator):
                 overflowing_cols = self._get_overflowing_cols(value)
 
                 if len(overflowing_cols) > 0:
-                    raise ValueError(f"Column Overflow {len(overflowing_cols)}")
+                    choice = input(
+                        f"WARNING: There are {len(overflowing_cols)} overflowing items.\n"
+                        f"If you choose to change the number of columns x items will be moved and reassigned to"
+                        f"remaining free spaces and x items will be deleted permanently.\n"
+                        f"Proceed anyway? (y/n)")
                 else:
                     setattr(obj, self.private_name, value)
 
