@@ -526,7 +526,7 @@ class UpdateSubparser(Subparser):
 
         update_container_parser.add_argument('values',
                                              action=ParseKwargsUpdate,
-                                             nargs='*',
+                                             nargs='+',
                                              type=str,
                                              metavar="VALUES",
                                              default={},
@@ -551,7 +551,7 @@ class UpdateSubparser(Subparser):
 
         update_drawer_parser.add_argument('values',
                                           action=ParseKwargs,
-                                          nargs='*',
+                                          nargs='+',
                                           type=str,
                                           metavar="VALUES",
                                           default={},
@@ -580,7 +580,7 @@ class UpdateSubparser(Subparser):
 
         update_component_parser.add_argument('values',
                                              action=ParseKwargs,
-                                             nargs='*',
+                                             nargs='+',
                                              type=str,
                                              metavar="VALUES",
                                              default={},
