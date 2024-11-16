@@ -166,15 +166,30 @@ class Container:
     def resize_container(self, new_row_count: int | NoChange = NoChange, new_column_count: int | NoChange = NoChange):
         """Change number of rows and/or columns. This action is non-destructive, if any drawers would overflow and
         to be lost the user is notified and asked for confirmation."""
-        if type(new_row_count) != NoChange and new_row_count > 0:
+        if type(new_row_count) != NoChange:
             if new_row_count < 1:
                 raise ValueError("Cannot resize row count below 1!")
-            self.total_rows = new_row_count
+            self.resize_rows(new_row_count)
 
-        if type(new_column_count) != NoChange and new_column_count > 0:
+        if type(new_column_count) != NoChange:
             if new_column_count < 1:
                 raise ValueError("Cannot resize column count below 1!")
-            self.max_drawers_per_row = new_column_count
+            self.resize_columns(new_column_count)
+
+    def resize_rows(self, new_row_count: int):
+        self.total_rows = new_row_count
+        self.drawer_rows = self.drawer_rows[:new_row_count:]
+        self._delete_overflowing_drawers(new_row_count)
+
+    def resize_columns(self, new_column_count: int):
+        self.max_drawers_per_row = new_column_count
+        for row in self.drawer_rows:
+            row.resize(new_column_count)
+
+    def _delete_overflowing_drawers(self, start_index: int):
+        drawers_to_delete = self.drawers[start_index::]
+        for drawer in drawers_to_delete:
+            self.drawers.remove(drawer)
 
     def clear_container(self):
         self._drawers.clear()

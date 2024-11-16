@@ -30,7 +30,6 @@ class RowValidator(Validator):
                 else:
                     setattr(obj, self.private_name, value)
 
-
         setattr(obj, self.private_name, value)
 
     def _get_overflowing_rows(self, new_row_count: int) -> list:

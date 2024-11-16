@@ -23,8 +23,9 @@ def test_duplicate_drawer_not_added(container, test_drawer_name):
 
 def test_new_drawer_not_added_when_row_is_full(container, test_drawer_name):
     with pytest.raises(NoFreeSpacesError):
-        container.resize_container(1, 1)
         container.add_drawer(test_drawer_name)
+        container.resize_container(1, 1)
+        container.add_drawer("secondtestDrawer")
         container.get_next_free_row_and_column()
 
 
