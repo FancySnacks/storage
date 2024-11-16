@@ -10,7 +10,7 @@ def test_drawer_is_added_to_container(container, test_drawer_name):
 
 def test_container_is_resized(container):
     prev_total = container.get_max_drawer_count
-    container.max_drawers_per_row = 2
+    container.resize_container(1, 2)
     new_total = container.get_max_drawer_count
     assert prev_total != new_total
 
@@ -23,8 +23,7 @@ def test_duplicate_drawer_not_added(container, test_drawer_name):
 
 def test_new_drawer_not_added_when_row_is_full(container, test_drawer_name):
     with pytest.raises(NoFreeSpacesError):
-        container.total_rows = 1
-        container.max_drawers_per_row = 1
+        container.resize_container(1, 1)
         container.add_drawer(test_drawer_name)
         container.get_next_free_row_and_column()
 

@@ -26,7 +26,7 @@ class RowValidator(Validator):
                 overflowing_rows = self._get_overflowing_rows(value)
 
                 if len(overflowing_rows) > 0:
-                    print("Overflow!")
+                    print("Row Overflow!")
                     # update Row list
                 else:
                     setattr(obj, self.private_name, value)
@@ -39,3 +39,26 @@ class RowValidator(Validator):
         overflowing_rows = self.owner.drawer_rows[new_row_count::]
         overflowing_rows = [row for row in overflowing_rows if row.has_items()]
         return overflowing_rows
+
+
+class ColumnValidator(Validator):
+    def __set__(self, obj, value):
+        self.owner = obj
+
+        if hasattr(obj, self.private_name):
+
+            if value < getattr(obj, self.private_name):
+                overflowing_cols = self._get_overflowing_cols(value)
+
+                if len(overflowing_cols) > 0:
+                    print("Column Overflow!")
+                    # update Column list
+                else:
+                    setattr(obj, self.private_name, value)
+
+
+        setattr(obj, self.private_name, value)
+
+    def _get_overflowing_cols(self, new_col_count: int):
+        """Get columns that will overflow when resizing container down"""
+        return []
