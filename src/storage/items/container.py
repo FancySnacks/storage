@@ -3,7 +3,8 @@ from __future__ import annotations
 from datetime import datetime
 from dataclasses import dataclass, field
 
-from storage.validator import RowValidator
+from storage.validator import RowValidator, ColumnValidator
+from storage.nochange import NoChange
 from storage.cli.exceptions import DuplicateNameError, SpaceOccupiedError, NoFreeSpacesError, ItemNotFoundError, \
     ItemNotFoundAtPositionError, ItemIsNotEmptyError
 from storage.cli.printer import Printer
@@ -18,7 +19,7 @@ class Container:
     or divisions."""
     name: str
     total_rows: int = RowValidator()
-    max_drawers_per_row: int = 8
+    max_drawers_per_row: int = ColumnValidator()
     compartments_per_drawer: int = 3
     tags: dict = field(repr=False, default_factory=dict)
 
@@ -161,6 +162,19 @@ class Container:
             self._add_special_tags()
         else:
             raise SpaceOccupiedError(itme='drawer', relation=self.name, pos=Position(row, column))
+
+    def resize_container(self, new_row_count: int | NoChange = NoChange, new_column_count: int | NoChange = NoChange):
+        """Change number of rows and/or columns. This action is non-destructive, if any drawers would overflow and
+        to be lost the user is notified and asked for confirmation."""
+        if type(new_row_count) != NoChange and new_row_count > 0:
+            if new_row_count < 1:
+                raise ValueError("Cannot resize row count below 1!")
+            self.total_rows = new_row_count
+
+        if type(new_column_count) != NoChange and new_column_count > 0:
+            if new_column_count < 1:
+                raise ValueError("Cannot resize column count below 1!")
+            self.max_drawers_per_row = new_column_count
 
     def clear_container(self):
         self._drawers.clear()
