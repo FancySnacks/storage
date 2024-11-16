@@ -46,6 +46,7 @@ class Container:
         self.tags['free_space'] = all([row.has_free_space() for row in self.drawer_rows])
 
     def create_rows(self, fill_empty_spaces=True):
+        """Create Row class for each row and fill it with placeholder drawers."""
         for row_n in range(0, self.total_rows):
             new_row = Row(row_n, [], Drawer, DrawerPlaceholder)
             self.drawer_rows.append(new_row)
@@ -128,6 +129,7 @@ class Container:
             raise ItemIsNotEmptyError(name=name, item='drawer', reason='because it has child components!', relation='')
 
     def remove_drawer_at_pos(self, row: int, column: int):
+        """Remove drawer at given row and index"""
         drawer = self.get_drawer_at_pos(row, column)
 
         if not drawer:
@@ -177,11 +179,15 @@ class Container:
             self.resize_columns(new_column_count)
 
     def resize_rows(self, new_row_count: int):
+        """Change maximum number of rows and resize container.
+        This action is destructive and will remove any overflowing items."""
         self.total_rows = new_row_count
         self.drawer_rows = self.drawer_rows[:new_row_count:]
         self._delete_overflowing_drawers(new_row_count)
 
     def resize_columns(self, new_column_count: int):
+        """Change maximum number of columns and resize container.
+        This action is destructive and will remove any overflowing items."""
         self.max_drawers_per_row = new_column_count
         for row in self.drawer_rows:
             row.resize(new_column_count)

@@ -53,7 +53,6 @@ class ColumnValidator(Validator):
                 else:
                     setattr(obj, self.private_name, value)
 
-
         setattr(obj, self.private_name, value)
 
     def _get_overflowing_cols(self, new_col_count: int) -> list:

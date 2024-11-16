@@ -3,8 +3,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from storage.nochange import NoChange
-
 
 @dataclass
 class Row:
@@ -20,12 +18,13 @@ class Row:
         self.items[column] = self.placeholder_item_class()
         return old_item
 
-    def resize(self, column_count: int | NoChange = NoChange):
-        if type(column_count) != NoChange:
-            if column_count < 1:
-                raise ValueError("Column size cannot be resized below 1!")
-            self._max_items = column_count
-            self.items = self.items[:column_count:]
+    def resize(self, column_count: int):
+        """Change number of columns. This action is destructive and will delete overflowing items."""
+        if column_count < 1:
+            raise ValueError("Column size cannot be resized below 1!")
+
+        self._max_items = column_count
+        self.items = self.items[:column_count:]
 
     def fill_columns(self, max_items_per_row):
         self._max_items = max_items_per_row
