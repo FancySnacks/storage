@@ -27,7 +27,7 @@ class RowValidator(Validator):
 
                 if len(overflowing_rows) > 0:
                     print("Row Overflow!")
-                    # update Row list
+                    raise ValueError(f"Column Overflow {len(overflowing_rows)}")
                 else:
                     setattr(obj, self.private_name, value)
 
@@ -51,7 +51,6 @@ class ColumnValidator(Validator):
                 overflowing_cols = self._get_overflowing_cols(value)
 
                 if len(overflowing_cols) > 0:
-                    print("Column Overflow!")
                     raise ValueError(f"Column Overflow {len(overflowing_cols)}")
                 else:
                     setattr(obj, self.private_name, value)
