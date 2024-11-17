@@ -1,4 +1,4 @@
-"""Validator class serving as a dataclass property in validating changes"""
+"""Validator class serving as a dataclass property in validating variable changes"""
 
 from abc import ABC, abstractmethod
 
