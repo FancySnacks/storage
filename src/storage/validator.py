@@ -27,6 +27,7 @@ class RowValidator(Validator):
 
                 if len(overflowing_rows) > 0:
                     prompter = Prompter(len(overflowing_rows), 'columns')
+                    user_input = prompter.get_user_input()
                 else:
                     setattr(obj, self.private_name, value)
 
@@ -50,6 +51,7 @@ class ColumnValidator(Validator):
 
                 if len(overflowing_cols) > 0:
                     prompter = Prompter(len(overflowing_cols), 'columns')
+                    user_input = prompter.get_user_input()
                 else:
                     setattr(obj, self.private_name, value)
 
@@ -78,13 +80,17 @@ class ColumnValidator(Validator):
 
 class Prompter:
     def __init__(self, overflowing_items_count: int, item_type: str = 'items'):
-        self.choice = input(
-            f"WARNING: There are {overflowing_items_count} overflowing {item_type}.\n"
-            f"If you choose to change the number of columns x {item_type} will be moved and reassigned to"
-            f"remaining free spaces and x {item_type} will be deleted permanently.\n"
+        self.overflowing_items_count = overflowing_items_count
+        self.item_type = item_type
+
+    def get_user_input(self) -> bool:
+        choice = input(
+            f"WARNING: There are {self.overflowing_items_count} overflowing {self.item_type}.\n"
+            f"If you choose to change the number of columns x {self.item_type} will be moved and reassigned to"
+            f"remaining free spaces and x {self.item_type} will be deleted permanently.\n"
             f"Proceed anyway? (y/n)\n")
 
-        print(self._clamp_user_input(self.choice))
+        return self._clamp_user_input(choice)
 
     def _clamp_user_input(self, user_input: str) -> bool:
         user_input = user_input.lower()
