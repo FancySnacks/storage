@@ -26,11 +26,7 @@ class RowValidator(Validator):
                 overflowing_rows = self._get_overflowing_rows(value)
 
                 if len(overflowing_rows) > 0:
-                    choice = input(
-                        f"WARNING: There are {len(overflowing_rows)} overflowing drawers.\n"
-                        f"If you choose to change the number of rows x drawers will be moved and reassigned to"
-                        f"remaining free spaces and x drawers will be deleted permanently.\n"
-                        f"Proceed anyway? (y/n)")
+                    prompter = Prompter(len(overflowing_rows), 'columns')
                 else:
                     setattr(obj, self.private_name, value)
 
@@ -53,11 +49,7 @@ class ColumnValidator(Validator):
                 overflowing_cols = self._get_overflowing_cols(value)
 
                 if len(overflowing_cols) > 0:
-                    choice = input(
-                        f"WARNING: There are {len(overflowing_cols)} overflowing items.\n"
-                        f"If you choose to change the number of columns x items will be moved and reassigned to"
-                        f"remaining free spaces and x items will be deleted permanently.\n"
-                        f"Proceed anyway? (y/n)")
+                    prompter = Prompter(len(overflowing_cols), 'columns')
                 else:
                     setattr(obj, self.private_name, value)
 
@@ -82,3 +74,22 @@ class ColumnValidator(Validator):
         [joined_overflowing_cols.extend(col) for col in cols]
 
         return joined_overflowing_cols
+
+
+class Prompter:
+    def __init__(self, overflowing_items_count: int, item_type: str = 'items'):
+        self.choice = input(
+            f"WARNING: There are {overflowing_items_count} overflowing {item_type}.\n"
+            f"If you choose to change the number of columns x {item_type} will be moved and reassigned to"
+            f"remaining free spaces and x {item_type} will be deleted permanently.\n"
+            f"Proceed anyway? (y/n)\n")
+
+        print(self._clamp_user_input(self.choice))
+
+    def _clamp_user_input(self, user_input: str) -> bool:
+        user_input = user_input.lower()
+
+        match user_input:
+            case 'y': return True
+            case 'n': return False
+            case _: raise ValueError("Invalid user input")
