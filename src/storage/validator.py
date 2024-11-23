@@ -42,6 +42,10 @@ class RowValidator(Validator):
                             setattr(obj, self.private_name, value)
                         else:
                             print("Action aborted")
+
+                    else:
+                        self.reassign(value, overflowing_rows)
+                        setattr(obj, self.private_name, value)
                 else:
                     setattr(obj, self.private_name, value)
         else:
