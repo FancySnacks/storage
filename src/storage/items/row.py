@@ -40,10 +40,19 @@ class Row:
         return isinstance(item, self.placeholder_item_class)
 
     def has_free_space(self) -> bool:
-        if self._max_items > len(self.items):
+        if self._max_items > len(self.get_all_valid_items()):
             return True
         else:
             return False
+
+    def get_free_spaces(self) -> list[int]:
+        free_cols: list[int] = []
+
+        for index, item in enumerate(self.items):
+            if not isinstance(item, self.item_class):
+                free_cols.append(index)
+
+        return free_cols
 
     def has_items(self) -> bool:
         return len(self.get_all_valid_items()) > 0

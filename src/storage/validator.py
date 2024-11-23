@@ -1,6 +1,8 @@
 """Validator class serving as a dataclass property in validating variable changes"""
 
 from abc import ABC, abstractmethod
+from sys import argv
+from termios import VLNEXT
 
 
 class Validator(ABC):
@@ -26,12 +28,44 @@ class RowValidator(Validator):
                 overflowing_rows = self._get_overflowing_rows(value)
 
                 if len(overflowing_rows) > 0:
-                    prompter = Prompter(len(overflowing_rows), 'columns')
-                    user_input = prompter.get_user_input()
+                    overflowing_drawers = self.get_overflowing_drawers(overflowing_rows)
+
+                    if 'pytest' not in argv[0]:
+                        prompter = Prompter(len(overflowing_drawers),
+                                            len(self.get_not_salvageable_items(value, overflowing_drawers)),
+                                            'rows')
+                        user_input = prompter.get_user_input()
+
+                        if user_input:
+                            self.reassign(value, overflowing_rows)
                 else:
                     setattr(obj, self.private_name, value)
 
         setattr(obj, self.private_name, value)
+
+    def reassign(self, new_row_count: int, overflowing_rows: list):
+        overflowing_drawers = [row.get_all_valid_items() for row in overflowing_rows]
+        joined_drawers = []
+        [joined_drawers.extend(col_list) for col_list in overflowing_drawers]
+        raise ValueError(f"{self.get_not_salvageable_items(new_row_count, overflowing_rows)} not salvageable items")
+
+    def get_free_spaces(self, new_row_count: int) -> list:
+        # get rows with free spaces (implying the change)
+        rows_with_free_spaces = self.owner.get_all_free_rows()[:new_row_count:]
+
+        # get all free columns from all remaining rows (implying the change)
+        free_columns = [row.get_free_spaces() for row in rows_with_free_spaces]
+        free_columns_joined = []
+        [free_columns_joined.extend(col_list) for col_list in free_columns]
+
+        return free_columns_joined
+
+    def get_overflowing_drawers(self, overflowing_rows: list) -> list:
+        return [row.get_all_valid_items() for row in overflowing_rows]
+
+    def get_not_salvageable_items(self, new_row_count: int, overflowing_items: list) -> list:
+        n_of_free_spaces = len(self.get_free_spaces(new_row_count)) - len(overflowing_items)
+        return overflowing_items[:n_of_free_spaces:]
 
     def _get_overflowing_rows(self, new_row_count: int) -> list:
         """Get rows that will overflow when resizing container down"""
@@ -50,8 +84,13 @@ class ColumnValidator(Validator):
                 overflowing_cols = self._get_overflowing_cols(value)
 
                 if len(overflowing_cols) > 0:
-                    prompter = Prompter(len(overflowing_cols), 'columns')
-                    user_input = prompter.get_user_input()
+                    if 'pytest' not in argv[0]:
+                        prompter = Prompter(len(overflowing_cols),
+                                            len(self.get_not_salvageable_items(overflowing_cols)),
+                                            'columns')
+                        user_input = prompter.get_user_input()
+                    else:
+                        self.reassign()
                 else:
                     setattr(obj, self.private_name, value)
 
@@ -67,7 +106,8 @@ class ColumnValidator(Validator):
         joined_overflowing_items = self._join_col_matrix(overflowing_cols)
 
         # remove items that act as placeholder
-        joined_filtered_overflowing_items: list = [col for col in joined_overflowing_items if rows[0].is_valid_item(col)]
+        joined_filtered_overflowing_items: list = [col for col in joined_overflowing_items if
+                                                   rows[0].is_valid_item(col)]
 
         return joined_filtered_overflowing_items
 
@@ -79,15 +119,16 @@ class ColumnValidator(Validator):
 
 
 class Prompter:
-    def __init__(self, overflowing_items_count: int, item_type: str = 'items'):
-        self.overflowing_items_count = overflowing_items_count
-        self.item_type = item_type
+    def __init__(self, overflowing_items_count: int, items_to_be_lost_count: int = 0, item_type: str = 'items'):
+        self.overflowing_items_count: int = overflowing_items_count
+        self.items_to_be_lost_count: int = items_to_be_lost_count
+        self.item_type: str = item_type
 
     def get_user_input(self) -> bool:
         choice = input(
-            f"WARNING: There are {self.overflowing_items_count} overflowing {self.item_type}.\n"
-            f"If you choose to change the number of columns x {self.item_type} will be moved and reassigned to"
-            f"remaining free spaces and x {self.item_type} will be deleted permanently.\n"
+            f"WARNING: There are {self.overflowing_items_count} overflowing drawers.\n"
+            f"If you choose to change the number of {self.item_type}s, {self.overflowing_items_count - self.items_to_be_lost_count} drawer(s) will be moved and reassigned to"
+            f"remaining free spaces and {self.items_to_be_lost_count} drawer(s) will be deleted permanently.\n"
             f"Proceed anyway? (y/n)\n")
 
         return self._clamp_user_input(choice)
@@ -96,6 +137,9 @@ class Prompter:
         user_input = user_input.lower()
 
         match user_input:
-            case 'y': return True
-            case 'n': return False
-            case _: raise ValueError("Invalid user input")
+            case 'y':
+                return True
+            case 'n':
+                return False
+            case _:
+                raise ValueError("Invalid user input")
