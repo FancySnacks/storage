@@ -1,6 +1,7 @@
 """Validator class serving as a dataclass property in validating variable changes"""
 
 from abc import ABC, abstractmethod
+from logging import raiseExceptions
 from sys import argv
 from termios import VLNEXT
 
@@ -44,10 +45,12 @@ class RowValidator(Validator):
         setattr(obj, self.private_name, value)
 
     def reassign(self, new_row_count: int, overflowing_rows: list):
-        overflowing_drawers = [row.get_all_valid_items() for row in overflowing_rows]
-        joined_drawers = []
-        [joined_drawers.extend(col_list) for col_list in overflowing_drawers]
-        raise ValueError(f"{self.get_not_salvageable_items(new_row_count, overflowing_rows)} not salvageable items")
+        overflowing_drawers = self.get_overflowing_drawers(overflowing_rows)
+        drawers_to_delete = self.get_not_salvageable_items(new_row_count, overflowing_drawers)
+
+        # drawers that will definitely get added
+        overflowing_drawers = [drawer for drawer in overflowing_drawers if drawer not in drawers_to_delete]
+        raise ValueError(overflowing_drawers)
 
     def get_free_spaces(self, new_row_count: int) -> list:
         # get rows with free spaces (implying the change)
@@ -61,11 +64,14 @@ class RowValidator(Validator):
         return free_columns_joined
 
     def get_overflowing_drawers(self, overflowing_rows: list) -> list:
-        return [row.get_all_valid_items() for row in overflowing_rows]
+        overflowing_drawers = [row.get_all_valid_items() for row in overflowing_rows]
+        overflowing_drawers_joined = []
+        [overflowing_drawers_joined.extend(col_list) for col_list in overflowing_drawers]
+        return overflowing_drawers_joined
 
     def get_not_salvageable_items(self, new_row_count: int, overflowing_items: list) -> list:
         n_of_free_spaces = len(self.get_free_spaces(new_row_count)) - len(overflowing_items)
-        return overflowing_items[:n_of_free_spaces:]
+        return overflowing_items[n_of_free_spaces::]
 
     def _get_overflowing_rows(self, new_row_count: int) -> list:
         """Get rows that will overflow when resizing container down"""
