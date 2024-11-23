@@ -40,11 +40,12 @@ class RowValidator(Validator):
                         if user_input:
                             self.reassign(value, overflowing_rows)
                             setattr(obj, self.private_name, value)
-                            self.owner.add_special_tags()
+                        else:
+                            print("Action aborted")
                 else:
                     setattr(obj, self.private_name, value)
-
-        setattr(obj, self.private_name, value)
+        else:
+            setattr(obj, self.private_name, value)
 
     def reassign(self, new_row_count: int, overflowing_rows: list):
         overflowing_drawers = self.get_overflowing_drawers(overflowing_rows)
