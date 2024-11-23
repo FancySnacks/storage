@@ -26,7 +26,6 @@ def test_new_drawer_not_added_when_row_is_full(container, test_drawer_name):
         container.add_drawer(test_drawer_name)
         container.resize_container(1, 1)
         container.add_drawer("secondtestDrawer")
-        container.get_next_free_row_and_column()
 
 
 def test_drawer_is_moved_to_another_spot(container, test_drawer_name):

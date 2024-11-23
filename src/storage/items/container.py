@@ -49,6 +49,7 @@ class Container:
         """Create Row class for each row and fill it with placeholder drawers."""
         for row_n in range(0, self.total_rows):
             new_row = Row(row_n, [], Drawer, DrawerPlaceholder)
+            new_row._max_items = self.max_drawers_per_row
             self.drawer_rows.append(new_row)
 
             if fill_empty_spaces:

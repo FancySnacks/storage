@@ -1,9 +1,7 @@
 """Validator class serving as a dataclass property in validating variable changes"""
 
 from abc import ABC, abstractmethod
-from logging import raiseExceptions
 from sys import argv
-from termios import VLNEXT
 
 
 class Validator(ABC):
@@ -38,14 +36,14 @@ class RowValidator(Validator):
                         user_input = prompter.get_user_input()
 
                         if user_input:
-                            self.reassign(value, overflowing_rows)
                             setattr(obj, self.private_name, value)
+                            self.reassign(value, overflowing_rows)
                         else:
                             print("Action aborted")
 
                     else:
-                        self.reassign(value, overflowing_rows)
                         setattr(obj, self.private_name, value)
+                        self.reassign(value, overflowing_rows)
                 else:
                     setattr(obj, self.private_name, value)
         else:
@@ -60,6 +58,12 @@ class RowValidator(Validator):
 
         for drawer in overflowing_drawers:
             self.owner.move_drawer_to_a_free_spot(drawer)
+
+        for drawer in drawers_to_delete:
+            self.owner.remove_drawer_by_name(drawer.name, forced=True)
+
+        if len(drawers_to_delete) > 0:
+            print(f"{len(drawers_to_delete)} drawers were deleted")
 
     def get_free_spaces(self, new_row_count: int) -> list:
         # get rows with free spaces (implying the change)
@@ -96,20 +100,58 @@ class ColumnValidator(Validator):
         if hasattr(obj, self.private_name):
 
             if value < getattr(obj, self.private_name):
-                overflowing_cols = self._get_overflowing_cols(value)
+                overflowing_drawers = self._get_overflowing_cols(value)
 
-                if len(overflowing_cols) > 0:
+                if len(overflowing_drawers) > 0:
                     if 'pytest' not in argv[0]:
-                        prompter = Prompter(len(overflowing_cols),
-                                            len(self.get_not_salvageable_items(overflowing_cols)),
-                                            'columns')
+                        prompter = Prompter(len(overflowing_drawers),
+                                            len(self.get_not_salvageable_items(value, overflowing_drawers)),
+                                            'rows')
                         user_input = prompter.get_user_input()
+
+                        if user_input:
+                            setattr(obj, self.private_name, value)
+                            self.reassign(value, overflowing_drawers)
+                        else:
+                            print("Action aborted")
+
                     else:
-                        self.reassign()
+                        setattr(obj, self.private_name, value)
+                        self.reassign(value, overflowing_drawers)
                 else:
                     setattr(obj, self.private_name, value)
+        else:
+            setattr(obj, self.private_name, value)
 
-        setattr(obj, self.private_name, value)
+    def reassign(self, new_col_count: int, overflowing_drawers: list):
+        drawers_to_delete = self.get_not_salvageable_items(new_col_count, overflowing_drawers)
+
+        # drawers that will definitely get added
+        overflowing_drawers = [drawer for drawer in overflowing_drawers if drawer not in drawers_to_delete]
+
+        for drawer in overflowing_drawers:
+            self.owner.move_drawer_to_a_free_spot(drawer)
+
+        for drawer in drawers_to_delete:
+            self.owner.remove_drawer_by_name(drawer.name, forced=True)
+
+        if len(drawers_to_delete) > 0:
+            print(f"{len(drawers_to_delete)} drawers were deleted")
+
+    def get_free_spaces(self, new_col_count: int) -> list:
+        # get rows with free spaces (implying the change)
+        rows_with_free_spaces = self.owner.get_all_free_rows()
+
+        # get all free columns from all remaining rows (implying the change)
+        free_columns = [row.get_free_spaces()[:new_col_count:] for row in rows_with_free_spaces]
+        free_columns_joined = []
+        [free_columns_joined.extend(col_list) for col_list in free_columns]
+
+        return free_columns_joined
+
+    def get_not_salvageable_items(self, new_col_count: int, overflowing_items: list) -> list:
+        n_of_free_spaces = len(self.get_free_spaces(new_col_count)) - len(overflowing_items)
+        return overflowing_items[n_of_free_spaces::]
 
     def _get_overflowing_cols(self, new_col_count: int) -> list:
         """Get columns that will overflow when resizing container down"""
