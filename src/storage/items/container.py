@@ -178,12 +178,12 @@ class Container:
         """Change number of rows and/or columns. This action is non-destructive, if any drawers would overflow and
         to be lost the user is notified and asked for confirmation."""
         if type(new_row_count) != NoChange:
-            self.resize_rows(new_row_count)
+            self._resize_rows(new_row_count)
 
         if type(new_column_count) != NoChange:
-            self.resize_columns(new_column_count)
+            self._resize_columns(new_column_count)
 
-    def resize_rows(self, new_row_count: int):
+    def _resize_rows(self, new_row_count: int):
         """Change maximum number of rows and resize container.
         New row count cannot be less than 1.
         This action is destructive and will remove any overflowing items."""
@@ -194,7 +194,7 @@ class Container:
         self.drawer_rows = self.drawer_rows[:new_row_count:]
         self._delete_overflowing_drawers(new_row_count)
 
-    def resize_columns(self, new_column_count: int):
+    def _resize_columns(self, new_column_count: int):
         """Change maximum number of columns and resize container.
         New column count cannot be less than 1.
         This action is destructive and will remove any overflowing items."""
