@@ -39,6 +39,8 @@ class RowValidator(Validator):
 
                         if user_input:
                             self.reassign(value, overflowing_rows)
+                            setattr(obj, self.private_name, value)
+                            self.owner.add_special_tags()
                 else:
                     setattr(obj, self.private_name, value)
 
@@ -50,7 +52,9 @@ class RowValidator(Validator):
 
         # drawers that will definitely get added
         overflowing_drawers = [drawer for drawer in overflowing_drawers if drawer not in drawers_to_delete]
-        raise ValueError(overflowing_drawers)
+
+        for drawer in overflowing_drawers:
+            self.owner.move_drawer_to_a_free_spot(drawer)
 
     def get_free_spaces(self, new_row_count: int) -> list:
         # get rows with free spaces (implying the change)

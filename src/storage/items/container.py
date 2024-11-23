@@ -28,7 +28,7 @@ class Container:
 
     def __post_init__(self):
         self.create_rows()
-        self._add_special_tags()
+        self.add_special_tags()
 
     @property
     def drawers(self) -> list[Drawer]:
@@ -38,7 +38,7 @@ class Container:
     def get_max_drawer_count(self) -> int:
         return self.total_rows * self.max_drawers_per_row
 
-    def _add_special_tags(self):
+    def add_special_tags(self):
         self.tags['rows'] = self.total_rows
         self.tags['columns'] = self.max_drawers_per_row
         self.tags['last_update'] = datetime.now().strftime("%d/%m/%Y, %H:%M")
@@ -74,7 +74,7 @@ class Container:
         row.items[pos.column] = new_drawer
         self._drawers.append(new_drawer)
 
-        self._add_special_tags()
+        self.add_special_tags()
 
         out = Printer.get_message("ADD_SUCCESS",
                                   verbosity=3,
@@ -116,7 +116,7 @@ class Container:
             self.drawer_rows[drawer_to_del.row].pop_item(drawer_to_del.column)
             self._drawers.remove(drawer_to_del)
 
-            self._add_special_tags()
+            self.add_special_tags()
 
             m = Printer.get_message("DEL_SUCCESS", 1,
                                     item='drawer',
@@ -138,7 +138,7 @@ class Container:
         drawer = self.drawer_rows[row].pop_item(column)
         self._drawers.remove(drawer)
 
-        self._add_special_tags()
+        self.add_special_tags()
 
         m = Printer.get_message("DEL_SUCCESS", 1,
                                 item='drawer',
@@ -161,9 +161,18 @@ class Container:
             drawer_obj.column = column
             self.drawer_rows[old_pos[0]].items[old_pos[1]] = DrawerPlaceholder()
 
-            self._add_special_tags()
+            self.add_special_tags()
         else:
             raise SpaceOccupiedError(itme='drawer', relation=self.name, pos=Position(row, column))
+
+    def move_drawer_to_a_free_spot(self, drawer_obj: Drawer):
+        old_pos = drawer_obj.position
+        new_pos = self._clamp_new_drawer_position()
+
+        self.drawer_rows[new_pos.row].items[new_pos.column] = drawer_obj
+        drawer_obj.row = new_pos.row
+        drawer_obj.column = new_pos.column
+        self.drawer_rows[old_pos[0]].items[old_pos[1]] = DrawerPlaceholder()
 
     def resize_container(self, new_row_count: int | NoChange = NoChange, new_column_count: int | NoChange = NoChange):
         """Change number of rows and/or columns. This action is non-destructive, if any drawers would overflow and
@@ -205,7 +214,7 @@ class Container:
         self._drawers.clear()
         self.drawer_rows.clear()
         self.create_rows()
-        self._add_special_tags()
+        self.add_special_tags()
 
         m = Printer.get_message("DEL_SUCCESS", 1,
                                 item='component',
