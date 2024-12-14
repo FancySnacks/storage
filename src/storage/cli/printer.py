@@ -21,8 +21,8 @@ class Printer:
     exceptions_ignore_silent_mode: bool = True
 
     @classmethod
-    def get_message(cls, key: str, verbosity: int = 1, **kwargs) -> str:
-        if cls.silent and verbosity < 2:
+    def get_message(cls, key: str, verbosity: int = 1, is_exception: bool = False, **kwargs) -> str:
+        if cls.silent and not is_exception:
             return ""
 
         verbosity = min(cls.get_max_verbosity_level_possible(key), verbosity)

@@ -14,7 +14,7 @@ class StorageBaseException(Exception):
         super().__init__(self.CONSOLE_MESSAGE)
 
     def get_formatted_error_msg(self) -> str:
-        return Printer.get_message(self.CONSOLE_MESSAGE, 2, **self.metadata, reason=self.REASON)
+        return Printer.get_message(self.CONSOLE_MESSAGE, 2, True, **self.metadata, reason=self.REASON)
 
 
 # ===== CREATE ===== #
