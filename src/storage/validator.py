@@ -175,6 +175,84 @@ class ColumnValidator(Validator):
         return joined_overflowing_cols
 
 
+class CompartmentValidator(Validator):
+    def __set__(self, obj, value):
+        self.owner = obj
+
+        if hasattr(obj, self.private_name):
+
+            if value < getattr(obj, self.private_name):
+                overflowing_components = self._get_overflowing_components(value)
+
+                if len(overflowing_components) > 0:
+                    if 'pytest' not in argv[0]:
+                        prompter = Prompter(len(overflowing_components),
+                                            len(self.get_not_salvageable_items(value, overflowing_components)),
+                                            'componnets')
+                        user_input = prompter.get_user_input()
+
+                        if user_input:
+                            setattr(obj, self.private_name, value)
+                            self.reassign(value, overflowing_components)
+                        else:
+                            print("Action aborted")
+
+                    else:
+                        setattr(obj, self.private_name, value)
+                        self.reassign(value, overflowing_components)
+                else:
+                    setattr(obj, self.private_name, value)
+        else:
+            setattr(obj, self.private_name, value)
+
+    def reassign(self, new_col_count: int, overflowing_drawers: list):
+        drawers_to_delete = self.get_not_salvageable_items(new_col_count, overflowing_drawers)
+
+        # drawers that will definitely get added
+        overflowing_drawers = [drawer for drawer in overflowing_drawers if drawer not in drawers_to_delete]
+
+        for drawer in overflowing_drawers:
+            self.owner.move_drawer_to_a_free_spot(drawer)
+
+        for drawer in drawers_to_delete:
+            self.owner.remove_drawer_by_name(drawer.name, forced=True)
+
+        if len(drawers_to_delete) > 0:
+            print(f"{len(drawers_to_delete)} drawers were deleted")
+
+    def get_free_spaces(self, new_col_count: int) -> list:
+        # get rows with free spaces (implying the change)
+        rows_with_free_spaces = self.owner.get_all_free_rows()
+
+        # get all free columns from all remaining rows (implying the change)
+        free_columns = [row.get_free_spaces()[:new_col_count:] for row in rows_with_free_spaces]
+        free_columns_joined = []
+        [free_columns_joined.extend(col_list) for col_list in free_columns]
+
+        return free_columns_joined
+
+    def get_not_salvageable_items(self, new_col_count: int, overflowing_items: list) -> list:
+        n_of_free_spaces = len(self.get_free_spaces(new_col_count)) - len(overflowing_items)
+        return overflowing_items[n_of_free_spaces::]
+
+    def _get_overflowing_components(self, new_component_count: int) -> list:
+        """Get columns that will overflow when resizing container down"""
+        drawers = self.owner.drawers
+        all_components = [drawer.components for drawer in drawers]
+        overflowing_components: list[list] = [drawer[new_component_count::] for drawer in all_components]
+
+        # join overflowing items into a single list from list of lists
+        joined_overflowing_items = self._join_comp_matrix(overflowing_components)
+
+        return joined_overflowing_items
+
+    def _join_comp_matrix(self, comps: list[list]) -> list:
+        joined_overflowing_comps: list = []
+        [joined_overflowing_comps.extend(comp) for comp in comps]
+
+        return joined_overflowing_comps
+
+
 class Prompter:
     def __init__(self, overflowing_items_count: int, items_to_be_lost_count: int = 0, item_type: str = 'items'):
         self.overflowing_items_count: int = overflowing_items_count

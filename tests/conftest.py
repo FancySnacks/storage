@@ -32,7 +32,7 @@ def test_component_name() -> str:
 
 @pytest.fixture
 def container(test_container_name) -> Container:
-    return Container(name=TEST_CONTAINER_NAME, total_rows=8, max_drawers_per_row=8)
+    return Container(name=TEST_CONTAINER_NAME, total_rows=8, max_drawers_per_row=8, compartments_per_drawer=3)
 
 
 @pytest.fixture
@@ -57,7 +57,7 @@ def component_dict() -> dict:
 
 @pytest.fixture
 def container_complete(component_dict) -> Container:
-    c = Container(name=TEST_CONTAINER_NAME, total_rows=8, max_drawers_per_row=8)
+    c = Container(name=TEST_CONTAINER_NAME, total_rows=8, max_drawers_per_row=8, compartments_per_drawer=3)
     d = c.add_drawer(TEST_DRAWER_NAME)
     d.add_component(**component_dict)
     return c

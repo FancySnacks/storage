@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from dataclasses import dataclass, field
 
-from storage.validator import RowValidator, ColumnValidator
+from storage.validator import RowValidator, ColumnValidator, CompartmentValidator
 from storage.nochange import NoChange
 from storage.cli.exceptions import DuplicateNameError, SpaceOccupiedError, NoFreeSpacesError, ItemNotFoundError, \
     ItemNotFoundAtPositionError, ItemIsNotEmptyError
@@ -20,7 +20,7 @@ class Container:
     name: str
     total_rows: int = RowValidator()
     max_drawers_per_row: int = ColumnValidator()
-    compartments_per_drawer: int = 3
+    compartments_per_drawer: int = CompartmentValidator()
     tags: dict = field(repr=False, default_factory=dict)
 
     drawer_rows: list[Row] = field(default_factory=list)
