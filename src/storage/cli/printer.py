@@ -18,10 +18,11 @@ def load_console_messages_from_file(filepath=PRINTER_MESSAGES_PATH):
 class Printer:
     messages: dict = load_console_messages_from_file()
     silent: bool = False
+    exceptions_ignore_silent_mode: bool = True
 
     @classmethod
     def get_message(cls, key: str, verbosity: int = 1, **kwargs) -> str:
-        if cls.silent:
+        if cls.silent and verbosity < 2:
             return ""
 
         verbosity = min(cls.get_max_verbosity_level_possible(key), verbosity)

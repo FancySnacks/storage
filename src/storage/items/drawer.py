@@ -176,6 +176,9 @@ class Drawer:
                 return i
         raise NoFreeSpacesError(item='component', relation=self.name)
 
+    def has_free_space(self) -> bool:
+        return self._row.has_free_space()
+
     def _free_spot_exists(self, components: list[Component]) -> bool:
         """Check whether all compartments are taken or not."""
         if self.parent_container:

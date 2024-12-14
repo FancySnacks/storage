@@ -188,7 +188,7 @@ class CompartmentValidator(Validator):
                     if 'pytest' not in argv[0]:
                         prompter = Prompter(len(overflowing_components),
                                             len(self.get_not_salvageable_items(value, overflowing_components)),
-                                            'componnets')
+                                            'components')
                         user_input = prompter.get_user_input()
 
                         if user_input:
@@ -221,15 +221,12 @@ class CompartmentValidator(Validator):
             print(f"{len(drawers_to_delete)} drawers were deleted")
 
     def get_free_spaces(self, new_col_count: int) -> list:
-        # get rows with free spaces (implying the change)
-        rows_with_free_spaces = self.owner.get_all_free_rows()
+        # get drawers with free spaces (implying the change)
+        drawers_with_free_spaces = self.owner.get_all_free_drawers()
+        free_rows = [drawer._row for drawer in drawers_with_free_spaces if drawer.has_free_space()]
+        raise ValueError(free_rows)
 
-        # get all free columns from all remaining rows (implying the change)
-        free_columns = [row.get_free_spaces()[:new_col_count:] for row in rows_with_free_spaces]
-        free_columns_joined = []
-        [free_columns_joined.extend(col_list) for col_list in free_columns]
-
-        return free_columns_joined
+        return free_rows
 
     def get_not_salvageable_items(self, new_col_count: int, overflowing_items: list) -> list:
         n_of_free_spaces = len(self.get_free_spaces(new_col_count)) - len(overflowing_items)

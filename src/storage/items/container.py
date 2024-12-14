@@ -242,6 +242,9 @@ class Container:
     def get_all_free_rows(self) -> list[Row]:
         return [drawer for drawer in self.drawer_rows if drawer.has_free_space()]
 
+    def get_all_free_drawers(self) -> list[Drawer]:
+        return [drawer for drawer in self.drawers if drawer.has_free_space()]
+
     def _clamp_new_drawer_position(self, row: int = -1, column: int = -1):
         """Place the drawer at either specified location via args or at the next free space if defaults are passed"""
         if row > -1:
