@@ -192,14 +192,14 @@ class CompartmentValidator(Validator):
                         user_input = prompter.get_user_input()
 
                         if user_input:
-                            setattr(obj, self.private_name, value)
                             self.reassign(value, overflowing_components)
+                            setattr(obj, self.private_name, value)
                         else:
                             print("Action aborted")
 
                     else:
-                        setattr(obj, self.private_name, value)
                         self.reassign(value, overflowing_components)
+                        setattr(obj, self.private_name, value)
                 else:
                     setattr(obj, self.private_name, value)
         else:
@@ -214,8 +214,8 @@ class CompartmentValidator(Validator):
         for comp in overflowing_components:
             raise ValueError("TODO: Move component to a free spot")
 
-        for comp in overflowing_components:
-            raise ValueError("TODO: Move component to a free spot")
+        for comp in components_to_delete:
+            comp.parent_drawer.remove_component_by_name(comp.name)
 
         if len(components_to_delete) > 0:
             print(f"{len(components_to_delete)} components were deleted")
@@ -258,7 +258,7 @@ class Prompter:
     def get_user_input(self) -> bool:
         choice = input(
             f"WARNING: There are {self.overflowing_items_count} overflowing {self.item_type}(s).\n"
-            f"If you choose to change the number of {self.item_type}s, {self.overflowing_items_count - self.items_to_be_lost_count} {self.item_type}(s) will be moved and reassigned to"
+            f"If you choose to change the number of {self.item_type}s, {self.overflowing_items_count - self.items_to_be_lost_count} {self.item_type}(s) will be moved and reassigned to "
             f"remaining free spaces and {self.items_to_be_lost_count} {self.item_type}(s) will be deleted permanently.\n"
             f"Proceed anyway? (y/n)\n")
 
